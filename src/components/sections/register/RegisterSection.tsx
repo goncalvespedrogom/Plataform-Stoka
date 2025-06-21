@@ -1,29 +1,59 @@
-import React, { useState } from 'react';
-import { HiFolderAdd } from "react-icons/hi";
+import React, { useState, Fragment } from 'react';
+import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
 import { IoPencil, IoTrash } from "react-icons/io5";
 import { RiCloseCircleFill } from "react-icons/ri";
+import { IoSearch } from "react-icons/io5";
+import { RxUpdate } from "react-icons/rx";
+import { CgClose } from "react-icons/cg";
+import { Listbox, Transition } from '@headlessui/react';
 
 interface Product {
   id: number;
   name: string;
+  category: string;
   quantity: number;
-  value: number;
+  unitPrice: number;
+  totalValue: number;
   description?: string;
 }
+
+// Categorias pré-definidas
+const PRODUCT_CATEGORIES = [
+  'Eletrônicos',
+  'Vestuário',
+  'Alimentos',
+  'Casa e Jardim',
+  'Esportes',
+  'Livros',
+  'Beleza e Saúde',
+  'Automotivo',
+  'Brinquedos',
+  'Ferramentas'
+];
 
 const RegisterSection = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'totalValue'>>({
     name: '',
+    category: '',
     quantity: 0,
-    value: 0,
+    unitPrice: 0,
     description: ''
   });
-  const [formattedValue, setFormattedValue] = useState('');
+  const [formattedUnitPrice, setFormattedUnitPrice] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
   // Estados para erros de validação
-  const [errors, setErrors] = useState<{ name?: string; quantity?: string; value?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; category?: string; quantity?: string; unitPrice?: string }>({});
+
+  // Função para filtrar produtos baseado no termo de busca e categoria selecionada
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategoryFilter || product.category === selectedCategoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   // Função para formatar valor em Real Brasileiro
   const formatToBRL = (value: string): string => {
@@ -51,28 +81,46 @@ const RegisterSection = () => {
     return parseFloat(numericString) || 0;
   };
 
-  // Função para lidar com mudança no campo de valor
-  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Função para lidar com mudança no campo de preço unitário
+  const handleUnitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     const formatted = formatToBRL(inputValue);
-    setFormattedValue(formatted);
+    setFormattedUnitPrice(formatted);
     
     // Atualiza o valor numérico no estado
     const numericValue = extractNumericValue(formatted);
-    setNewProduct({ ...newProduct, value: numericValue });
+    setNewProduct({ ...newProduct, unitPrice: numericValue });
+  };
+
+  const handleIncrementQuantity = () => {
+    setNewProduct(prev => ({ ...prev, quantity: Number(prev.quantity || 0) + 1 }));
+    if (errors.quantity) setErrors({ ...errors, quantity: undefined });
+  };
+
+  const handleDecrementQuantity = () => {
+    setNewProduct(prev => ({ ...prev, quantity: Math.max(0, Number(prev.quantity || 0) - 1) }));
+    if (errors.quantity) setErrors({ ...errors, quantity: undefined });
+  };
+
+  // Função para calcular o valor total
+  const calculateTotalValue = (quantity: number, unitPrice: number): number => {
+    return quantity * unitPrice;
   };
 
   // Função para validar campos obrigatórios
   const validateFields = () => {
-    const newErrors: { name?: string; quantity?: string; value?: string } = {};
+    const newErrors: { name?: string; category?: string; quantity?: string; unitPrice?: string } = {};
     if (!newProduct.name.trim()) {
       newErrors.name = 'Nome do produto é obrigatório.';
+    }
+    if (!newProduct.category) {
+      newErrors.category = 'Selecione uma categoria.';
     }
     if (!newProduct.quantity || newProduct.quantity <= 0) {
       newErrors.quantity = 'Insira uma quantidade válida.';
     }
-    if (!newProduct.value || newProduct.value <= 0) {
-      newErrors.value = 'Insira um valor válido.';
+    if (!newProduct.unitPrice || newProduct.unitPrice <= 0) {
+      newErrors.unitPrice = 'Insira um preço unitário válido.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -80,13 +128,15 @@ const RegisterSection = () => {
 
   const handleAddProduct = () => {
     if (!validateFields()) return;
+    const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
     const product: Product = {
       id: products.length + 1,
-      ...newProduct
+      ...newProduct,
+      totalValue
     };
     setProducts([...products, product]);
-    setNewProduct({ name: '', quantity: 0, value: 0, description: '' });
-    setFormattedValue('');
+    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, description: '' });
+    setFormattedUnitPrice('');
     setIsModalOpen(false);
     setErrors({});
   };
@@ -95,27 +145,29 @@ const RegisterSection = () => {
     setEditingProduct(product);
     setNewProduct({
       name: product.name,
+      category: product.category,
       quantity: product.quantity,
-      value: product.value,
+      unitPrice: product.unitPrice,
       description: product.description || ''
     });
-    // Formata o valor para exibição no modal
-    setFormattedValue(formatToBRL((product.value * 100).toString()));
+    // Formata o preço unitário para exibição no modal
+    setFormattedUnitPrice(formatToBRL((product.unitPrice * 100).toString()));
     setIsModalOpen(true);
   };
 
   const handleUpdateProduct = () => {
     if (!validateFields()) return;
     if (editingProduct) {
+      const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
       const updatedProducts = products.map(product => 
         product.id === editingProduct.id 
-          ? { ...editingProduct, ...newProduct }
+          ? { ...editingProduct, ...newProduct, totalValue }
           : product
       );
       setProducts(updatedProducts);
       setEditingProduct(null);
-      setNewProduct({ name: '', quantity: 0, value: 0, description: '' });
-      setFormattedValue('');
+      setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, description: '' });
+      setFormattedUnitPrice('');
       setIsModalOpen(false);
       setErrors({});
     }
@@ -128,42 +180,159 @@ const RegisterSection = () => {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
-    setNewProduct({ name: '', quantity: 0, value: 0, description: '' });
-    setFormattedValue('');
+    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, description: '' });
+    setFormattedUnitPrice('');
     setErrors({});
   };
 
   return (
     <div className="flex flex-col gap-8">
       
-      {/* Botão Adicionar Produto */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-bold transition-opacity duration-200 hover:bg-[#ffffff7c]"
-      >
-        <HiFolderAdd size={26} className="align-middle flex-shrink-0 relative top-[-1px]" />
-        Adicionar
-      </button>
+      {/* Botão Adicionar Produto e Input de Busca */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]"
+        >
+          <HiFolderAdd size={26} className="align-middle flex-shrink-0 relative top-[-1px]" />
+          Adicionar
+        </button>
+
+        {/* Filtro por Categoria */}
+        <div className="relative w-56">
+          <Listbox
+            value={selectedCategoryFilter}
+            onChange={setSelectedCategoryFilter}
+          >
+            <div className="relative">
+              <Listbox.Button 
+                className={`bg-[#fff] shadow ${selectedCategoryFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]`}
+              >
+                <span className="block truncate">
+                  {selectedCategoryFilter || "Todas as categorias"}
+                </span>
+                <HiSelector
+                  className="h-5 w-5 text-gray-400 flex-shrink-0"
+                  aria-hidden="true"
+                />
+              </Listbox.Button>
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  <Listbox.Option
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'
+                      }`
+                    }
+                    value=""
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span
+                          className={`block truncate ${
+                            selected ? 'font-medium' : 'font-normal'
+                          }`}
+                        >
+                          Todas as categorias
+                        </span>
+                        {selected ? (
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">
+                            <HiCheck className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                  {PRODUCT_CATEGORIES.map((category) => (
+                    <Listbox.Option
+                      key={category}
+                      className={({ active }) =>
+                        `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'
+                        }`
+                      }
+                      value={category}
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span
+                            className={`block truncate ${
+                              selected ? 'font-medium' : 'font-normal'
+                            }`}
+                          >
+                            {category}
+                          </span>
+                          {selected ? (
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">
+                              <HiCheck className="h-5 w-5" aria-hidden="true" />
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Transition>
+            </div>
+          </Listbox>
+        </div>
+        
+        <div className="relative flex-1 max-w-md">
+          <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Buscar por nome do produto..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-[#fff] text-[#231f20] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent shadow"
+          />
+        </div>
+      </div>
 
       {/* Tabela de Produtos */}
       <div className="bg-[#fff] rounded-2xl px-4 py-6 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
         <table className="w-full border-collapse text-[#231f20]">
           <thead>
             <tr>
-              <th className="text-left p-3 border-b border-[#e0e0e0]">Nome</th>
-              <th className="text-left p-3 border-b border-[#e0e0e0]">Quantidade</th>
-              <th className="text-left p-3 border-b border-[#e0e0e0]">Valor</th>
-              <th className="text-left p-3 border-b border-[#e0e0e0]">Descrição</th>
-              <th className="text-left p-3 border-b border-[#e0e0e0]">Ações</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Nome</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Categoria</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Quantidade</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Preço Unitário</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Valor Total</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Ações</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td className="p-3 border-b border-[#e0e0e0]">{product.name}</td>
+                <td className="p-3 border-b border-[#e0e0e0]">
+                  <span 
+                    className="px-2 py-1 bg-[#f0f0f0] rounded-full text-xs font-medium transition-colors duration-200 cursor-default"
+                    style={{ backgroundColor: '#f0f0f0' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e0e0e0'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                  >
+                    {product.category}
+                  </span>
+                </td>
                 <td className="p-3 border-b border-[#e0e0e0]">{product.quantity}</td>
                 <td className="p-3 border-b border-[#e0e0e0]">
-                  {product.value.toLocaleString('pt-BR', {
+                  {product.unitPrice.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </td>
+                <td className="p-3 border-b border-[#e0e0e0]">
+                  {product.totalValue.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
                     minimumFractionDigits: 2,
@@ -193,6 +362,15 @@ const RegisterSection = () => {
             ))}
           </tbody>
         </table>
+        
+        {/* Mensagem quando não há produtos ou quando a busca não retorna resultados */}
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-8 text-gray-400">
+            {searchTerm || selectedCategoryFilter 
+              ? `Nenhum produto encontrado${searchTerm ? ` com o nome "${searchTerm}"` : ''}${selectedCategoryFilter ? ` na categoria "${selectedCategoryFilter}"` : ''}.` 
+              : 'Nenhum produto cadastrado ainda.'}
+          </div>
+        )}
       </div>
 
       {/* Modal de Adição/Edição de Produto */}
@@ -203,64 +381,179 @@ const RegisterSection = () => {
             <div className="flex justify-end">
               <button
                 onClick={handleModalClose}
-                className="text-[#222] text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
               >
-                <RiCloseCircleFill size={28} />
+                <CgClose size={22} style={{ strokeWidth: 1.2 }} />
               </button>
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-[#222] text-sm font-medium">Nome do Produto <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-sm font-medium">Nome do Produto <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="Digite o nome do produto"
                 value={newProduct.name}
                 onChange={(e) => { setNewProduct({ ...newProduct, name: e.target.value }); if (errors.name) setErrors({ ...errors, name: undefined }); }}
-                className={`px-3 py-2 rounded-lg border ${errors.name ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222]`}
+                className={`w-full sm:text-sm px-3 py-2 rounded-lg border ${errors.name ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300`}
               />
               {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name}</span>}
             </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-gray-600 text-sm font-medium">Categoria <span className="text-red-500">*</span></label>
+              <Listbox
+                value={newProduct.category}
+                onChange={(value) => {
+                  setNewProduct({ ...newProduct, category: value });
+                  if (errors.category) setErrors({ ...errors, category: undefined });
+                }}
+              >
+                <div className="relative">
+                  <Listbox.Button 
+                    className={`relative w-full cursor-default rounded-lg border bg-[#f5f6fa] ${newProduct.category ? 'text-[#222]' : 'text-gray-400'} px-3 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-gray-300 focus-visible:ring-offset-2 sm:text-sm ${errors.category ? 'border-red-500' : 'border-[#e0e0e0]'}`}
+                  >
+                    <span className="block truncate">{newProduct.category || "Selecione uma categoria"}</span>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                      <HiSelector
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Listbox.Button>
+                  <Transition
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {PRODUCT_CATEGORIES.map((category) => (
+                        <Listbox.Option
+                          key={category}
+                          className={({ active }) =>
+                            `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                              active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'
+                            }`
+                          }
+                          value={category}
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span
+                                className={`block truncate ${
+                                  selected ? 'font-medium' : 'font-normal'
+                                }`}
+                              >
+                                {category}
+                              </span>
+                              {selected ? (
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">
+                                  <HiCheck className="h-5 w-5" aria-hidden="true" />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </Transition>
+                </div>
+              </Listbox>
+              {errors.category && <span className="text-red-500 text-xs mt-1">{errors.category}</span>}
+            </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-[#222] text-sm font-medium">Quantidade <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                placeholder="Digite a quantidade"
-                value={newProduct.quantity}
-                onChange={(e) => { setNewProduct({ ...newProduct, quantity: Number(e.target.value) }); if (errors.quantity) setErrors({ ...errors, quantity: undefined }); }}
-                className={`px-3 py-2 rounded-lg border ${errors.quantity ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222]`}
-              />
+              <label className="text-gray-600 text-sm font-medium">Quantidade <span className="text-red-500">*</span></label>
+              <div className="relative">
+                <input
+                  type="number"
+                  placeholder="0"
+                  value={newProduct.quantity}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewProduct({ ...newProduct, quantity: value === '' ? 0 : Number(value) });
+                    if (errors.quantity) setErrors({ ...errors, quantity: undefined });
+                  }}
+                  className={`w-full appearance-none px-3 py-2 rounded-lg border pr-10 sm:text-sm ${errors.quantity ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] ${newProduct.quantity === 0 ? 'text-gray-400' : 'text-[#222]'} focus:outline-none focus:ring-2 focus:ring-gray-300`}
+                />
+                
+                {/* Visual Icon (non-interactive) */}
+                <div className="absolute inset-y-0 right-0 flex items-center pr-[.55rem] pointer-events-none">
+                  <HiSelector className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </div>
+                
+                {/* Invisible buttons for functionality */}
+                <div className="absolute inset-y-0 right-0 flex flex-col w-10">
+                  <button
+                    type="button"
+                    className="flex-1 cursor-pointer rounded-tr-lg"
+                    onClick={handleIncrementQuantity}
+                    aria-label="Aumentar quantidade"
+                  />
+                  <button
+                    type="button"
+                    className="flex-1 cursor-pointer rounded-br-lg"
+                    onClick={handleDecrementQuantity}
+                    aria-label="Diminuir quantidade"
+                  />
+                </div>
+              </div>
               {errors.quantity && <span className="text-red-500 text-xs mt-1">{errors.quantity}</span>}
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-[#222] text-sm font-medium">Valor (R$) <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-sm font-medium">Preço Unitário <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="R$ 0,00"
-                value={formattedValue}
-                onChange={(e) => { handleValueChange(e); if (errors.value) setErrors({ ...errors, value: undefined }); }}
-                className={`px-3 py-2 rounded-lg border ${errors.value ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222]`}
+                value={formattedUnitPrice}
+                onChange={(e) => { handleUnitPriceChange(e); if (errors.unitPrice) setErrors({ ...errors, unitPrice: undefined }); }}
+                className={`w-full sm:text-sm px-3 py-2 rounded-lg border ${errors.unitPrice ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300`}
               />
-              {errors.value && <span className="text-red-500 text-xs mt-1">{errors.value}</span>}
+              {errors.unitPrice && <span className="text-red-500 text-xs mt-1">{errors.unitPrice}</span>}
             </div>
+
+            {/* Exibição do valor total calculado */}
+            {newProduct.quantity > 0 && newProduct.unitPrice > 0 && (
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-600 text-sm font-medium">Valor Total</label>
+                <div className="px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f8f9fa] text-[#222] sm:text-sm">
+                  {calculateTotalValue(newProduct.quantity, newProduct.unitPrice).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </div>
+              </div>
+            )}
             
             <div className="flex flex-col gap-1">
-              <label className="text-[#222] text-sm font-medium">Descrição (opcional)</label>
+              <label className="text-gray-600 text-sm font-medium">Descrição <span className="text-gray-400 font-normal">(opcional)</span></label>
               <textarea
                 placeholder="Digite uma descrição para o produto"
                 value={newProduct.description}
                 onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                className="px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] min-h-[100px]"
+                className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
             
             <div className="flex gap-3 justify-end">
               <button
                 onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
-                className="mt-4 px-4 py-2 rounded-lg border-none bg-[#1f1f1f] text-[#fff] cursor-pointer shadow flex items-center gap-2 transition-opacity duration-200 hover:opacity-80 font-bold"
+                className="mt-4 px-4 py-2 rounded-lg border-none bg-[#1f1f1f] text-[#fff] cursor-pointer shadow flex items-center gap-2 transition-opacity duration-200 hover:opacity-80 font-medium"
               >
-                {editingProduct ? 'Atualizar' : 'Adicionar'}
+                {editingProduct ? (
+                  <>
+                    <RxUpdate size={20} />
+                    Atualizar
+                  </>
+                ) : (
+                  <>
+                    <HiFolderAdd size={20} className="text-white" />
+                    Adicionar
+                  </>
+                )}
               </button>
             </div>
           </div>
