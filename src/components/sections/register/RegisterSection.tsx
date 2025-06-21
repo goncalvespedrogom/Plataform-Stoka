@@ -6,6 +6,7 @@ import { IoSearch } from "react-icons/io5";
 import { RxUpdate } from "react-icons/rx";
 import { CgClose } from "react-icons/cg";
 import { Listbox, Transition } from '@headlessui/react';
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 interface Product {
   id: number;
@@ -47,6 +48,10 @@ const RegisterSection = () => {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
   // Estados para erros de validação
   const [errors, setErrors] = useState<{ name?: string; category?: string; quantity?: string; unitPrice?: string }>({});
+  
+  // Estados para paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
 
   // Função para filtrar produtos baseado no termo de busca e categoria selecionada
   const filteredProducts = products.filter(product => {
@@ -54,6 +59,60 @@ const RegisterSection = () => {
     const matchesCategory = !selectedCategoryFilter || product.category === selectedCategoryFilter;
     return matchesSearch && matchesCategory;
   });
+
+  // Cálculos para paginação
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Função para navegar para uma página específica
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  // Função para ir para a página anterior
+  const goToPreviousPage = () => {
+    goToPage(currentPage - 1);
+  };
+
+  // Função para ir para a próxima página
+  const goToNextPage = () => {
+    goToPage(currentPage + 1);
+  };
+
+  // Função para gerar os números das páginas a serem exibidos
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Se temos 5 páginas ou menos, mostra todas
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Se temos mais de 5 páginas, mostra uma janela deslizante
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      // Ajusta o início se estamos no final
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  };
+
+  // Reset da página atual quando os filtros mudam
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategoryFilter]);
 
   // Função para formatar valor em Real Brasileiro
   const formatToBRL = (value: string): string => {
@@ -309,7 +368,7 @@ const RegisterSection = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map((product) => (
+            {currentProducts.map((product) => (
               <tr key={product.id}>
                 <td className="p-3 border-b border-[#e0e0e0]">{product.name}</td>
                 <td className="p-3 border-b border-[#e0e0e0]">
@@ -344,14 +403,14 @@ const RegisterSection = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditProduct(product)}
-                      className="p-2 rounded-lg bg-[#418533d0] text-[#fff] cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                      className="p-2 rounded-lg bg-gray-400 text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-gray-500"
                       title="Editar produto"
                     >
                       <IoPencil size={16} />
                     </button>
                     <button
                       onClick={() => handleRemoveProduct(product.id)}
-                      className="p-2 rounded-lg bg-[#e61515c5] text-[#fff] cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                      className="p-2 rounded-lg opacity-80 bg-[#e61515c5] text-[#fff] cursor-pointer transition-opacity duration-200 hover:opacity-100"
                       title="Remover produto"
                     >
                       <IoTrash size={16} />
@@ -369,6 +428,64 @@ const RegisterSection = () => {
             {searchTerm || selectedCategoryFilter 
               ? `Nenhum produto encontrado${searchTerm ? ` com o nome "${searchTerm}"` : ''}${selectedCategoryFilter ? ` na categoria "${selectedCategoryFilter}"` : ''}.` 
               : 'Nenhum produto cadastrado ainda.'}
+          </div>
+        )}
+
+        {/* Controles de Paginação */}
+        {filteredProducts.length > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6 px-3">
+            {/* Informações da página atual */}
+            <div className="text-sm text-gray-400">
+              Mostrando {startIndex + 1} - {Math.min(endIndex, filteredProducts.length)} de {filteredProducts.length} produtos
+            </div>
+
+            {/* Controles de navegação */}
+            <div className="flex items-center gap-2">
+              {/* Botão Anterior */}
+              <button
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${
+                  currentPage === 1
+                    ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'border border-gray-300 text-gray-400 hover:bg-gray-100'
+                }`}
+                title="Página anterior"
+              >
+                <IoChevronBack size={16} />
+              </button>
+
+              {/* Números das páginas */}
+              <div className="flex items-center gap-1">
+                {getPageNumbers().map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    onClick={() => goToPage(pageNumber)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pageNumber === currentPage
+                        ? 'bg-gray-400 text-white'
+                        : 'border border-gray-300 text-gray-500 hover:bg-gray-100'
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+              </div>
+
+              {/* Botão Próximo */}
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${
+                  currentPage === totalPages
+                    ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'border border-gray-300 text-gray-400 hover:bg-gray-100'
+                }`}
+                title="Próxima página"
+              >
+                <IoChevronForward size={16} />
+              </button>
+            </div>
           </div>
         )}
       </div>
