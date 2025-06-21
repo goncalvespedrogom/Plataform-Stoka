@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
 import { IoPencil, IoTrash } from "react-icons/io5";
 import { RiCloseCircleFill } from "react-icons/ri";
@@ -6,7 +6,8 @@ import { IoSearch } from "react-icons/io5";
 import { RxUpdate } from "react-icons/rx";
 import { CgClose } from "react-icons/cg";
 import { Listbox, Transition } from '@headlessui/react';
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { IoChevronBack, IoChevronForward, IoChevronUp, IoChevronDown } from "react-icons/io5";
+import DatePicker from 'react-datepicker';
 
 interface Product {
   id: number;
@@ -15,8 +16,11 @@ interface Product {
   quantity: number;
   unitPrice: number;
   totalValue: number;
+  date: Date;
   description?: string;
 }
+
+type SortableKeys = 'name' | 'category' | 'quantity' | 'unitPrice' | 'totalValue' | 'date';
 
 // Categorias pré-definidas
 const PRODUCT_CATEGORIES = [
@@ -32,6 +36,13 @@ const PRODUCT_CATEGORIES = [
   'Ferramentas'
 ];
 
+// Função utilitária para capitalizar apenas a primeira letra da primeira palavra
+function capitalizeFirstWord(name: string) {
+  if (!name) return '';
+  const [first, ...rest] = name.split(' ');
+  return [first.charAt(0).toUpperCase() + first.slice(1), ...rest].join(' ');
+}
+
 const RegisterSection = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,13 +52,16 @@ const RegisterSection = () => {
     category: '',
     quantity: 0,
     unitPrice: 0,
+    date: new Date(),
     description: ''
   });
   const [formattedUnitPrice, setFormattedUnitPrice] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
+  // Estado para ordenação
+  const [sortConfig, setSortConfig] = useState<{ key: SortableKeys | null; direction: 'ascending' | 'descending' }>({ key: 'name', direction: 'ascending' });
   // Estados para erros de validação
-  const [errors, setErrors] = useState<{ name?: string; category?: string; quantity?: string; unitPrice?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; category?: string; quantity?: string; unitPrice?: string; date?: string }>({});
   
   // Estados para paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,11 +74,41 @@ const RegisterSection = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const requestSort = (key: SortableKeys) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedProducts = useMemo(() => {
+    let sortableItems = [...filteredProducts];
+    if (sortConfig.key) {
+      sortableItems.sort((a, b) => {
+        let aValue = a[sortConfig.key as SortableKeys];
+        let bValue = b[sortConfig.key as SortableKeys];
+        if (sortConfig.key === 'date') {
+          aValue = new Date(aValue as Date).getTime();
+          bValue = new Date(bValue as Date).getTime();
+        }
+        if (aValue < bValue) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [filteredProducts, sortConfig]);
+
   // Cálculos para paginação
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
-  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
   // Função para navegar para uma página específica
   const goToPage = (page: number) => {
@@ -168,7 +212,7 @@ const RegisterSection = () => {
 
   // Função para validar campos obrigatórios
   const validateFields = () => {
-    const newErrors: { name?: string; category?: string; quantity?: string; unitPrice?: string } = {};
+    const newErrors: { name?: string; category?: string; quantity?: string; unitPrice?: string; date?: string } = {};
     if (!newProduct.name.trim()) {
       newErrors.name = 'Nome do produto é obrigatório.';
     }
@@ -181,6 +225,9 @@ const RegisterSection = () => {
     if (!newProduct.unitPrice || newProduct.unitPrice <= 0) {
       newErrors.unitPrice = 'Insira um preço unitário válido.';
     }
+    if (!newProduct.date) {
+      newErrors.date = 'Selecione uma data.';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -191,10 +238,11 @@ const RegisterSection = () => {
     const product: Product = {
       id: products.length + 1,
       ...newProduct,
-      totalValue
+      totalValue,
+      date: newProduct.date,
     };
     setProducts([...products, product]);
-    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, description: '' });
+    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, date: new Date(), description: '' });
     setFormattedUnitPrice('');
     setIsModalOpen(false);
     setErrors({});
@@ -207,6 +255,7 @@ const RegisterSection = () => {
       category: product.category,
       quantity: product.quantity,
       unitPrice: product.unitPrice,
+      date: product.date ? new Date(product.date) : new Date(),
       description: product.description || ''
     });
     // Formata o preço unitário para exibição no modal
@@ -220,12 +269,12 @@ const RegisterSection = () => {
       const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
       const updatedProducts = products.map(product => 
         product.id === editingProduct.id 
-          ? { ...editingProduct, ...newProduct, totalValue }
+          ? { ...editingProduct, ...newProduct, totalValue, date: newProduct.date }
           : product
       );
       setProducts(updatedProducts);
       setEditingProduct(null);
-      setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, description: '' });
+      setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, date: new Date(), description: '' });
       setFormattedUnitPrice('');
       setIsModalOpen(false);
       setErrors({});
@@ -239,7 +288,7 @@ const RegisterSection = () => {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
-    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, description: '' });
+    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, date: new Date(), description: '' });
     setFormattedUnitPrice('');
     setErrors({});
   };
@@ -358,11 +407,54 @@ const RegisterSection = () => {
         <table className="w-full border-collapse text-[#231f20]">
           <thead>
             <tr>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Nome</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Categoria</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Quantidade</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Preço Unitário</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Valor Total</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+                <button onClick={() => requestSort('name')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                  Nome
+                  {sortConfig.key === 'name' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+                <button onClick={() => requestSort('category')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                  Categoria
+                  {sortConfig.key === 'category' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+                <button onClick={() => requestSort('quantity')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                  Quantidade
+                  {sortConfig.key === 'quantity' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+                <button onClick={() => requestSort('unitPrice')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                  Preço Unitário
+                  {sortConfig.key === 'unitPrice' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+                <button onClick={() => requestSort('totalValue')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                  Valor Total
+                  {sortConfig.key === 'totalValue' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+                <button onClick={() => requestSort('date')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                  Data
+                  {sortConfig.key === 'date' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Descrição</th>
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Ações</th>
             </tr>
@@ -398,6 +490,9 @@ const RegisterSection = () => {
                     maximumFractionDigits: 2
                   })}
                 </td>
+                <td className="p-3 border-b border-[#e0e0e0]">
+                  {product.date ? new Date(product.date).toLocaleDateString('pt-BR') : ''}
+                </td>
                 <td className="p-3 border-b border-[#e0e0e0]">{product.description}</td>
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <div className="flex gap-2">
@@ -423,20 +518,20 @@ const RegisterSection = () => {
         </table>
         
         {/* Mensagem quando não há produtos ou quando a busca não retorna resultados */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+        {sortedProducts.length === 0 && (
+          <div className="text-center pt-10 pb-3 text-gray-400">
             {searchTerm || selectedCategoryFilter 
               ? `Nenhum produto encontrado${searchTerm ? ` com o nome "${searchTerm}"` : ''}${selectedCategoryFilter ? ` na categoria "${selectedCategoryFilter}"` : ''}.` 
-              : 'Nenhum produto cadastrado ainda.'}
+              : 'Não há produtos registrados no momento.'}
           </div>
         )}
 
         {/* Controles de Paginação */}
-        {filteredProducts.length > 0 && totalPages > 1 && (
+        {sortedProducts.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between mt-6 px-3">
             {/* Informações da página atual */}
             <div className="text-sm text-gray-400">
-              Mostrando {startIndex + 1} - {Math.min(endIndex, filteredProducts.length)} de {filteredProducts.length} produtos
+              Mostrando {startIndex + 1} - {Math.min(endIndex, sortedProducts.length)} de {sortedProducts.length} produtos
             </div>
 
             {/* Controles de navegação */}
@@ -510,7 +605,11 @@ const RegisterSection = () => {
                 type="text"
                 placeholder="Digite o nome do produto"
                 value={newProduct.name}
-                onChange={(e) => { setNewProduct({ ...newProduct, name: e.target.value }); if (errors.name) setErrors({ ...errors, name: undefined }); }}
+                onChange={(e) => {
+                  const formatted = capitalizeFirstWord(e.target.value);
+                  setNewProduct({ ...newProduct, name: formatted });
+                  if (errors.name) setErrors({ ...errors, name: undefined });
+                }}
                 className={`w-full sm:text-sm px-3 py-2 rounded-lg border ${errors.name ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300`}
               />
               {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name}</span>}
@@ -646,11 +745,27 @@ const RegisterSection = () => {
             )}
             
             <div className="flex flex-col gap-1">
+              <label className="text-gray-600 text-sm font-medium">Data <span className="text-red-500">*</span></label>
+              <DatePicker
+                selected={newProduct.date}
+                onChange={(date: Date | null) => { setNewProduct({ ...newProduct, date: date || new Date() }); if (errors.date) setErrors({ ...errors, date: undefined }); }}
+                dateFormat="dd/MM/yyyy"
+                className={`w-full sm:text-sm px-3 py-2 rounded-lg border ${errors.date ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300`}
+                placeholderText="Selecione a data"
+                locale="pt-BR"
+              />
+              {errors.date && <span className="text-red-500 text-xs mt-1">{errors.date}</span>}
+            </div>
+            
+            <div className="flex flex-col gap-1">
               <label className="text-gray-600 text-sm font-medium">Descrição <span className="text-gray-400 font-normal">(opcional)</span></label>
               <textarea
                 placeholder="Digite uma descrição para o produto"
                 value={newProduct.description}
-                onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                onChange={(e) => {
+                  const formatted = capitalizeFirstWord(e.target.value);
+                  setNewProduct({ ...newProduct, description: formatted });
+                }}
                 className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
