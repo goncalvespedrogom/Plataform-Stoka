@@ -684,10 +684,18 @@ const RegisterSection = () => {
                 <input
                   type="number"
                   placeholder="0"
-                  value={newProduct.quantity}
+                  value={newProduct.quantity === 0 ? '' : newProduct.quantity}
+                  onFocus={() => {
+                    if (newProduct.quantity === 0) {
+                      setNewProduct({ ...newProduct, quantity: undefined as any });
+                    }
+                  }}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    setNewProduct({ ...newProduct, quantity: value === '' ? 0 : Number(value) });
+                    let value = e.target.value;
+                    // Garante que só números positivos sejam aceitos
+                    if (/^\d*$/.test(value)) {
+                      setNewProduct({ ...newProduct, quantity: value === '' ? 0 : Number(value) });
+                    }
                     if (errors.quantity) setErrors({ ...errors, quantity: undefined });
                   }}
                   className={`w-full appearance-none px-3 py-2 rounded-lg border pr-10 sm:text-sm ${errors.quantity ? 'border-red-500' : 'border-[#e0e0e0]'} bg-[#f5f6fa] ${newProduct.quantity === 0 ? 'text-gray-400' : 'text-[#222]'} focus:outline-none focus:ring-2 focus:ring-gray-300`}
