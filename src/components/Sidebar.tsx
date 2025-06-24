@@ -1,4 +1,4 @@
-import { FaHome, FaChartBar, FaDatabase, FaQuestionCircle, FaCog, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaChartBar, FaDatabase, FaQuestionCircle, FaCog, FaUser, FaSignOutAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DashboardSection from './sections/dashboard/index';
 import RegisterSection from './sections/register/index';
 import { useState } from 'react';
@@ -6,9 +6,14 @@ import LogoSidebar from '../assets/LogoSidebar.png';
 
 export default function Sidebar() {
   const [selectedSection, setSelectedSection] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const handleSectionClick = (section: string) => {
     setSelectedSection(section);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
   };
 
   const renderSection = () => {
@@ -24,11 +29,114 @@ export default function Sidebar() {
 
   return (
     <div className="dashboard-container" style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#f5f6fa' }}>
-      <aside className="sidebar" style={{ width: '260px', background: '#fff', height: '100vh', position: 'relative', zIndex: 2, padding: '32px 20px', borderTopRightRadius: 24, borderBottomRightRadius: 24, boxShadow: '2px 0 8px #e0e0e0' }}>
-        <div className="flex items-center mb-10" style={{ paddingLeft: 4 }}>
-          <img src={LogoSidebar.src} alt="Logo" style={{ maxWidth: '35%', height: 'auto' }} />
+      <aside
+        className="sidebar"
+        style={{
+          width: isSidebarOpen ? '260px' : '70px',
+          background: '#fff',
+          height: '100vh',
+          position: 'relative',
+          zIndex: 2,
+          padding: isSidebarOpen ? '32px 20px' : '32px 10px',
+          borderTopRightRadius: 24,
+          borderBottomRightRadius: 24,
+          boxShadow: '2px 0 8px #e0e0e0',
+          transition: 'width 0.2s',
+        }}
+      >
+        <div
+          className="mb-10"
+          style={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: isSidebarOpen ? 'row' : 'column',
+            alignItems: isSidebarOpen ? 'center' : 'center',
+            justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+            gap: isSidebarOpen ? 12 : 8,
+            minHeight: 40,
+            width: '100%',
+            paddingLeft: isSidebarOpen ? 4 : 0,
+            paddingTop: isSidebarOpen ? 0 : 8,
+          }}
+        >
+          {isSidebarOpen ? (
+            <>
+              <img
+                src={LogoSidebar.src}
+                alt="Logo"
+                style={{
+                  maxWidth: '35%',
+                  height: 'auto',
+                  transition: 'max-width 0.2s',
+                }}
+              />
+              <button
+                onClick={toggleSidebar}
+                style={{
+                  position: 'absolute',
+                  right: -34,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  background: '#231f20',
+                  color: '#fff',
+                  border: 'none',
+                  boxShadow: '0 2px 8px #e0e0e0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 10,
+                  padding: 0,
+                }}
+                aria-label="Fechar menu"
+              >
+                <FaChevronLeft size={14} />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={toggleSidebar}
+                style={{
+                  position: 'absolute',
+                  right: -14,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  background: '#231f20',
+                  color: '#fff',
+                  border: 'none',
+                  boxShadow: '0 2px 8px #e0e0e0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 10,
+                  padding: 0,
+                }}
+                aria-label="Abrir menu"
+              >
+                <FaChevronRight size={14} />
+              </button>
+              <img
+                src={LogoSidebar.src}
+                alt="Logo"
+                style={{
+                  maxWidth: '40px',
+                  height: 'auto',
+                  transition: 'max-width 0.2s',
+                  marginTop: 36,
+                }}
+              />
+            </>
+          )}
         </div>
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-2" style={{ marginTop: 32, alignItems: isSidebarOpen ? 'flex-start' : 'center' }}>
           <a 
             href="#" 
             onClick={() => handleSectionClick('dashboard')}
@@ -37,7 +145,7 @@ export default function Sidebar() {
             }`}
           >
             <FaHome size={20} />
-            Dashboard
+            {isSidebarOpen && 'Dashboard'}
           </a>
           <a 
             href="#" 
@@ -47,7 +155,7 @@ export default function Sidebar() {
             }`}
           >
             <FaChartBar size={20} />
-            Análise
+            {isSidebarOpen && 'Análise'}
           </a>
           <a 
             href="#" 
@@ -57,7 +165,7 @@ export default function Sidebar() {
             }`}
           >
             <FaDatabase size={20} />
-            Registros
+            {isSidebarOpen && 'Registros'}
           </a>
           <a 
             href="#" 
@@ -67,7 +175,7 @@ export default function Sidebar() {
             }`}
           >
             <FaQuestionCircle size={20} />
-            Ajuda
+            {isSidebarOpen && 'Ajuda'}
           </a>
           <a 
             href="#" 
@@ -77,7 +185,7 @@ export default function Sidebar() {
             }`}
           >
             <FaCog size={20} />
-            Configurações
+            {isSidebarOpen && 'Configurações'}
           </a>
           <a 
             href="#" 
@@ -87,7 +195,7 @@ export default function Sidebar() {
             }`}
           >
             <FaUser size={20} />
-            Perfil
+            {isSidebarOpen && 'Perfil'}
           </a>
           <a 
             href="#" 
@@ -97,7 +205,7 @@ export default function Sidebar() {
             }`}
           >
             <FaSignOutAlt size={20} />
-            Sair
+            {isSidebarOpen && 'Sair'}
           </a>
         </nav>
       </aside>
