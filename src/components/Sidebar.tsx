@@ -102,9 +102,9 @@ export default function Sidebar() {
                 onClick={toggleSidebar}
                 style={{
                   position: 'absolute',
-                  right: -14,
+                  right: -23,
                   top: '50%',
-                  transform: 'translateY(-50%)',
+                  transform: 'translateY(-80%)',
                   width: 28,
                   height: 28,
                   borderRadius: '50%',
