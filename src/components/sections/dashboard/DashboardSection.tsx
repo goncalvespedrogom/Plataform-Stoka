@@ -4,6 +4,7 @@ import { useProductContext } from '../register/ProductContext';
 
 const DashboardSection = () => {
   const { products } = useProductContext();
+  const totalItens = products.reduce((acc, produto) => acc + produto.quantity, 0);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Linha de cards principais */}
@@ -28,8 +29,13 @@ const DashboardSection = () => {
             <span style={{ fontWeight: 'bold', fontSize: 40 }}>{products.length}</span>
           </div>
         </div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Tasks</div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Outreach Success</div>
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Qntd. de Itens por Produto</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            <span style={{ fontWeight: 'bold', fontSize: 40 }}>{totalItens}</span>
+          </div>
+        </div>
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Tarefas</div>
         <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Server Storage</div>
       </div>
       {/* Weekly Reports */}
