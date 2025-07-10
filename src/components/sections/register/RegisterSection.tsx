@@ -8,17 +8,8 @@ import { CgClose } from "react-icons/cg";
 import { Listbox, Transition } from '@headlessui/react';
 import { IoChevronBack, IoChevronForward, IoChevronUp, IoChevronDown } from "react-icons/io5";
 import DatePicker from 'react-datepicker';
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  quantity: number;
-  unitPrice: number;
-  totalValue: number;
-  date: Date;
-  description?: string;
-}
+import { Product } from '../../../types/Product';
+import { useProductContext } from './ProductContext';
 
 type SortableKeys = 'name' | 'category' | 'quantity' | 'unitPrice' | 'totalValue' | 'date';
 
@@ -44,7 +35,7 @@ function capitalizeFirstWord(name: string) {
 }
 
 const RegisterSection = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { products, setProducts } = useProductContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'totalValue'>>({
