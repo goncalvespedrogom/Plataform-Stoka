@@ -27,6 +27,14 @@ const DashboardSection = () => {
     return { dia, valor: soma };
   });
 
+  // Novo array: quantidade de itens por dia da semana
+  const itensPorDia = diasSemana.map((dia, idx) => {
+    const soma = products
+      .filter(p => new Date(p.date).getDay() === ((idx + 1) % 7))
+      .reduce((acc, p) => acc + p.quantity, 0);
+    return { dia, quantidade: soma };
+  });
+
   // Função para formatar valores em Real Brasileiro
   const formatarReal = (valor: number) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -48,6 +56,18 @@ const DashboardSection = () => {
         </text>
       </g>
     );
+  };
+
+  // Tooltip customizado para mostrar apenas o valor
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, padding: '6px 12px', fontWeight: 500, fontSize: 14 }}>
+          {formatarReal(payload[0].value)}
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -79,8 +99,7 @@ const DashboardSection = () => {
                   ticks={[1000, 5000, 10000, 15000, 20000]}
                 />
                 <Tooltip 
-                  formatter={(value: number) => formatarReal(value)}
-                  labelStyle={{ fontWeight: 'bold' }}
+                  content={<CustomTooltip />}
                 />
                 <Line 
                   type="monotone" 
@@ -94,7 +113,49 @@ const DashboardSection = () => {
             </ResponsiveContainer>
           </div>
         </div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 260, boxShadow: '0 2px 8px #e0e0e0' }}>Project Completion</div>
+        {/* NOVO GRÁFICO: Quantidade de Itens por Produto por Semana */}
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, paddingRight: 10, flex: 2, minHeight: 260, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Quantidade Total de Itens</span>
+          <div style={{ width: '100%', height: 200, paddingLeft: 0, marginLeft: -12, paddingTop: 12 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={itensPorDia} margin={{ top: 32, right: 16, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="dia"
+                  tick={<CustomTick />}
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }} 
+                  tickFormatter={valor => formatarNumero(valor)}
+                  domain={[1000, 10000]}
+                  ticks={[1000, 4000, 7000, 10000]}
+                  allowDecimals={false}
+                />
+                <Tooltip 
+                  content={({ active, payload }: any) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, padding: '6px 12px', fontWeight: 500, fontSize: 14 }}>
+                          {formatarNumero(payload[0].value)} itens
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="quantidade" 
+                  stroke="#333" 
+                  strokeWidth={3} 
+                  dot={{ r: 6, fill: '#333', stroke: '#333', strokeWidth: 2 }} 
+                  activeDot={{ r: 8, fill: '#333', stroke: '#333', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        {/* <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 260, boxShadow: '0 2px 8px #e0e0e0' }}>Project Completion</div> */}
       </div>
       {/* Linha de membros, tarefas, outreach e storage */}
       <div style={{ display: 'flex', gap: '24px' }}>
@@ -105,7 +166,7 @@ const DashboardSection = () => {
           </div>
         </div>
         <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
-          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Qntd. de Itens por Produto</span>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Itens Registrados</span>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <span style={{ fontWeight: 'bold', fontSize: 40 }}>{totalItens}</span>
           </div>
