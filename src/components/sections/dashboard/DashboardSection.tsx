@@ -1,11 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '../../../types/Product';
 import { useProductContext } from '../register/ProductContext';
+import { useTaskContext } from '../tasks/TaskContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DashboardSection = () => {
   const { products } = useProductContext();
+  const { tasks } = useTaskContext();
   const totalItens = products.reduce((acc, produto) => acc + produto.quantity, 0);
+
+  // Estados para filtros e navegação de tarefas
+  const [taskFilter, setTaskFilter] = useState<'todas' | 'concluídas' | 'em_andamento' | 'pendentes'>('todas');
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+
+  // Função para filtrar tarefas
+  const filteredTasks = tasks.filter(task => {
+    switch (taskFilter) {
+      case 'concluídas':
+        return task.status === 'concluída';
+      case 'em_andamento':
+        return task.status === 'em_andamento';
+      case 'pendentes':
+        return task.status === 'pendente';
+      default:
+        return true; // todas
+    }
+  });
+
+  // Função para navegar para próxima tarefa
+  const nextTask = () => {
+    if (filteredTasks.length > 0) {
+      setCurrentTaskIndex((prev) => (prev + 1) % filteredTasks.length);
+    }
+  };
+
+  // Função para navegar para tarefa anterior
+  const prevTask = () => {
+    if (filteredTasks.length > 0) {
+      setCurrentTaskIndex((prev) => (prev - 1 + filteredTasks.length) % filteredTasks.length);
+    }
+  };
+
+  // Resetar índice quando mudar filtro
+  useEffect(() => {
+    setCurrentTaskIndex(0);
+  }, [taskFilter]);
 
   const diasSemana = [
     'Segunda-feira',
@@ -171,12 +210,226 @@ const DashboardSection = () => {
             <span style={{ fontWeight: 'bold', fontSize: 40 }}>{totalItens}</span>
           </div>
         </div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Tarefas</div>
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>
+          Weekly Reports
+        </div>
         <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Server Storage</div>
       </div>
-      {/* Weekly Reports */}
-      <div style={{ background: '#fff', borderRadius: 16, padding: 24, minHeight: 180, boxShadow: '0 2px 8px #e0e0e0' }}>
-        Weekly Reports
+      {/* Tarefas e Nova Box */}
+      <div style={{ display: 'flex', gap: '24px' }}>
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Tarefas</span>
+          
+          {/* Filtros */}
+          <div style={{ position: 'absolute', top: 24, right: 24, display: 'flex', gap: '8px' }}>
+            {(['todas', 'pendentes', 'em_andamento', 'concluídas'] as const).map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setTaskFilter(filter)}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: 12,
+                  borderRadius: 12,
+                  border: 'none',
+                  background: taskFilter === filter ? '#333' : '#f0f0f0',
+                  color: taskFilter === filter ? '#fff' : '#666',
+                  cursor: 'pointer',
+                  fontWeight: taskFilter === filter ? 'bold' : 'normal'
+                }}
+              >
+                {filter === 'em_andamento' ? 'Em Andamento' : filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* Conteúdo das tarefas */}
+          <div style={{ marginTop: 60, height: 'calc(100% - 60px)', display: 'flex', flexDirection: 'column' }}>
+            {filteredTasks.length > 0 ? (
+              <>
+                {/* Tarefa atual */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', background: '#f8f9fa', borderRadius: 8, padding: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{
+                      padding: '4px 8px',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      background: 
+                        filteredTasks[currentTaskIndex].status === 'concluída' ? '#4CAF50' :
+                        filteredTasks[currentTaskIndex].status === 'em_andamento' ? '#FF9800' : '#F44336',
+                      color: '#fff'
+                    }}>
+                      {filteredTasks[currentTaskIndex].status === 'concluída' ? 'Concluída' :
+                       filteredTasks[currentTaskIndex].status === 'em_andamento' ? 'Em Andamento' : 'Pendente'}
+                    </span>
+                    <span style={{
+                      padding: '4px 8px',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      background: 
+                        filteredTasks[currentTaskIndex].priority === 'alta' ? '#F44336' :
+                        filteredTasks[currentTaskIndex].priority === 'média' ? '#FF9800' : '#4CAF50',
+                      color: '#fff'
+                    }}>
+                      {filteredTasks[currentTaskIndex].priority.charAt(0).toUpperCase() + filteredTasks[currentTaskIndex].priority.slice(1)}
+                    </span>
+                  </div>
+                  
+                  <h3 style={{ 
+                    fontSize: 18, 
+                    fontWeight: 'bold', 
+                    margin: 0,
+                    color: '#333'
+                  }}>
+                    {filteredTasks[currentTaskIndex].title}
+                  </h3>
+                  
+                  <p style={{ 
+                    fontSize: 14, 
+                    color: '#666', 
+                    margin: 0,
+                    lineHeight: 1.5,
+                    flex: 1
+                  }}>
+                    {filteredTasks[currentTaskIndex].description}
+                  </p>
+                  
+                  <div style={{ fontSize: 12, color: '#999' }}>
+                    Criada em: {new Date(filteredTasks[currentTaskIndex].createdAt).toLocaleDateString('pt-BR')}
+                    {filteredTasks[currentTaskIndex].dueDate && (
+                      <span style={{ marginLeft: 16 }}>
+                        Prazo: {new Date(filteredTasks[currentTaskIndex].dueDate).toLocaleDateString('pt-BR')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* Navegação abaixo da tarefa */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 24, gap: 10 }}>
+                  <button
+                    onClick={prevTask}
+                    disabled={filteredTasks.length <= 1}
+                    style={{
+                      padding: 0,
+                      border: 'none',
+                      background: '#F3F4F6',
+                      color: '#616161',
+                      borderRadius: '50%',
+                      cursor: filteredTasks.length <= 1 ? 'not-allowed' : 'pointer',
+                      fontSize: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 32,
+                      height: 32,
+                      transition: 'background 0.2s, color 0.2s',
+                      outline: 'none',
+                      opacity: filteredTasks.length <= 1 ? 0.5 : 1
+                    }}
+                    aria-label="Anterior"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M15.5 19L9.5 12L15.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                  <span style={{ fontSize: 12, color: '#616161', fontWeight: 500 }}>
+                    {currentTaskIndex + 1} de {filteredTasks.length}
+                  </span>
+                  <button
+                    onClick={nextTask}
+                    disabled={filteredTasks.length <= 1}
+                    style={{
+                      padding: 0,
+                      border: 'none',
+                      background: '#F3F4F6',
+                      color: '#616161',
+                      borderRadius: '50%',
+                      cursor: filteredTasks.length <= 1 ? 'not-allowed' : 'pointer',
+                      fontSize: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 32,
+                      height: 32,
+                      transition: 'background 0.2s, color 0.2s',
+                      outline: 'none',
+                      opacity: filteredTasks.length <= 1 ? 0.5 : 1
+                    }}
+                    aria-label="Próxima"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8.5 5L14.5 12L8.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: '100%',
+                color: '#999',
+                fontSize: 14
+              }}>
+                <span>Nenhuma tarefa encontrada</span>
+                <span style={{ fontSize: 12, marginTop: 4 }}>
+                  {taskFilter === 'todas' ? 'Adicione tarefas para começar' : `Nenhuma tarefa ${taskFilter}`}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Nova Box - Todas as Tarefas */}
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Todas as Tarefas</span>
+          <div style={{ marginTop: 60, maxHeight: 4 * 72 + 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {tasks
+              .slice()
+              .sort((a, b) => {
+                const prioridade = { alta: 3, média: 2, baixa: 1 };
+                return prioridade[b.priority] - prioridade[a.priority];
+              })
+              .map((task) => (
+                <div key={task.id} style={{ background: '#f8f9fa', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: 12,
+                      fontSize: 11,
+                      fontWeight: 'bold',
+                      background: 
+                        task.status === 'concluída' ? '#4CAF50' :
+                        task.status === 'em_andamento' ? '#FF9800' : '#F44336',
+                      color: '#fff'
+                    }}>
+                      {task.status === 'concluída' ? 'Concluída' :
+                       task.status === 'em_andamento' ? 'Em Andamento' : 'Pendente'}
+                    </span>
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: 12,
+                      fontSize: 11,
+                      fontWeight: 'bold',
+                      background: 
+                        task.priority === 'alta' ? '#F44336' :
+                        task.priority === 'média' ? '#FF9800' : '#4CAF50',
+                      color: '#fff'
+                    }}>
+                      {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                    </span>
+                  </div>
+                  <div style={{ fontWeight: 'bold', fontSize: 15, color: '#333' }}>{task.title}</div>
+                  <div style={{ fontSize: 13, color: '#666', lineHeight: 1.4 }}>{task.description}</div>
+                </div>
+              ))}
+            {tasks.length === 0 && (
+              <div style={{ color: '#999', fontSize: 14, textAlign: 'center', padding: 24 }}>Nenhuma tarefa cadastrada.</div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

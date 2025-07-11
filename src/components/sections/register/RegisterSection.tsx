@@ -597,7 +597,8 @@ const RegisterSection = () => {
                 placeholder="Digite o nome do produto"
                 value={newProduct.name}
                 onChange={(e) => {
-                  const formatted = capitalizeFirstWord(e.target.value);
+                  const value = e.target.value;
+                  const formatted = value.charAt(0).toUpperCase() + value.slice(1);
                   setNewProduct({ ...newProduct, name: formatted });
                   if (errors.name) setErrors({ ...errors, name: undefined });
                 }}
@@ -762,7 +763,8 @@ const RegisterSection = () => {
                 placeholder="Digite uma descrição para o produto"
                 value={newProduct.description}
                 onChange={(e) => {
-                  const formatted = capitalizeFirstWord(e.target.value);
+                  const value = e.target.value;
+                  const formatted = value.charAt(0).toUpperCase() + value.slice(1);
                   setNewProduct({ ...newProduct, description: formatted });
                 }}
                 className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-gray-300"

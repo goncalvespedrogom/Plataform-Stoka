@@ -1,9 +1,12 @@
-import { FaHome, FaChartBar, FaDatabase, FaQuestionCircle, FaCog, FaUser, FaSignOutAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaClipboardList, FaHome, FaChartBar, FaDatabase, FaQuestionCircle, FaCog, FaUser, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaBookmark } from "react-icons/fa";
 import DashboardSection from './sections/dashboard/index';
 import RegisterSection from './sections/register/index';
+import TasksSection from './sections/tasks/index';
 import { useState } from 'react';
 import LogoSidebar from '../assets/LogoSidebar.png';
 import { ProductProvider } from './sections/register/ProductContext';
+import { TaskProvider } from './sections/tasks/TaskContext';
+import { GrTasks } from "react-icons/gr";
 
 export default function Sidebar() {
   const [selectedSection, setSelectedSection] = useState('dashboard');
@@ -21,6 +24,8 @@ export default function Sidebar() {
     switch (selectedSection) {
       case 'dashboard':
         return <DashboardSection />;
+      case 'analytics':
+        return <TasksSection />;
       case 'databases':
         return <RegisterSection />;
       default:
@@ -30,7 +35,8 @@ export default function Sidebar() {
 
   return (
     <ProductProvider>
-      <div className="dashboard-container" style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#f5f6fa' }}>
+      <TaskProvider>
+        <div className="dashboard-container" style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: '#f5f6fa' }}>
         <aside
           className="sidebar"
           style={{
@@ -142,7 +148,7 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('dashboard')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
                 selectedSection === 'dashboard' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
@@ -152,27 +158,27 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('analytics')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
                 selectedSection === 'analytics' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaChartBar size={20} />
-              {isSidebarOpen && 'Análise'}
+              <FaBookmark size={20} />
+              {isSidebarOpen && 'Tarefas'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('databases')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
                 selectedSection === 'databases' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaDatabase size={20} />
+              <FaClipboardList size={20} />
               {isSidebarOpen && 'Registros'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('help')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
                 selectedSection === 'help' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
@@ -182,7 +188,7 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('settings')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
                 selectedSection === 'settings' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
@@ -192,7 +198,7 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('profile')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
                 selectedSection === 'profile' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
@@ -202,7 +208,7 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('logout')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-4 ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-4 w-full ${
                 selectedSection === 'logout' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
@@ -215,6 +221,7 @@ export default function Sidebar() {
           {renderSection()}
         </main>
       </div>
+      </TaskProvider>
     </ProductProvider>
   );
 } 
