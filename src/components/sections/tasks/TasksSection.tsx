@@ -31,6 +31,7 @@ const TasksSection = () => {
   const [errors, setErrors] = useState<{ title?: string; description?: string; dueDate?: string }>({});
   const [currentPage, setCurrentPage] = useState(1);
   const tasksPerPage = 12;
+  const [detailModalTask, setDetailModalTask] = useState<Task | null>(null);
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -293,7 +294,15 @@ const TasksSection = () => {
                   {isOverdue(task.dueDate) && (<span className="ml-2 text-xs text-red-600 font-medium">Atrasada</span>)}
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0]">{formatDate(task.createdAt)}</td>
-                <td className="p-3 border-b border-[#e0e0e0] max-w-xs truncate">{task.description}</td>
+                <td className="p-3 border-b border-[#e0e0e0] max-w-xs truncate">
+                  <button
+                    className="w-full text-left truncate hover:underline focus:outline-none"
+                    title="Ver detalhes da tarefa"
+                    onClick={() => setDetailModalTask(task)}
+                  >
+                    {task.description}
+                  </button>
+                </td>
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <div className="flex gap-2">
                     <button onClick={() => handleEditTask(task)} className="p-2 rounded-lg bg-gray-400 text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-gray-500" title="Editar tarefa"><IoPencil size={16} /></button>
@@ -395,6 +404,78 @@ const TasksSection = () => {
             <div className="flex justify-end gap-3 mt-4">
               <button type="button" onClick={handleModalClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancelar</button>
               <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de Detalhes da Tarefa */}
+      {detailModalTask && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white p-0 rounded-2xl w-full max-w-md shadow-2xl relative animate-fadeIn">
+            <div className="flex justify-between items-center border-b px-7 py-5 rounded-t-2xl bg-gradient-to-r from-gray-100 to-gray-50">
+              <h2 className="text-2xl font-bold text-gray-400 tracking-tight">Detalhes da Tarefa</h2>
+              <button
+                onClick={() => setDetailModalTask(null)}
+                className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                title="Fechar"
+              >
+                <CgClose size={22} style={{ strokeWidth: 1.2 }} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-6 px-7 py-6">
+              {/* Grupo: Título e Descrição */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-sm font-medium">Título</span>
+                </div>
+                <div className="text-base text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner break-words">
+                  {detailModalTask.title}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-500 text-sm font-medium">Descrição</span>
+                <div className="text-base text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 whitespace-pre-line break-words max-h-40 overflow-auto shadow-inner">
+                  {detailModalTask.description}
+                </div>
+              </div>
+              {/* Grupo: Prioridade e Status */}
+              <div className="flex flex-row gap-4 items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-sm font-medium">Prioridade</span>
+                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(detailModalTask.priority)}`}>{detailModalTask.priority.charAt(0).toUpperCase() + detailModalTask.priority.slice(1)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-sm font-medium">Status</span>
+                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(detailModalTask.status)}`}>{detailModalTask.status.replace('_', ' ').charAt(0).toUpperCase() + detailModalTask.status.replace('_', ' ').slice(1)}</span>
+                </div>
+              </div>
+              {/* Grupo: Datas */}
+              <div className="flex flex-col gap-2 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-sm font-medium">Vencimento</span>
+                  <span className="text-[#231f20] font-medium">{formatDate(detailModalTask.dueDate)}</span>
+                  {isOverdue(detailModalTask.dueDate) && (<span className="ml-2 text-xs text-red-600 font-medium">Atrasada</span>)}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-sm font-medium">Criada em</span>
+                  <span className="text-[#231f20]">{formatDate(detailModalTask.createdAt)}</span>
+                </div>
+                {detailModalTask.completedAt && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500 text-sm font-medium">Concluída em</span>
+                    <span className="text-[#231f20]">{formatDate(detailModalTask.completedAt)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex justify-end px-7 pb-6">
+              <button
+                type="button"
+                onClick={() => setDetailModalTask(null)}
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium"
+              >
+                Fechar
+              </button>
             </div>
           </div>
         </div>
