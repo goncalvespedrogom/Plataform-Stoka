@@ -3,6 +3,13 @@ import { Product } from '../../../types/Product';
 import { useProductContext } from '../register/ProductContext';
 import { useTaskContext } from '../tasks/TaskContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { FaSortAmountDownAlt } from 'react-icons/fa';
+import { LuWeight } from 'react-icons/lu';
+import { IoPricetagOutline } from 'react-icons/io5';
+import { MdOutlineLocalOffer } from 'react-icons/md';
+import { MdAttachMoney } from 'react-icons/md';
+import { HiOutlineDocumentCurrencyDollar } from 'react-icons/hi2';
+import { HiOutlineCurrencyDollar } from 'react-icons/hi2';
 
 const DashboardSection = () => {
   const { products } = useProductContext();
@@ -198,22 +205,65 @@ const DashboardSection = () => {
       </div>
       {/* Linha de membros, tarefas, outreach e storage */}
       <div style={{ display: 'flex', gap: '24px' }}>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
-          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Produtos Registrados</span>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <span style={{ fontWeight: 'bold', fontSize: 40 }}>{products.length}</span>
+        {/* Coluna empilhada: Produtos Registrados e Itens Registrados */}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 200, gap: 12 }}>
+          <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, boxShadow: '0 2px 8px #e0e0e0', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Produtos Registrados</span>
+            <span style={{ fontWeight: 'bold', fontSize: 40, marginTop: 28 }}>{products.length}</span>
+          </div>
+          <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, boxShadow: '0 2px 8px #e0e0e0', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Itens Registrados</span>
+            <span style={{ fontWeight: 'bold', fontSize: 40, marginTop: 28 }}>{totalItens}</span>
           </div>
         </div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
-          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Itens Registrados</span>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <span style={{ fontWeight: 'bold', fontSize: 40 }}>{totalItens}</span>
-          </div>
+        {/* Último Registro */}
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Último Registro</span>
+          {products.length > 0 ? (
+            (() => {
+              const last = products[products.length - 1];
+              const valorTotal = last.unitPrice * last.quantity;
+              return (
+                <>
+                  {/* Linha do meio: quantidade, valor unitário, valor total, data */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '40px 0 8px 0', width: '100%' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <LuWeight size={20} color="#9ca3af" style={{ marginBottom: 2, strokeWidth: 2.5 }} />
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{last.quantity}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Quantidade</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <MdOutlineLocalOffer size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(last.unitPrice)}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Unitário</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <HiOutlineCurrencyDollar size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(valorTotal)}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Total</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{ marginBottom: 2 }}><rect x="3" y="4" width="18" height="18" rx="4" stroke="#9ca3af" strokeWidth="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/></svg>
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{new Date(last.date).toLocaleDateString('pt-BR')}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Data</span>
+                    </div>
+                  </div>
+                  {/* Box cinza com título e descrição na parte debaixo */}
+                  <div style={{ background: '#f8f9fa', borderRadius: 8, marginTop: 24, padding: '18px 32px', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', boxShadow: '0 1px 4px #e0e0e0' }}>
+                    <span style={{ fontWeight: 600, fontSize: 18, color: '#333', marginBottom: 6 }}>{last.name}</span>
+                    <span style={{ color: '#666', fontSize: 14, lineHeight: 1.5 }}>{last.description || <span style={{ color: '#bbb' }}>Sem descrição.</span>}</span>
+                  </div>
+                </>
+              );
+            })()
+          ) : (
+            <span style={{ color: '#999', fontSize: 15, marginTop: 32 }}>Nenhum produto registrado.</span>
+          )}
         </div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>
-          Weekly Reports
+        {/* Server Storage com mesmo tamanho do Último Registro */}
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          Server Storage
         </div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0' }}>Server Storage</div>
       </div>
       {/* Tarefas e Nova Box */}
       <div style={{ display: 'flex', gap: '24px' }}>
