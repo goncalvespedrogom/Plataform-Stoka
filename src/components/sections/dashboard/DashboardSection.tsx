@@ -116,6 +116,27 @@ const DashboardSection = () => {
     return null;
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResult, setSearchResult] = useState<{ type: 'produto' | 'tarefa'; data: any } | null>(null);
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setSearchResult(null);
+      return;
+    }
+
+    const productMatch = products.find(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const taskMatch = tasks.find(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    if (productMatch) {
+      setSearchResult({ type: 'produto', data: productMatch });
+    } else if (taskMatch) {
+      setSearchResult({ type: 'tarefa', data: taskMatch });
+    } else {
+      setSearchResult(null);
+    }
+  }, [searchTerm, products, tasks]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Linha de cards principais */}
@@ -261,8 +282,100 @@ const DashboardSection = () => {
           )}
         </div>
         {/* Server Storage com mesmo tamanho do Último Registro */}
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          Server Storage
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative' }}>
+          {/* Input de busca */}
+          <input
+            type="text"
+            placeholder="Digite o nome do produto ou tarefa..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{
+              marginTop: 8,
+              width: '92%',
+              maxWidth: 'none',
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: '1px solid #e0e0e0',
+              fontSize: 14,
+              outline: 'none',
+              boxSizing: 'border-box',
+              marginBottom: 12,
+              background: '#f3f4f6', // cinza claro
+              color: '#333',
+              transition: 'box-shadow 0.2s, border 0.2s',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+            }}
+          />
+          {/* Resultado da busca */}
+          {searchTerm.trim() === '' ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+              flex: 1
+            }}>
+              <span style={{ color: '#bbb', fontSize: 14 }}>Digite para buscar um produto ou tarefa.</span>
+            </div>
+          ) : (
+            searchResult ? (
+              searchResult.type === 'produto' ? (
+                // Produto encontrado
+                <div style={{ background: '#f8f9fa', borderRadius: 8, marginTop: 10, padding: '18px 32px', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', boxShadow: '0 1px 4px #e0e0e0' }}>
+                  <span style={{ fontWeight: 600, fontSize: 18, color: '#333', marginBottom: 6 }}>{searchResult.data.name}</span>
+                  <span style={{ color: '#666', fontSize: 14, lineHeight: 1.5 }}>{searchResult.data.description || <span style={{ color: '#bbb' }}>Sem descrição.</span>}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '24px 0 0 0', width: '100%' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <LuWeight size={20} color="#9ca3af" style={{ marginBottom: 2, strokeWidth: 2.5 }} />
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{searchResult.data.quantity}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Quantidade</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <MdOutlineLocalOffer size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(searchResult.data.unitPrice)}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Unitário</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <HiOutlineCurrencyDollar size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(searchResult.data.unitPrice * searchResult.data.quantity)}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Total</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{ marginBottom: 2 }}><rect x="3" y="4" width="18" height="18" rx="4" stroke="#9ca3af" strokeWidth="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/></svg>
+                      <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{new Date(searchResult.data.date).toLocaleDateString('pt-BR')}</span>
+                      <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Data</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Tarefa encontrada
+                <div style={{ background: '#f8f9fa', borderRadius: 8, marginTop: 10, padding: '18px 32px', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', boxShadow: '0 1px 4px #e0e0e0' }}>
+                  <span style={{ fontWeight: 600, fontSize: 18, color: '#333', marginBottom: 6 }}>{searchResult.data.title}</span>
+                  <span style={{ color: '#666', fontSize: 14, lineHeight: 1.5 }}>{searchResult.data.description || <span style={{ color: '#bbb' }}>Sem descrição.</span>}</span>
+                  <div style={{ display: 'flex', gap: 24, marginTop: 18 }}>
+                    <span style={{ padding: '4px 8px', borderRadius: 12, fontSize: 13, fontWeight: 'bold', background: searchResult.data.status === 'concluída' ? '#4CAF50' : searchResult.data.status === 'em_andamento' ? '#FF9800' : '#F44336', color: '#fff' }}>
+                      {searchResult.data.status === 'concluída' ? 'Concluída' : searchResult.data.status === 'em_andamento' ? 'Em Andamento' : 'Pendente'}
+                    </span>
+                    <span style={{ padding: '4px 8px', borderRadius: 12, fontSize: 13, fontWeight: 'bold', background: searchResult.data.priority === 'alta' ? '#F44336' : searchResult.data.priority === 'média' ? '#FF9800' : '#4CAF50', color: '#fff' }}>
+                      {searchResult.data.priority.charAt(0).toUpperCase() + searchResult.data.priority.slice(1)}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#999', marginTop: 12 }}>
+                    Criada em: {new Date(searchResult.data.createdAt).toLocaleDateString('pt-BR')}
+                    {searchResult.data.dueDate && (
+                      <span style={{ marginLeft: 16 }}>
+                        Prazo: {new Date(searchResult.data.dueDate).toLocaleDateString('pt-BR')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            ) : (
+              <span style={{ color: '#999', fontSize: 15, marginTop: 32 }}>Nenhum produto ou tarefa encontrado.</span>
+            )
+          )}
         </div>
       </div>
       {/* Tarefas e Nova Box */}
