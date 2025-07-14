@@ -1,6 +1,7 @@
 import React, { useState, Fragment, useMemo } from 'react';
 import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
 import { IoPencil, IoTrash } from "react-icons/io5";
+import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { RiCloseCircleFill } from "react-icons/ri";
 import { IoSearch } from "react-icons/io5";
 import { RxUpdate } from "react-icons/rx";
@@ -284,6 +285,36 @@ const RegisterSection = () => {
     setErrors({});
   };
 
+  // Função para incrementar a quantidade de um produto na tabela
+  const handleIncrementProductQuantity = (productId: number) => {
+    setProducts(prevProducts => prevProducts.map(product => {
+      if (product.id === productId) {
+        const newQuantity = product.quantity + 1;
+        return {
+          ...product,
+          quantity: newQuantity,
+          totalValue: newQuantity * product.unitPrice
+        };
+      }
+      return product;
+    }));
+  };
+
+  // Função para decrementar a quantidade de um produto na tabela
+  const handleDecrementProductQuantity = (productId: number) => {
+    setProducts(prevProducts => prevProducts.map(product => {
+      if (product.id === productId) {
+        const newQuantity = Math.max(0, product.quantity - 1);
+        return {
+          ...product,
+          quantity: newQuantity,
+          totalValue: newQuantity * product.unitPrice
+        };
+      }
+      return product;
+    }));
+  };
+
   return (
     <div className="flex flex-col gap-8">
       
@@ -500,6 +531,20 @@ const RegisterSection = () => {
                       title="Remover produto"
                     >
                       <IoTrash size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleIncrementProductQuantity(product.id)}
+                      className="p-2 rounded-lg bg-[#73d894] text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-[#56eb88]"
+                      title="Adicionar quantidade"
+                    >
+                      <IoMdAdd size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDecrementProductQuantity(product.id)}
+                      className="p-2 rounded-lg bg-[#fce359] text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-[#fddf31]"
+                      title="Diminuir quantidade"
+                    >
+                      <IoMdRemove size={16} />
                     </button>
                   </div>
                 </td>
