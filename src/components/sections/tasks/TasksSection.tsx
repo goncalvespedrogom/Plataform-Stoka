@@ -14,6 +14,7 @@ const PRIORITIES = ['baixa', 'média', 'alta'];
 const STATUS_OPTIONS = ['pendente', 'em_andamento', 'concluída'];
 
 const TasksSection = () => {
+  const [isClient, setIsClient] = useState(false);
   const { tasks, setTasks } = useTaskContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -56,8 +57,15 @@ const TasksSection = () => {
         let aValue = a[sortConfig.key as SortableKeys];
         let bValue = b[sortConfig.key as SortableKeys];
         if (sortConfig.key === 'dueDate' || sortConfig.key === 'createdAt') {
-          aValue = new Date(aValue as Date).getTime();
-          bValue = new Date(bValue as Date).getTime();
+          const aTime = new Date(aValue as Date).getTime();
+          const bTime = new Date(bValue as Date).getTime();
+          if (aTime < bTime) {
+            return sortConfig.direction === 'ascending' ? -1 : 1;
+          }
+          if (aTime > bTime) {
+            return sortConfig.direction === 'ascending' ? 1 : -1;
+          }
+          return 0;
         }
         if (aValue < bValue) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -75,6 +83,13 @@ const TasksSection = () => {
   const startIndex = (currentPage - 1) * tasksPerPage;
   const endIndex = startIndex + tasksPerPage;
   const currentTasks = sortedTasks.slice(startIndex, endIndex);
+
+  React.useEffect(() => { setIsClient(true); }, []);
+  React.useEffect(() => { setCurrentPage(1); }, [searchTerm, selectedPriorityFilter, selectedStatusFilter]);
+
+  if (!isClient) {
+    return <div style={{ minHeight: 300 }} />;
+  }
 
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -96,7 +111,6 @@ const TasksSection = () => {
     }
     return pages;
   };
-  React.useEffect(() => { setCurrentPage(1); }, [searchTerm, selectedPriorityFilter, selectedStatusFilter]);
 
   const validateFields = () => {
     const newErrors: { title?: string; description?: string; dueDate?: string } = {};
@@ -325,13 +339,13 @@ const TasksSection = () => {
         {sortedTasks.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between mt-6 px-3">
             <div className="text-sm text-gray-400">
-              Mostrando {startIndex + 1} - {Math.min(endIndex, sortedTasks.length)} de {sortedTasks.length} tarefas
+              Mostrando {isClient ? String(startIndex + 1) : ''} - {isClient ? String(Math.min(endIndex, sortedTasks.length)) : ''} de {isClient ? String(sortedTasks.length) : ''} tarefas
             </div>
             <div className="flex items-center gap-2">
               <button onClick={goToPreviousPage} disabled={currentPage === 1} className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${currentPage === 1 ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border border-gray-300 text-gray-400 hover:bg-gray-100'}`} title="Página anterior"><IoChevronBack size={16} /></button>
               <div className="flex items-center gap-1">
                 {getPageNumbers().map((pageNumber) => (
-                  <button key={pageNumber} onClick={() => goToPage(pageNumber)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${pageNumber === currentPage ? 'bg-gray-400 text-white' : 'border border-gray-300 text-gray-500 hover:bg-gray-100'}`}>{pageNumber}</button>
+                  <button key={pageNumber} onClick={() => goToPage(pageNumber)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${pageNumber === currentPage ? 'bg-gray-400 text-white' : 'border border-gray-300 text-gray-500 hover:bg-gray-100'}`}>{isClient ? String(pageNumber) : ''}</button>
                 ))}
               </div>
               <button onClick={goToNextPage} disabled={currentPage === totalPages} className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${currentPage === totalPages ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border border-gray-300 text-gray-400 hover:bg-gray-100'}`} title="Próxima página"><IoChevronForward size={16} /></button>
@@ -403,7 +417,7 @@ const TasksSection = () => {
             </div>
             <div className="flex justify-end gap-3 mt-4">
               <button type="button" onClick={handleModalClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancelar</button>
-              <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
+              <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 transition-colors">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
             </div>
           </div>
         </div>

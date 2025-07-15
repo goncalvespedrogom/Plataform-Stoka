@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from '../../../types/Product';
 
 interface ProductContextType {
@@ -17,7 +17,32 @@ export const useProductContext = () => {
 };
 
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  // Função para restaurar datas ao carregar do localStorage
+  function parseProducts(raw: any[]): Product[] {
+    return raw.map((p) => ({
+      ...p,
+      date: p.date ? new Date(p.date) : undefined,
+    }));
+  }
+
+  const [products, setProducts] = useState<Product[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('products');
+      if (saved) {
+        try {
+          return parseProducts(JSON.parse(saved));
+        } catch {
+          return [];
+        }
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('products', JSON.stringify(products));
+  }, [products]);
+
   return (
     <ProductContext.Provider value={{ products, setProducts }}>
       {children}

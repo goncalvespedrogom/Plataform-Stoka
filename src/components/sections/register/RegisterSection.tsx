@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo } from 'react';
+import React, { useState, Fragment, useMemo, useEffect } from 'react';
 import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
 import { IoPencil, IoTrash } from "react-icons/io5";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
@@ -36,6 +36,7 @@ function capitalizeFirstWord(name: string) {
 }
 
 const RegisterSection = () => {
+  const [isClient, setIsClient] = useState(false);
   const { products, setProducts } = useProductContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -61,7 +62,8 @@ const RegisterSection = () => {
 
   // Função para filtrar produtos baseado no termo de busca e categoria selecionada
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const name = product.name || '';
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !selectedCategoryFilter || product.category === selectedCategoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -146,7 +148,7 @@ const RegisterSection = () => {
   };
 
   // Reset da página atual quando os filtros mudam
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategoryFilter]);
 
@@ -224,8 +226,20 @@ const RegisterSection = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const [isConfirmMergeModalOpen, setIsConfirmMergeModalOpen] = useState(false);
+  const [mergeTargetProduct, setMergeTargetProduct] = useState<Product | null>(null);
+
   const handleAddProduct = () => {
     if (!validateFields()) return;
+    // Verifica se já existe produto com o mesmo nome (case insensitive)
+    const existingProduct = products.find(
+      (p) => p.name.trim().toLowerCase() === newProduct.name.trim().toLowerCase()
+    );
+    if (existingProduct) {
+      setMergeTargetProduct(existingProduct);
+      setIsConfirmMergeModalOpen(true);
+      return;
+    }
     const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
     const product: Product = {
       id: products.length + 1,
@@ -238,6 +252,38 @@ const RegisterSection = () => {
     setFormattedUnitPrice('');
     setIsModalOpen(false);
     setErrors({});
+  };
+
+  const handleConfirmMerge = () => {
+    if (!mergeTargetProduct) return;
+    // Mescla os produtos conforme regras
+    const oldQuantity = mergeTargetProduct.quantity;
+    const newQuantity = oldQuantity + newProduct.quantity;
+    const oldUnitPrice = mergeTargetProduct.unitPrice;
+    const newUnitPrice = newProduct.unitPrice;
+    // Média ponderada
+    const mergedUnitPrice = ((oldQuantity * oldUnitPrice) + (newProduct.quantity * newUnitPrice)) / newQuantity;
+    const mergedProduct: Product = {
+      ...mergeTargetProduct,
+      quantity: newQuantity,
+      unitPrice: mergedUnitPrice,
+      totalValue: newQuantity * mergedUnitPrice,
+      // Mantém categoria, data e descrição do produto original
+    };
+    setProducts(products.map(p =>
+      p.id === mergeTargetProduct.id ? mergedProduct : p
+    ));
+    setIsConfirmMergeModalOpen(false);
+    setIsModalOpen(false);
+    setMergeTargetProduct(null);
+    setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, date: new Date(), description: '' });
+    setFormattedUnitPrice('');
+    setErrors({});
+  };
+
+  const handleCancelMerge = () => {
+    setIsConfirmMergeModalOpen(false);
+    // Mantém o modal de registro aberto para o usuário editar o nome
   };
 
   const handleEditProduct = (product: Product) => {
@@ -314,6 +360,11 @@ const RegisterSection = () => {
       return product;
     }));
   };
+
+  useEffect(() => { setIsClient(true); }, []);
+  if (!isClient) {
+    return <div style={{ minHeight: 300 }} />;
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -567,51 +618,36 @@ const RegisterSection = () => {
           <div className="flex items-center justify-between mt-6 px-3">
             {/* Informações da página atual */}
             <div className="text-sm text-gray-400">
-              Mostrando {startIndex + 1} - {Math.min(endIndex, sortedProducts.length)} de {sortedProducts.length} produtos
+              Mostrando {isClient ? startIndex + 1 : ''} - {isClient ? Math.min(endIndex, sortedProducts.length) : ''} de {isClient ? sortedProducts.length : ''} produtos
             </div>
-
             {/* Controles de navegação */}
             <div className="flex items-center gap-2">
               {/* Botão Anterior */}
               <button
                 onClick={goToPreviousPage}
                 disabled={currentPage === 1}
-                className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${
-                  currentPage === 1
-                    ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'border border-gray-300 text-gray-400 hover:bg-gray-100'
-                }`}
+                className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${currentPage === 1 ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border border-gray-300 text-gray-400 hover:bg-gray-100'}`}
                 title="Página anterior"
               >
                 <IoChevronBack size={16} />
               </button>
-
               {/* Números das páginas */}
               <div className="flex items-center gap-1">
                 {getPageNumbers().map((pageNumber) => (
                   <button
                     key={pageNumber}
                     onClick={() => goToPage(pageNumber)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      pageNumber === currentPage
-                        ? 'bg-gray-400 text-white'
-                        : 'border border-gray-300 text-gray-500 hover:bg-gray-100'
-                    }`}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${pageNumber === currentPage ? 'bg-gray-400 text-white' : 'border border-gray-300 text-gray-500 hover:bg-gray-100'}`}
                   >
-                    {pageNumber}
+                    {isClient ? pageNumber : ''}
                   </button>
                 ))}
               </div>
-
               {/* Botão Próximo */}
               <button
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages}
-                className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${
-                  currentPage === totalPages
-                    ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'border border-gray-300 text-gray-400 hover:bg-gray-100'
-                }`}
+                className={`p-2 py-2.5 rounded-lg border transition-all duration-200 ${currentPage === totalPages ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border border-gray-300 text-gray-400 hover:bg-gray-100'}`}
                 title="Próxima página"
               >
                 <IoChevronForward size={16} />
@@ -819,7 +855,7 @@ const RegisterSection = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
-                className="mt-4 px-4 py-2 rounded-lg border-none bg-[#1f1f1f] text-[#fff] cursor-pointer shadow flex items-center gap-2 transition-opacity duration-200 hover:opacity-80 font-medium"
+                className="mt-4 px-4 py-2 rounded-lg border-none bg-gray-600 text-[#fff] cursor-pointer shadow flex items-center gap-2 transition-opacity duration-200 hover:opacity-80 font-medium"
               >
                 {editingProduct ? (
                   <>
@@ -832,6 +868,29 @@ const RegisterSection = () => {
                     Adicionar
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de Confirmação de Mesclagem */}
+      {isConfirmMergeModalOpen && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow-lg">
+            <div className="text-lg font-semibold text-gray-600">Produto já registrado</div>
+            <div className="text-[#231f208e] text-base">Este produto já está registrado na lista, portanto ele será recalculado e adicionado ao produto já existente.</div>
+            <div className="flex gap-3 justify-end pt-8">
+              <button
+                onClick={handleCancelMerge}
+                className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-[#231f20] cursor-pointer hover:bg-gray-100 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmMerge}
+                className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white cursor-pointer shadow hover:opacity-80 transition font-medium"
+              >
+                Prosseguir
               </button>
             </div>
           </div>
