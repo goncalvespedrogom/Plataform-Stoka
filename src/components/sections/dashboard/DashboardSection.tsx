@@ -10,11 +10,13 @@ import { MdOutlineLocalOffer } from 'react-icons/md';
 import { MdAttachMoney } from 'react-icons/md';
 import { HiOutlineDocumentCurrencyDollar } from 'react-icons/hi2';
 import { HiOutlineCurrencyDollar } from 'react-icons/hi2';
+import { useSalesContext } from '../sales/SalesContext';
 
 const DashboardSection = () => {
   const [isClient, setIsClient] = useState(false);
   const { products } = useProductContext();
   const { tasks } = useTaskContext();
+  const { sales } = useSalesContext();
   const totalItens = products.reduce((acc, produto) => acc + produto.quantity, 0);
 
   // Estados para filtros e navegação de tarefas
@@ -138,6 +140,29 @@ const DashboardSection = () => {
     }
   }, [searchTerm, products, tasks]);
 
+  // --- VENDAS ---
+  // Saldo total
+  const saldoTotal = sales.reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
+  // Saldo semanal (últimos 7 dias)
+  const agora = new Date();
+  const seteDiasAtras = new Date(agora);
+  seteDiasAtras.setDate(agora.getDate() - 7);
+  const saldoSemanal = sales.filter(sale => new Date(sale.saleDate) >= seteDiasAtras)
+    .reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
+  // Última venda
+  const ultimaVenda = sales.length > 0 ? sales.reduce((a, b) => new Date(a.saleDate) > new Date(b.saleDate) ? a : b) : null;
+  // Busca de venda
+  const [searchVenda, setSearchVenda] = useState('');
+  const [searchVendaResult, setSearchVendaResult] = useState(null as null | typeof sales[0]);
+  useEffect(() => {
+    if (searchVenda.trim() === '') {
+      setSearchVendaResult(null);
+      return;
+    }
+    const vendaMatch = sales.find(sale => sale.productName.toLowerCase().includes(searchVenda.toLowerCase()));
+    setSearchVendaResult(vendaMatch || null);
+  }, [searchVenda, sales]);
+
   useEffect(() => { setIsClient(true); }, []);
   if (!isClient) {
     return <div style={{ minHeight: 300 }} />;
@@ -146,14 +171,7 @@ const DashboardSection = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Linha de cards principais */}
-      <div style={{ display: 'flex', gap: '24px' }}>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 180, flex: 1, boxShadow: '0 2px 8px #e0e0e0' }}>Revenue this month</div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 180, flex: 1, boxShadow: '0 2px 8px #e0e0e0' }}>Spend this month</div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 180, flex: 1, boxShadow: '0 2px 8px #e0e0e0' }}>Reports Submitted</div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 180, flex: 1, boxShadow: '0 2px 8px #e0e0e0' }}>New Tasks</div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 180, flex: 1, boxShadow: '0 2px 8px #e0e0e0' }}>Completed Tasks</div>
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 180, flex: 1, boxShadow: '0 2px 8px #e0e0e0' }}>Ongoing Projects</div>
-      </div>
+      {/* REMOVIDO: Linha de cards principais (Revenue, Spend, Reports, etc.) */}
       {/* Linha de gráficos e progresso */}
       <div style={{ display: 'flex', gap: '24px' }}>
         <div style={{ background: '#fff', borderRadius: 16, padding: 24, paddingRight: 10, flex: 2, minHeight: 260, boxShadow: '0 2px 8px #e0e0e0', position: 'relative' }}>
@@ -254,7 +272,7 @@ const DashboardSection = () => {
                 return (
                   <>
                     {/* Linha do meio: quantidade, valor unitário, valor total, data */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '40px 0 8px 0', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '40px 0 8px 0', width: '100%', paddingRight: 24 }}>
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
                         <LuWeight size={20} color="#9ca3af" style={{ marginBottom: 2, strokeWidth: 2.5 }} />
                         <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{last.quantity}</span>
@@ -600,6 +618,135 @@ const DashboardSection = () => {
               <div style={{ color: '#999', fontSize: 14, textAlign: 'center', padding: 24 }}>Nenhuma tarefa cadastrada.</div>
             )}
           </div>
+        </div>
+      </div>
+      {/* NOVA LINHA: Boxes de Vendas */}
+      <div style={{ display: 'flex', gap: '24px', marginTop: 0 }}>
+        {/* Coluna empilhada: Saldo total e Saldo semanal */}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 200, gap: 12 }}>
+          {/* Saldo total */}
+          <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, boxShadow: '0 2px 8px #e0e0e0', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Saldo Total das Vendas</span>
+            <span style={{ fontWeight: 'bold', fontSize: 32, marginTop: 28, color: saldoTotal > 0 ? '#22c55e' : saldoTotal < 0 ? '#ef4444' : '#888' }}>{formatarReal(saldoTotal)}</span>
+          </div>
+          {/* Saldo semanal */}
+          <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 1, boxShadow: '0 2px 8px #e0e0e0', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Saldo Semanal das Vendas</span>
+            <span style={{ fontWeight: 'bold', fontSize: 32, marginTop: 28, color: saldoSemanal > 0 ? '#22c55e' : saldoSemanal < 0 ? '#ef4444' : '#888' }}>{formatarReal(saldoSemanal)}</span>
+          </div>
+        </div>
+        {/* Box Última venda */}
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span className="text-gray-400" style={{ position: 'absolute', top: 24, left: 24, fontSize: 16, fontWeight: 500 }}>Última Venda</span>
+          {ultimaVenda ? (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '40px 0 8px 0', width: '100%', paddingRight: 24 }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                  <LuWeight size={20} color="#9ca3af" style={{ marginBottom: 2, strokeWidth: 2.5 }} />
+                  <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{ultimaVenda.quantity}</span>
+                  <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Quantidade</span>
+                </div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                  <MdOutlineLocalOffer size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                  <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(ultimaVenda.salePrice)}</span>
+                  <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Unitário</span>
+                </div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                  <HiOutlineCurrencyDollar size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                  <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(ultimaVenda.salePrice * ultimaVenda.quantity)}</span>
+                  <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Total</span>
+                </div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{ marginBottom: 2 }}><rect x="3" y="4" width="18" height="18" rx="4" stroke="#9ca3af" strokeWidth="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/></svg>
+                  <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{new Date(ultimaVenda.saleDate).toLocaleDateString('pt-BR')}</span>
+                  <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Data</span>
+                </div>
+              </div>
+              <div style={{ background: '#f8f9fa', borderRadius: 8, marginTop: 24, padding: '18px 32px', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', boxShadow: '0 1px 4px #e0e0e0' }}>
+                <span style={{ fontWeight: 600, fontSize: 18, color: '#333', marginBottom: 6 }}>{ultimaVenda.productName}</span>
+                <span style={{ color: '#666', fontSize: 14, fontWeight: 400, lineHeight: 1.5 }}>
+                  Saldo da venda: <span style={{ color: (ultimaVenda.profit - ultimaVenda.loss) > 0 ? '#22c55e' : (ultimaVenda.profit - ultimaVenda.loss) < 0 ? '#ef4444' : '#888', fontWeight: 600, fontSize: 14 }}>
+                    {formatarReal(ultimaVenda.profit - ultimaVenda.loss)}
+                  </span>
+                </span>
+              </div>
+            </>
+          ) : (
+            <span style={{ color: '#999', fontSize: 15, marginTop: 32 }}>Nenhuma venda registrada.</span>
+          )}
+        </div>
+        {/* Box de busca de venda */}
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Digite o nome do produto vendido..."
+            value={searchVenda}
+            onChange={e => setSearchVenda(e.target.value)}
+            style={{
+              marginTop: 8,
+              width: '92%',
+              maxWidth: 'none',
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: '1px solid #e0e0e0',
+              fontSize: 14,
+              outline: 'none',
+              boxSizing: 'border-box',
+              marginBottom: 12,
+              background: '#f3f4f6',
+              color: '#333',
+              transition: 'box-shadow 0.2s, border 0.2s',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+            }}
+          />
+          {searchVenda.trim() === '' ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+              flex: 1
+            }}>
+              <span style={{ color: '#bbb', fontSize: 14 }}>Digite para buscar uma venda.</span>
+            </div>
+          ) : (
+            searchVendaResult ? (
+              <div style={{ background: '#f8f9fa', borderRadius: 8, marginTop: 10, padding: '18px 32px', width: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', boxShadow: '0 1px 4px #e0e0e0' }}>
+                <span style={{ fontWeight: 600, fontSize: 18, color: '#333', marginBottom: 6 }}>{searchVendaResult.productName}</span>
+                <span style={{ color: '#666', fontSize: 16, fontWeight: 500, lineHeight: 1.5 }}>
+                  Saldo: <span style={{ color: (searchVendaResult.profit - searchVendaResult.loss) > 0 ? '#22c55e' : (searchVendaResult.profit - searchVendaResult.loss) < 0 ? '#ef4444' : '#888', fontWeight: 600 }}>
+                    {formatarReal(searchVendaResult.profit - searchVendaResult.loss)}
+                  </span>
+                </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', margin: '24px 0 0 0', width: '100%' }}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                    <LuWeight size={20} color="#9ca3af" style={{ marginBottom: 2, strokeWidth: 2.5 }} />
+                    <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{searchVendaResult.quantity}</span>
+                    <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Quantidade</span>
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                    <MdOutlineLocalOffer size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                    <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(searchVendaResult.salePrice)}</span>
+                    <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Unitário</span>
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                    <HiOutlineCurrencyDollar size={22} color="#9ca3af" style={{ marginBottom: 2 }} />
+                    <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{formatarReal(searchVendaResult.salePrice * searchVendaResult.quantity)}</span>
+                    <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Valor Total</span>
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{ marginBottom: 2 }}><rect x="3" y="4" width="18" height="18" rx="4" stroke="#9ca3af" strokeWidth="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/></svg>
+                    <span style={{ color: '#363636', fontWeight: 500, fontSize: 17, marginTop: 2 }}>{new Date(searchVendaResult.saleDate).toLocaleDateString('pt-BR')}</span>
+                    <span style={{ color: '#888', fontSize: 13, marginTop: 2 }}>Data</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <span style={{ color: '#999', fontSize: 15, marginTop: 32 }}>Nenhuma venda encontrada.</span>
+            )
+          )}
         </div>
       </div>
     </div>

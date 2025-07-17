@@ -8,6 +8,7 @@ import { ProductProvider } from './sections/register/ProductContext';
 import { TaskProvider } from './sections/tasks/TaskContext';
 import { GrTasks } from "react-icons/gr";
 import SalesSection from './sections/sales/index';
+import { SalesProvider } from './sections/sales/SalesContext';
 
 export default function Sidebar() {
   const [selectedSection, setSelectedSection] = useState('dashboard');
@@ -24,7 +25,11 @@ export default function Sidebar() {
   const renderSection = () => {
     switch (selectedSection) {
       case 'dashboard':
-        return <DashboardSection />;
+        return (
+          <SalesProvider>
+            <DashboardSection />
+          </SalesProvider>
+        );
       case 'analytics':
         return <TasksSection />;
       case 'databases':
@@ -32,7 +37,11 @@ export default function Sidebar() {
       case 'sales':
         return <SalesSection />;
       default:
-        return <DashboardSection />;
+        return (
+          <SalesProvider>
+            <DashboardSection />
+          </SalesProvider>
+        );
     }
   };
 
