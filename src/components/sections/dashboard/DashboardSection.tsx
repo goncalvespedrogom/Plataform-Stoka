@@ -11,6 +11,7 @@ import { MdAttachMoney } from 'react-icons/md';
 import { HiOutlineDocumentCurrencyDollar } from 'react-icons/hi2';
 import { HiOutlineCurrencyDollar } from 'react-icons/hi2';
 import { useSalesContext } from '../sales/SalesContext';
+import { IoSearch } from "react-icons/io5";
 
 const DashboardSection = () => {
   const [isClient, setIsClient] = useState(false);
@@ -310,28 +311,41 @@ const DashboardSection = () => {
         {/* Server Storage com mesmo tamanho do Último Registro */}
         <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative' }}>
           {/* Input de busca */}
-          <input
-            type="text"
-            placeholder="Digite o nome do produto ou tarefa..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{
-              marginTop: 8,
-              width: '92%',
-              maxWidth: 'none',
-              padding: '8px 14px',
-              borderRadius: 8,
-              border: '1px solid #e0e0e0',
-              fontSize: 14,
-              outline: 'none',
-              boxSizing: 'border-box',
-              marginBottom: 12,
-              background: '#f3f4f6', // cinza claro
-              color: '#333',
-              transition: 'box-shadow 0.2s, border 0.2s',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-            }}
-          />
+          <div style={{ position: 'relative', width: '100%' }}>
+            <IoSearch
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: 17,
+                color: '#9ca3af',
+                pointerEvents: 'none'
+              }}
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="Digite o nome do produto ou tarefa..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{
+                marginTop: 8,
+                width: '92%',
+                maxWidth: 'none',
+                padding: '8px 14px',
+                borderRadius: 8,
+                border: '1px solid #e0e0e0',
+                fontSize: 14,
+                outline: 'none',
+                boxSizing: 'border-box',
+                marginBottom: 12,
+                background: '#f3f4f6', // cinza claro
+                color: '#333',
+                transition: 'box-shadow 0.2s, border 0.2s',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                paddingLeft: 38 // espaço para o ícone
+              }}
+            />
+          </div>
           {/* Resultado da busca */}
           {searchTerm.trim() === '' ? (
             <div style={{
@@ -677,28 +691,41 @@ const DashboardSection = () => {
         </div>
         {/* Box de busca de venda */}
         <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 200, boxShadow: '0 2px 8px #e0e0e0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative' }}>
-          <input
-            type="text"
-            placeholder="Digite o nome do produto vendido..."
-            value={searchVenda}
-            onChange={e => setSearchVenda(e.target.value)}
-            style={{
-              marginTop: 8,
-              width: '92%',
-              maxWidth: 'none',
-              padding: '8px 14px',
-              borderRadius: 8,
-              border: '1px solid #e0e0e0',
-              fontSize: 14,
-              outline: 'none',
-              boxSizing: 'border-box',
-              marginBottom: 12,
-              background: '#f3f4f6',
-              color: '#333',
-              transition: 'box-shadow 0.2s, border 0.2s',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-            }}
-          />
+          <div style={{ position: 'relative', width: '100%' }}>
+            <IoSearch
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: 17,
+                color: '#9ca3af',
+                pointerEvents: 'none'
+              }}
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="Digite o nome do produto vendido..."
+              value={searchVenda}
+              onChange={e => setSearchVenda(e.target.value)}
+              style={{
+                marginTop: 8,
+                width: '92%',
+                maxWidth: 'none',
+                padding: '8px 14px',
+                borderRadius: 8,
+                border: '1px solid #e0e0e0',
+                fontSize: 14,
+                outline: 'none',
+                boxSizing: 'border-box',
+                marginBottom: 12,
+                background: '#f3f4f6',
+                color: '#333',
+                transition: 'box-shadow 0.2s, border 0.2s',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                paddingLeft: 38 // espaço para o ícone
+              }}
+            />
+          </div>
           {searchVenda.trim() === '' ? (
             <div style={{
               display: 'flex',

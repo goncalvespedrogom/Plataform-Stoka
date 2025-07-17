@@ -153,13 +153,38 @@ const SalesSectionContent = () => {
       <div className="bg-white rounded-2xl p-8 shadow flex flex-col" style={{ minHeight: 120 }}>
         <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registro de Vendas</span>
         <div className="flex flex-col md:flex-row gap-4 items-center relative">
-          <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <IoSearch
+            style={{
+              position: 'absolute',
+              left: 12,
+              top: 17,
+              color: '#9ca3af',
+              pointerEvents: 'none'
+            }}
+            size={20}
+          />
           <input
             type="text"
             placeholder="Buscar produto pelo nome..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-3 rounded-lg border border-gray-300 w-full md:w-96 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            style={{
+              marginTop: 8,
+              width: '92%',
+              maxWidth: 'none',
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: '1px solid #e0e0e0',
+              fontSize: 14,
+              outline: 'none',
+              boxSizing: 'border-box',
+              marginBottom: 12,
+              background: '#f3f4f6',
+              color: '#333',
+              transition: 'box-shadow 0.2s, border 0.2s',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+              paddingLeft: 38 // espaço para o ícone
+            }}
           />
         </div>
         {searchTerm && (
@@ -256,54 +281,56 @@ const SalesSectionContent = () => {
         {sales.length === 0 ? (
           <span className="text-gray-400">Nenhuma venda registrada ainda.</span>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#f5f6fa]">
-                <th className="py-2 px-3 font-medium text-gray-600 rounded-tl-2xl">Produto</th>
-                <th className="py-2 px-3 font-medium text-gray-600">Data</th>
-                <th className="py-2 px-3 font-medium text-gray-600">Quantidade</th>
-                <th className="py-2 px-3 font-medium text-gray-600">Valor unitário da venda</th>
-                <th className="py-2 px-3 font-medium text-gray-600">Total</th>
-                <th className="py-2 px-3 font-medium text-gray-600">Lucro</th>
-                <th className="py-2 px-3 font-medium text-gray-600">Prejuízo</th>
-                <th className="py-2 px-3 font-medium text-gray-600 rounded-tr-2xl">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sales.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="text-center text-gray-400 py-6">Nenhuma venda registrada.</td>
+          <div className="border border-gray-200 rounded-2xl overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#f5f6fa]">
+                  <th className="py-2 px-3 font-medium text-gray-600 rounded-tl-2xl">Produto</th>
+                  <th className="py-2 px-3 font-medium text-gray-600">Data</th>
+                  <th className="py-2 px-3 font-medium text-gray-600">Quantidade</th>
+                  <th className="py-2 px-3 font-medium text-gray-600">Valor unitário da venda</th>
+                  <th className="py-2 px-3 font-medium text-gray-600">Total</th>
+                  <th className="py-2 px-3 font-medium text-gray-600">Lucro</th>
+                  <th className="py-2 px-3 font-medium text-gray-600">Prejuízo</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 rounded-tr-2xl">Ações</th>
                 </tr>
-              ) : (
-                sales.map((sale) => (
-                  <tr key={sale.id} className="border-t">
-                    <td className="py-2 px-3">{sale.productName}</td>
-                    <td className="py-2 px-3">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
-                    <td className="py-2 px-3">{sale.quantity}</td>
-                    <td className="py-2 px-3">{sale.salePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td className="py-2 px-3">{(sale.salePrice * sale.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td className="py-2 px-3 text-green-600">{sale.profit > 0 ? sale.profit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
-                    <td className="py-2 px-3 text-red-600">{sale.loss > 0 ? sale.loss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
-                    <td className="py-2 px-3">
-                      <button
-                        onClick={() => handleRemoveSale(sale.id)}
-                        className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
-                        title="Remover venda"
-                      >
-                        <IoTrash size={18} className="text-gray-500" />
-                      </button>
-                    </td>
+              </thead>
+              <tbody>
+                {sales.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="text-center text-gray-400 py-6">Nenhuma venda registrada.</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  sales.map((sale) => (
+                    <tr key={sale.id} className="border-t">
+                      <td className="py-2 px-3">{sale.productName}</td>
+                      <td className="py-2 px-3">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
+                      <td className="py-2 px-3">{sale.quantity}</td>
+                      <td className="py-2 px-3">{sale.salePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td className="py-2 px-3">{(sale.salePrice * sale.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td className="py-2 px-3 text-green-600">{sale.profit > 0 ? sale.profit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
+                      <td className="py-2 px-3 text-red-600">{sale.loss > 0 ? sale.loss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
+                      <td className="py-2 px-3">
+                        <button
+                          onClick={() => handleRemoveSale(sale.id)}
+                          className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
+                          title="Remover venda"
+                        >
+                          <IoTrash size={18} className="text-gray-500" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
       {/* Box de Saldo Total */}
       <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start mt-2 relative" style={{ maxWidth: 320 }}>
         <div className="flex w-full items-center justify-between mb-2">
-          <span className="text-gray-400" style={{ fontSize: 15, fontWeight: 500 }}>Saldo total</span>
+          <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Total das Vendas</span>
           <button
             onClick={() => setResetModalOpen(true)}
             className="p-1 rounded hover:bg-gray-100 transition"
