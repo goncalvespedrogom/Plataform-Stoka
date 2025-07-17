@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useMemo } from 'react';
 import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
-import { IoPencil, IoTrash } from "react-icons/io5";
+import { IoPencil, IoTrash, IoSearch } from "react-icons/io5";
 import { CgClose } from "react-icons/cg";
 import { Listbox, Transition } from '@headlessui/react';
 import { IoChevronBack, IoChevronForward, IoChevronUp, IoChevronDown } from "react-icons/io5";
@@ -184,7 +184,7 @@ const TasksSection = () => {
         <div className="relative w-44">
           <Listbox value={selectedPriorityFilter} onChange={setSelectedPriorityFilter}>
             <div className="relative">
-              <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]`}>
+              <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c`}>
                 <span className="block truncate">
                   {selectedPriorityFilter || 'Todas as prioridades'}
                 </span>
@@ -232,6 +232,7 @@ const TasksSection = () => {
         </div>
         {/* Busca */}
         <div className="relative flex-1 max-w-md">
+          <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
             placeholder="Buscar por título ou descrição..."
@@ -239,17 +240,14 @@ const TasksSection = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-[#fff] text-[#231f20] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent shadow"
           />
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" /></svg>
-          </span>
         </div>
       </div>
       {/* Tabela de Tarefas */}
-      <div className="bg-[#fff] rounded-2xl px-4 py-6 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
+      <div className="bg-[#fff] rounded-2xl pt-0 pb-6 px-0 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
         <table className="w-full border-collapse text-[#231f20]">
           <thead>
-            <tr>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+            <tr className="bg-[#f5f6fa]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tl-2xl text-gray-600">
                 <button onClick={() => requestSort('title')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Título
                   {sortConfig.key === 'title' ? (
@@ -257,40 +255,12 @@ const TasksSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
-                <button onClick={() => requestSort('priority')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
-                  Prioridade
-                  {sortConfig.key === 'priority' ? (
-                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
-                  ) : <IoChevronDown className="text-gray-300" />}
-                </button>
-              </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
-                <button onClick={() => requestSort('status')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
-                  Status
-                  {sortConfig.key === 'status' ? (
-                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
-                  ) : <IoChevronDown className="text-gray-300" />}
-                </button>
-              </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
-                <button onClick={() => requestSort('dueDate')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
-                  Vencimento
-                  {sortConfig.key === 'dueDate' ? (
-                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
-                  ) : <IoChevronDown className="text-gray-300" />}
-                </button>
-              </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
-                <button onClick={() => requestSort('createdAt')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
-                  Criada em
-                  {sortConfig.key === 'createdAt' ? (
-                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
-                  ) : <IoChevronDown className="text-gray-300" />}
-                </button>
-              </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Descrição</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Ações</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Prioridade</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Status</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Vencimento</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Criada em</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -319,8 +289,8 @@ const TasksSection = () => {
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <div className="flex gap-2">
-                    <button onClick={() => handleEditTask(task)} className="p-2 rounded-lg bg-gray-400 text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-gray-500" title="Editar tarefa"><IoPencil size={16} /></button>
-                    <button onClick={() => handleRemoveTask(task.id)} className="p-2 rounded-lg opacity-80 bg-[#e61515c5] text-[#fff] cursor-pointer transition-opacity duration-200 hover:opacity-100" title="Remover tarefa"><IoTrash size={16} /></button>
+                    <button onClick={() => handleEditTask(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Editar tarefa"><IoPencil size={18} className="text-gray-500" /></button>
+                    <button onClick={() => handleRemoveTask(task.id)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Remover tarefa"><IoTrash size={18} className="text-gray-500" /></button>
                   </div>
                 </td>
               </tr>

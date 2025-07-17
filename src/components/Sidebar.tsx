@@ -7,6 +7,7 @@ import LogoSidebar from '../assets/LogoSidebar.png';
 import { ProductProvider } from './sections/register/ProductContext';
 import { TaskProvider } from './sections/tasks/TaskContext';
 import { GrTasks } from "react-icons/gr";
+import SalesSection from './sections/sales/index';
 
 export default function Sidebar() {
   const [selectedSection, setSelectedSection] = useState('dashboard');
@@ -28,6 +29,8 @@ export default function Sidebar() {
         return <TasksSection />;
       case 'databases':
         return <RegisterSection />;
+      case 'sales':
+        return <SalesSection />;
       default:
         return <DashboardSection />;
     }
@@ -177,13 +180,13 @@ export default function Sidebar() {
             </a>
             <a 
               href="#" 
-              onClick={() => handleSectionClick('help')}
+              onClick={() => handleSectionClick('sales')}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
-                selectedSection === 'help' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
+                selectedSection === 'sales' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
               <FaQuestionCircle size={20} />
-              {isSidebarOpen && 'Ajuda'}
+              {isSidebarOpen && 'Vendas'}
             </a>
             <a 
               href="#" 

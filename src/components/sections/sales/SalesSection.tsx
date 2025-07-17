@@ -1,0 +1,357 @@
+import React, { useState, useEffect } from 'react';
+import { useProductContext } from '../register/ProductContext';
+import { SalesProvider, useSalesContext } from './SalesContext';
+import { Product } from '../../../types/Product';
+import { IoSearch } from "react-icons/io5";
+import { IoTrash } from "react-icons/io5";
+import { RxUpdate } from "react-icons/rx";
+
+// Função para formatar valor em Real Brasileiro
+const formatToBRL = (value: string): string => {
+  const numericValue = value.replace(/\D/g, '');
+  if (numericValue === '') return '';
+  const numberValue = parseFloat(numericValue) / 100;
+  return numberValue.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
+
+const extractNumericValue = (formattedValue: string): number => {
+  const numericString = formattedValue.replace(/[^\d,]/g, '').replace(',', '.');
+  return parseFloat(numericString) || 0;
+};
+
+const SalesSectionContent = () => {
+  const { products, setProducts } = useProductContext();
+  const { sales, setSales } = useSalesContext();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [salePrice, setSalePrice] = useState('');
+  const [saleQuantity, setSaleQuantity] = useState(1);
+  const [error, setError] = useState('');
+  const [formattedSalePrice, setFormattedSalePrice] = useState('');
+  const [hiddenSales, setHiddenSales] = useState<number[]>([]);
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [resetReferenceDate, setResetReferenceDate] = useState<Date | null>(null);
+
+  // Calcular saldo total (lucro - prejuízo)
+  const filteredSales = resetReferenceDate
+    ? sales.filter(sale => {
+        const saleDate = sale.saleDate instanceof Date ? sale.saleDate : new Date(sale.saleDate);
+        return saleDate > resetReferenceDate;
+      })
+    : sales;
+  const totalBalance = filteredSales.reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
+
+  // Busca produtos pelo nome
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Abrir modal para registrar venda
+  const handleRegisterSale = (product: Product) => {
+    setSelectedProduct(product);
+    setSalePrice('');
+    setSaleQuantity(1);
+    setError('');
+    setIsModalOpen(true);
+  };
+
+  // Fechar modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    setError('');
+  };
+
+  // Atualizar valor formatado ao digitar
+  const handleSalePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const formatted = formatToBRL(inputValue);
+    setFormattedSalePrice(formatted);
+    setSalePrice(formatted);
+    if (error) setError('');
+  };
+
+  // Registrar venda
+  const handleConfirmSale = () => {
+    if (!selectedProduct) return;
+    const price = extractNumericValue(formattedSalePrice);
+    const quantity = Number(saleQuantity) || 1;
+    if (isNaN(price) || price <= 0) {
+      setError('Informe um valor de venda válido.');
+      return;
+    }
+    if (quantity <= 0 || quantity > selectedProduct.quantity) {
+      setError('Quantidade inválida.');
+      return;
+    }
+    // Calcular lucro/prejuízo
+    const unitProfit = price - selectedProduct.unitPrice;
+    const totalProfit = unitProfit * quantity;
+    // Atualizar estoque do produto
+    setProducts(prev => prev.map(p =>
+      p.id === selectedProduct.id
+        ? { ...p, quantity: Math.max(0, Number(p.quantity) - quantity) }
+        : p
+    ));
+    // Registrar venda
+    setSales(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        quantity: quantity,
+        salePrice: price,
+        saleDate: new Date(),
+        profit: totalProfit > 0 ? totalProfit : 0,
+        loss: totalProfit < 0 ? Math.abs(totalProfit) : 0,
+      }
+    ]);
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    setFormattedSalePrice('');
+  };
+
+  // Função para ocultar venda visualmente
+  const handleHideSale = (saleId: number) => {
+    setHiddenSales(prev => [...prev, saleId]);
+  };
+
+  // Função para remover venda definitivamente
+  const handleRemoveSale = (saleId: number) => {
+    setSales(prev => {
+      const updated = prev.filter(sale => sale.id !== saleId);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('sales', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  // Persistir referência de reset no localStorage
+  useEffect(() => {
+    if (resetReferenceDate && typeof window !== 'undefined') {
+      localStorage.setItem('salesResetReference', resetReferenceDate.toISOString());
+    }
+  }, [resetReferenceDate]);
+  // Carregar referência de reset ao montar
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const ref = localStorage.getItem('salesResetReference');
+      if (ref) setResetReferenceDate(new Date(ref));
+    }
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="bg-white rounded-2xl p-8 shadow flex flex-col" style={{ minHeight: 120 }}>
+        <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registro de Vendas</span>
+        <div className="flex flex-col md:flex-row gap-4 items-center relative">
+          <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Buscar produto pelo nome..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-3 rounded-lg border border-gray-300 w-full md:w-96 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          />
+        </div>
+        {searchTerm && (
+          <div className="flex flex-col pt-2 gap-4 mt-4 overflow-y-auto" style={{ maxHeight: 3 * 72 + 16 }}>
+            {filteredProducts.length === 0 && (
+              <span className="text-gray-400">Nenhum produto encontrado.</span>
+            )}
+            {filteredProducts.slice(0, 3).map(product => (
+              <div key={product.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 shadow-sm">
+                <div>
+                  <div className="font-semibold text-lg text-gray-700">{product.name}</div>
+                  <div className="text-sm text-gray-500">{product.description || 'Sem descrição.'}</div>
+                  <div className="text-xs text-gray-400">Estoque: {product.quantity} | Valor unitário: R$ {product.unitPrice.toFixed(2)}</div>
+                </div>
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:opacity-80 transition"
+                  onClick={() => handleRegisterSale(product)}
+                  disabled={product.quantity === 0}
+                  title={product.quantity === 0 ? 'Sem estoque' : 'Registrar venda'}
+                >
+                  Registrar venda
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Modal de venda */}
+        {isModalOpen && selectedProduct && (
+          <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+            <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow">
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-600 text-sm font-medium">Produto</label>
+                <div className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222]">{selectedProduct.name}</div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-600 text-sm font-medium">Valor unitário da venda <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="R$ 0,00"
+                  value={formattedSalePrice}
+                  onChange={handleSalePriceChange}
+                  className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-600 text-sm font-medium">Quantidade <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    placeholder="1"
+                    min="1"
+                    max={selectedProduct.quantity}
+                    value={saleQuantity === 0 ? '' : saleQuantity}
+                    onFocus={e => {
+                      if (saleQuantity === 0) setSaleQuantity(undefined as any);
+                    }}
+                    onChange={e => {
+                      let value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setSaleQuantity(value === '' ? 0 : Number(value));
+                      }
+                      if (error) setError('');
+                    }}
+                    className={`w-full appearance-none px-3 py-2 rounded-lg border pr-10 sm:text-sm border-[#e0e0e0] bg-[#f5f6fa] ${saleQuantity === 0 ? 'text-gray-400' : 'text-[#222]'} focus:outline-none focus:ring-2 focus:ring-gray-300`}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-[.55rem] pointer-events-none">
+                    {/* Espaço reservado para ícone se quiser adicionar */}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Quantidade disponível: {selectedProduct.quantity}</div>
+              </div>
+              {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+              <div className="flex gap-3 justify-end pt-4">
+                <button
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-[#231f20] cursor-pointer hover:bg-gray-100 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmSale}
+                  className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white cursor-pointer shadow hover:opacity-80 transition font-medium"
+                >
+                  Registrar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      {/* Listagem de vendas */}
+      <div className="bg-white rounded-2xl p-8 shadow flex flex-col">
+        <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Histórico de Vendas</span>
+        {sales.length === 0 ? (
+          <span className="text-gray-400">Nenhuma venda registrada ainda.</span>
+        ) : (
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#f5f6fa]">
+                <th className="py-2 px-3 font-medium text-gray-600 rounded-tl-2xl">Produto</th>
+                <th className="py-2 px-3 font-medium text-gray-600">Data</th>
+                <th className="py-2 px-3 font-medium text-gray-600">Quantidade</th>
+                <th className="py-2 px-3 font-medium text-gray-600">Valor unitário da venda</th>
+                <th className="py-2 px-3 font-medium text-gray-600">Total</th>
+                <th className="py-2 px-3 font-medium text-gray-600">Lucro</th>
+                <th className="py-2 px-3 font-medium text-gray-600">Prejuízo</th>
+                <th className="py-2 px-3 font-medium text-gray-600 rounded-tr-2xl">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sales.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="text-center text-gray-400 py-6">Nenhuma venda registrada.</td>
+                </tr>
+              ) : (
+                sales.map((sale) => (
+                  <tr key={sale.id} className="border-t">
+                    <td className="py-2 px-3">{sale.productName}</td>
+                    <td className="py-2 px-3">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
+                    <td className="py-2 px-3">{sale.quantity}</td>
+                    <td className="py-2 px-3">{sale.salePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td className="py-2 px-3">{(sale.salePrice * sale.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td className="py-2 px-3 text-green-600">{sale.profit > 0 ? sale.profit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
+                    <td className="py-2 px-3 text-red-600">{sale.loss > 0 ? sale.loss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
+                    <td className="py-2 px-3">
+                      <button
+                        onClick={() => handleRemoveSale(sale.id)}
+                        className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
+                        title="Remover venda"
+                      >
+                        <IoTrash size={18} className="text-gray-500" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+      {/* Box de Saldo Total */}
+      <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start mt-2 relative" style={{ maxWidth: 320 }}>
+        <div className="flex w-full items-center justify-between mb-2">
+          <span className="text-gray-400" style={{ fontSize: 15, fontWeight: 500 }}>Saldo total</span>
+          <button
+            onClick={() => setResetModalOpen(true)}
+            className="p-1 rounded hover:bg-gray-100 transition"
+            title="Zerar saldo total"
+          >
+            <RxUpdate size={22} className="text-gray-400" />
+          </button>
+        </div>
+        <span className={
+          totalBalance > 0 ? 'text-green-600 font-bold text-xl' : totalBalance < 0 ? 'text-red-600 font-bold text-xl' : 'text-gray-600 font-bold text-xl'
+        }>
+          {totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+        </span>
+      </div>
+      {/* Modal de confirmação de reset do saldo total */}
+      {resetModalOpen && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] flex flex-col gap-2 shadow">
+            <span className="text-lg font-medium text-gray-700">Deseja realmente zerar o saldo total?</span>
+            <span className="text-gray-500 text-sm">O saldo será zerado e passará a contar apenas para as próximas vendas.</span>
+            <div className="flex gap-3 justify-end pt-6">
+              <button
+                onClick={() => setResetModalOpen(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setResetReferenceDate(new Date());
+                  setResetModalOpen(false);
+                }}
+                className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const SalesSection = () => (
+  <SalesProvider>
+    <SalesSectionContent />
+  </SalesProvider>
+);
+
+export default SalesSection; 

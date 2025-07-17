@@ -476,11 +476,11 @@ const RegisterSection = () => {
       </div>
 
       {/* Tabela de Produtos */}
-      <div className="bg-[#fff] rounded-2xl px-4 py-6 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
+      <div className="bg-[#fff] rounded-2xl pt-0 pb-6 px-0 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
         <table className="w-full border-collapse text-[#231f20]">
           <thead>
-            <tr>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+            <tr className="bg-[#f5f6fa]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tl-2xl text-gray-600">
                 <button onClick={() => requestSort('name')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Nome
                   {sortConfig.key === 'name' ? (
@@ -488,7 +488,7 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
                 <button onClick={() => requestSort('category')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Categoria
                   {sortConfig.key === 'category' ? (
@@ -496,7 +496,7 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
                 <button onClick={() => requestSort('quantity')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Quantidade
                   {sortConfig.key === 'quantity' ? (
@@ -504,7 +504,7 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
                 <button onClick={() => requestSort('unitPrice')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Preço Unitário
                   {sortConfig.key === 'unitPrice' ? (
@@ -512,7 +512,7 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
                 <button onClick={() => requestSort('totalValue')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Valor Total
                   {sortConfig.key === 'totalValue' ? (
@@ -520,7 +520,7 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
                 <button onClick={() => requestSort('date')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
                   Data
                   {sortConfig.key === 'date' ? (
@@ -528,8 +528,8 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Descrição</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0]">Ações</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -571,31 +571,31 @@ const RegisterSection = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditProduct(product)}
-                      className="p-2 rounded-lg bg-gray-400 text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-gray-500"
+                      className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Editar produto"
                     >
-                      <IoPencil size={16} />
+                      <IoPencil size={18} className="text-gray-500" />
                     </button>
                     <button
                       onClick={() => handleRemoveProduct(product.id)}
-                      className="p-2 rounded-lg opacity-80 bg-[#e61515c5] text-[#fff] cursor-pointer transition-opacity duration-200 hover:opacity-100"
+                      className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Remover produto"
                     >
-                      <IoTrash size={16} />
+                      <IoTrash size={18} className="text-gray-500" />
                     </button>
                     <button
                       onClick={() => handleIncrementProductQuantity(product.id)}
-                      className="p-2 rounded-lg bg-[#73d894] text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-[#56eb88]"
+                      className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Adicionar quantidade"
                     >
-                      <IoMdAdd size={18} />
+                      <IoMdAdd size={18} className="text-gray-500" />
                     </button>
                     <button
                       onClick={() => handleDecrementProductQuantity(product.id)}
-                      className="p-2 rounded-lg bg-[#fce359] text-[#fff] cursor-pointer transition-opacity duration-200 hover:bg-[#fddf31]"
+                      className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Diminuir quantidade"
                     >
-                      <IoMdRemove size={16} />
+                      <IoMdRemove size={18} className="text-gray-500" />
                     </button>
                   </div>
                 </td>
