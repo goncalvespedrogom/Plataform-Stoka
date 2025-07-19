@@ -25,8 +25,8 @@ const extractNumericValue = (formattedValue: string): number => {
 };
 
 const SalesSectionContent = () => {
-  const { products, setProducts } = useProductContext();
-  const { sales, setSales } = useSalesContext();
+  const { products, updateProduct } = useProductContext();
+  const { sales, addSale, removeSale } = useSalesContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +78,7 @@ const SalesSectionContent = () => {
   };
 
   // Registrar venda
-  const handleConfirmSale = () => {
+  const handleConfirmSale = async () => {
     if (!selectedProduct) return;
     const price = extractNumericValue(formattedSalePrice);
     const quantity = Number(saleQuantity) || 1;
@@ -94,25 +94,19 @@ const SalesSectionContent = () => {
     const unitProfit = price - selectedProduct.unitPrice;
     const totalProfit = unitProfit * quantity;
     // Atualizar estoque do produto
-    setProducts(prev => prev.map(p =>
-      p.id === selectedProduct.id
-        ? { ...p, quantity: Math.max(0, Number(p.quantity) - quantity) }
-        : p
-    ));
+    await updateProduct(selectedProduct.id, {
+      quantity: Math.max(0, Number(selectedProduct.quantity) - quantity)
+    });
     // Registrar venda
-    setSales(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        productId: selectedProduct.id,
-        productName: selectedProduct.name,
-        quantity: quantity,
-        salePrice: price,
-        saleDate: new Date(),
-        profit: totalProfit > 0 ? totalProfit : 0,
-        loss: totalProfit < 0 ? Math.abs(totalProfit) : 0,
-      }
-    ]);
+    await addSale({
+      productId: selectedProduct.id,
+      productName: selectedProduct.name,
+      quantity: quantity,
+      salePrice: price,
+      saleDate: new Date(),
+      profit: totalProfit > 0 ? totalProfit : 0,
+      loss: totalProfit < 0 ? Math.abs(totalProfit) : 0,
+    });
     setIsModalOpen(false);
     setSelectedProduct(null);
     setFormattedSalePrice('');
@@ -124,14 +118,8 @@ const SalesSectionContent = () => {
   };
 
   // Função para remover venda definitivamente
-  const handleRemoveSale = (saleId: number) => {
-    setSales(prev => {
-      const updated = prev.filter(sale => sale.id !== saleId);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('sales', JSON.stringify(updated));
-      }
-      return updated;
-    });
+  const handleRemoveSale = async (saleId: string) => {
+    await removeSale(saleId);
   };
 
   // Persistir referência de reset no localStorage

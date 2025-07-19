@@ -12,17 +12,78 @@ import { HiOutlineDocumentCurrencyDollar } from 'react-icons/hi2';
 import { HiOutlineCurrencyDollar } from 'react-icons/hi2';
 import { useSalesContext } from '../sales/SalesContext';
 import { IoSearch } from "react-icons/io5";
+import { useRouter } from "next/router";
+import { useAuth } from "../../../hooks/useAuth";
 
 const DashboardSection = () => {
+  // TODOS os hooks devem ser declarados aqui no topo!
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const { products } = useProductContext();
   const { tasks } = useTaskContext();
   const { sales } = useSalesContext();
-  const totalItens = products.reduce((acc, produto) => acc + produto.quantity, 0);
-
-  // Estados para filtros e navegação de tarefas
   const [taskFilter, setTaskFilter] = useState<'todas' | 'concluídas' | 'em_andamento' | 'pendentes'>('todas');
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResult, setSearchResult] = useState<{ type: 'produto' | 'tarefa'; data: any } | null>(null);
+  const [searchVenda, setSearchVenda] = useState('');
+  const [searchVendaResult, setSearchVendaResult] = useState(null as null | typeof sales[0]);
+
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
+
+  React.useEffect(() => { setIsClient(true); }, []);
+
+  React.useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setSearchResult(null);
+      return;
+    }
+    const productMatch = products.find(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const taskMatch = tasks.find(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()));
+    if (productMatch) {
+      setSearchResult({ type: 'produto', data: productMatch });
+    } else if (taskMatch) {
+      setSearchResult({ type: 'tarefa', data: taskMatch });
+    } else {
+      setSearchResult(null);
+    }
+  }, [searchTerm, products, tasks]);
+
+  React.useEffect(() => {
+    if (searchVenda.trim() === '') {
+      setSearchVendaResult(null);
+      return;
+    }
+    const vendaMatch = sales.find(sale => sale.productName.toLowerCase().includes(searchVenda.toLowerCase()));
+    setSearchVendaResult(vendaMatch || null);
+  }, [searchVenda, sales]);
+
+  React.useEffect(() => {
+    setCurrentTaskIndex(0);
+  }, [taskFilter]);
+
+  // --- VENDAS ---
+  // Saldo total
+  const saldoTotal = sales.reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
+  // Saldo semanal (últimos 7 dias)
+  const agora = new Date();
+  const seteDiasAtras = new Date(agora);
+  seteDiasAtras.setDate(agora.getDate() - 7);
+  const saldoSemanal = sales.filter(sale => new Date(sale.saleDate) >= seteDiasAtras)
+    .reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
+  // Última venda
+  const ultimaVenda = sales.length > 0 ? sales.reduce((a, b) => new Date(a.saleDate) > new Date(b.saleDate) ? a : b) : null;
+
+  if (loading || !user || !isClient) {
+    return <div className="text-center mt-10">Carregando...</div>;
+  }
+
+  const totalItens = products.reduce((acc, produto) => acc + produto.quantity, 0);
 
   // Função para filtrar tarefas
   const filteredTasks = tasks.filter(task => {
@@ -51,11 +112,6 @@ const DashboardSection = () => {
       setCurrentTaskIndex((prev) => (prev - 1 + filteredTasks.length) % filteredTasks.length);
     }
   };
-
-  // Resetar índice quando mudar filtro
-  useEffect(() => {
-    setCurrentTaskIndex(0);
-  }, [taskFilter]);
 
   const diasSemana = [
     'Segunda-feira',
@@ -119,55 +175,6 @@ const DashboardSection = () => {
     }
     return null;
   };
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResult, setSearchResult] = useState<{ type: 'produto' | 'tarefa'; data: any } | null>(null);
-
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setSearchResult(null);
-      return;
-    }
-
-    const productMatch = products.find(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    const taskMatch = tasks.find(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    if (productMatch) {
-      setSearchResult({ type: 'produto', data: productMatch });
-    } else if (taskMatch) {
-      setSearchResult({ type: 'tarefa', data: taskMatch });
-    } else {
-      setSearchResult(null);
-    }
-  }, [searchTerm, products, tasks]);
-
-  // --- VENDAS ---
-  // Saldo total
-  const saldoTotal = sales.reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
-  // Saldo semanal (últimos 7 dias)
-  const agora = new Date();
-  const seteDiasAtras = new Date(agora);
-  seteDiasAtras.setDate(agora.getDate() - 7);
-  const saldoSemanal = sales.filter(sale => new Date(sale.saleDate) >= seteDiasAtras)
-    .reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
-  // Última venda
-  const ultimaVenda = sales.length > 0 ? sales.reduce((a, b) => new Date(a.saleDate) > new Date(b.saleDate) ? a : b) : null;
-  // Busca de venda
-  const [searchVenda, setSearchVenda] = useState('');
-  const [searchVendaResult, setSearchVendaResult] = useState(null as null | typeof sales[0]);
-  useEffect(() => {
-    if (searchVenda.trim() === '') {
-      setSearchVendaResult(null);
-      return;
-    }
-    const vendaMatch = sales.find(sale => sale.productName.toLowerCase().includes(searchVenda.toLowerCase()));
-    setSearchVendaResult(vendaMatch || null);
-  }, [searchVenda, sales]);
-
-  useEffect(() => { setIsClient(true); }, []);
-  if (!isClient) {
-    return <div style={{ minHeight: 300 }} />;
-  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>

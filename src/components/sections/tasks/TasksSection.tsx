@@ -15,7 +15,7 @@ const STATUS_OPTIONS = ['pendente', 'em_andamento', 'concluída'];
 
 const TasksSection = () => {
   const [isClient, setIsClient] = useState(false);
-  const { tasks, setTasks } = useTaskContext();
+  const { tasks, addTask, updateTask, removeTask } = useTaskContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [newTask, setNewTask] = useState<Omit<Task, 'id' | 'createdAt' | 'completedAt'>>({
@@ -121,10 +121,10 @@ const TasksSection = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (!validateFields()) return;
-    const task: Task = { ...newTask, id: Date.now(), createdAt: new Date() };
-    setTasks(prev => [...prev, task]);
+    const task: Omit<Task, 'id'> = { ...newTask, createdAt: new Date() };
+    await addTask(task);
     setNewTask({ title: '', description: '', priority: 'média', status: 'pendente', dueDate: new Date() });
     setErrors({});
     setIsModalOpen(false);
@@ -134,16 +134,24 @@ const TasksSection = () => {
     setNewTask({ title: task.title, description: task.description, priority: task.priority, status: task.status, dueDate: task.dueDate });
     setIsModalOpen(true);
   };
-  const handleUpdateTask = () => {
+  const handleUpdateTask = async () => {
     if (!validateFields() || !editingTask) return;
-    const updatedTask: Task = { ...editingTask, ...newTask, completedAt: newTask.status === 'concluída' ? new Date() : editingTask.completedAt };
-    setTasks(prev => prev.map(task => task.id === editingTask.id ? updatedTask : task));
+    const updatedFields = {
+      ...newTask,
+      completedAt: newTask.status === 'concluída' ? new Date() : editingTask.completedAt,
+    };
+    if (updatedFields.completedAt === undefined) {
+      delete updatedFields.completedAt;
+    }
+    await updateTask(editingTask.id as string, updatedFields);
     setEditingTask(null);
     setNewTask({ title: '', description: '', priority: 'média', status: 'pendente', dueDate: new Date() });
     setErrors({});
     setIsModalOpen(false);
   };
-  const handleRemoveTask = (taskId: number) => { setTasks(prev => prev.filter(task => task.id !== taskId)); };
+  const handleRemoveTask = async (taskId: string) => {
+    await removeTask(taskId);
+  };
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingTask(null);

@@ -37,7 +37,7 @@ function capitalizeFirstWord(name: string) {
 
 const RegisterSection = () => {
   const [isClient, setIsClient] = useState(false);
-  const { products, setProducts } = useProductContext();
+  const { products, addProduct, updateProduct, removeProduct } = useProductContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'totalValue'>>({
@@ -229,7 +229,7 @@ const RegisterSection = () => {
   const [isConfirmMergeModalOpen, setIsConfirmMergeModalOpen] = useState(false);
   const [mergeTargetProduct, setMergeTargetProduct] = useState<Product | null>(null);
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!validateFields()) return;
     // Verifica se já existe produto com o mesmo nome (case insensitive)
     const existingProduct = products.find(
@@ -241,13 +241,12 @@ const RegisterSection = () => {
       return;
     }
     const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
-    const product: Product = {
-      id: products.length + 1,
+    const product: Omit<Product, 'id'> = {
       ...newProduct,
       totalValue,
       date: newProduct.date,
     };
-    setProducts([...products, product]);
+    await addProduct(product);
     setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, date: new Date(), description: '' });
     setFormattedUnitPrice('');
     setIsModalOpen(false);
@@ -270,9 +269,9 @@ const RegisterSection = () => {
       totalValue: newQuantity * mergedUnitPrice,
       // Mantém categoria, data e descrição do produto original
     };
-    setProducts(products.map(p =>
-      p.id === mergeTargetProduct.id ? mergedProduct : p
-    ));
+    // setProducts(products.map(p => // This line was removed as per the edit hint
+    //   p.id === mergeTargetProduct.id ? mergedProduct : p
+    // ));
     setIsConfirmMergeModalOpen(false);
     setIsModalOpen(false);
     setMergeTargetProduct(null);
@@ -301,16 +300,15 @@ const RegisterSection = () => {
     setIsModalOpen(true);
   };
 
-  const handleUpdateProduct = () => {
+  const handleUpdateProduct = async () => {
     if (!validateFields()) return;
     if (editingProduct) {
       const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
-      const updatedProducts = products.map(product => 
-        product.id === editingProduct.id 
-          ? { ...editingProduct, ...newProduct, totalValue, date: newProduct.date }
-          : product
-      );
-      setProducts(updatedProducts);
+      await updateProduct(editingProduct.id as string, {
+        ...newProduct,
+        totalValue,
+        date: newProduct.date,
+      });
       setEditingProduct(null);
       setNewProduct({ name: '', category: '', quantity: 0, unitPrice: 0, date: new Date(), description: '' });
       setFormattedUnitPrice('');
@@ -319,8 +317,8 @@ const RegisterSection = () => {
     }
   };
 
-  const handleRemoveProduct = (productId: number) => {
-    setProducts(products.filter(product => product.id !== productId));
+  const handleRemoveProduct = async (productId: string) => {
+    await removeProduct(productId);
   };
 
   const handleModalClose = () => {
@@ -332,33 +330,27 @@ const RegisterSection = () => {
   };
 
   // Função para incrementar a quantidade de um produto na tabela
-  const handleIncrementProductQuantity = (productId: number) => {
-    setProducts(prevProducts => prevProducts.map(product => {
-      if (product.id === productId) {
-        const newQuantity = product.quantity + 1;
-        return {
-          ...product,
-          quantity: newQuantity,
-          totalValue: newQuantity * product.unitPrice
-        };
-      }
-      return product;
-    }));
+  const handleIncrementProductQuantity = async (productId: string) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      const newQuantity = product.quantity + 1;
+      await updateProduct(productId, {
+        quantity: newQuantity,
+        totalValue: newQuantity * product.unitPrice,
+      });
+    }
   };
 
   // Função para decrementar a quantidade de um produto na tabela
-  const handleDecrementProductQuantity = (productId: number) => {
-    setProducts(prevProducts => prevProducts.map(product => {
-      if (product.id === productId) {
-        const newQuantity = Math.max(0, product.quantity - 1);
-        return {
-          ...product,
-          quantity: newQuantity,
-          totalValue: newQuantity * product.unitPrice
-        };
-      }
-      return product;
-    }));
+  const handleDecrementProductQuantity = async (productId: string) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      const newQuantity = Math.max(0, product.quantity - 1);
+      await updateProduct(productId, {
+        quantity: newQuantity,
+        totalValue: newQuantity * product.unitPrice,
+      });
+    }
   };
 
   useEffect(() => { setIsClient(true); }, []);

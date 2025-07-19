@@ -1,9 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Sale } from '../../../types/Sale';
+import { db } from '../../../firebaseConfig';
+import { collection, query, where, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { useAuth } from '../../../hooks/useAuth';
 
 interface SalesContextType {
   sales: Sale[];
-  setSales: React.Dispatch<React.SetStateAction<Sale[]>>;
+  addSale: (sale: Omit<Sale, 'id'>) => Promise<void>;
+  updateSale: (id: string, sale: Partial<Sale>) => Promise<void>;
+  removeSale: (id: string) => Promise<void>;
+  loading: boolean;
 }
 
 const SalesContext = createContext<SalesContextType | undefined>(undefined);
@@ -16,28 +22,58 @@ export const useSalesContext = () => {
   return context;
 };
 
-export const SalesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sales, setSales] = useState<Sale[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('sales');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          return parsed.map((s: any) => ({ ...s, saleDate: new Date(s.saleDate) }));
-        } catch {
-          return [];
-        }
-      }
-    }
-    return [];
-  });
+export const SalesProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('sales', JSON.stringify(sales));
-  }, [sales]);
+    if (user === undefined) {
+      setLoading(true);
+      return;
+    }
+    if (!user) {
+      setSales([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const q = query(collection(db, 'sales'), where('userId', '==', user.uid));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const sals: Sale[] = snapshot.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+        saleDate: docSnap.data().saleDate ? docSnap.data().saleDate.toDate ? docSnap.data().saleDate.toDate() : new Date(docSnap.data().saleDate) : undefined,
+      }) as Sale);
+      setSales(sals);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [user]);
+
+  const addSale = async (sale: Omit<Sale, 'id'>) => {
+    if (!user) return;
+    await addDoc(collection(db, 'sales'), {
+      ...sale,
+      userId: user.uid,
+      saleDate: sale.saleDate || new Date(),
+    });
+  };
+
+  const updateSale = async (id: string, sale: Partial<Sale>) => {
+    if (!user) return;
+    await updateDoc(doc(db, 'sales', id), {
+      ...sale,
+    });
+  };
+
+  const removeSale = async (id: string) => {
+    if (!user) return;
+    await deleteDoc(doc(db, 'sales', id));
+  };
 
   return (
-    <SalesContext.Provider value={{ sales, setSales }}>
+    <SalesContext.Provider value={{ sales, addSale, updateSale, removeSale, loading }}>
       {children}
     </SalesContext.Provider>
   );
