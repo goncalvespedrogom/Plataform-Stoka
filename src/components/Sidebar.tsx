@@ -253,9 +253,9 @@ export default function Sidebar() {
         </main>
         {showLogoutModal && (
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-              <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col items-center">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Confirmar Logout</h2>
-                <p className="mb-6 text-gray-600 text-center">Tem certeza que deseja sair da sua conta?</p>
+              <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col ">
+                <h2 className="text-2xl font-bold mb-2 text-gray-800">Logout</h2>
+                <p className="mb-12 text-gray-600">Tem certeza que deseja sair da sua conta?</p>
                 <div className="flex gap-4 w-full justify-center">
                   <button
                     onClick={handleCancelLogout}
@@ -265,9 +265,9 @@ export default function Sidebar() {
                   </button>
                   <button
                     onClick={handleConfirmLogout}
-                    className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition font-medium"
+                    className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
                   >
-                    Sair
+                    Confirmar
                   </button>
                 </div>
               </div>

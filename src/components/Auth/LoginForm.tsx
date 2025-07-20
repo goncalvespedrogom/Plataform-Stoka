@@ -25,15 +25,16 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="flex flex-col gap-4 max-w-sm mx-auto mt-8 p-6 border rounded bg-white shadow">
-      <h2 className="text-xl font-bold mb-2">Login</h2>
+    <form onSubmit={handleLogin} className="flex flex-col gap-4 max-w-sm mx-auto p-0 bg-transparent shadow-none border-none w-full">
+      <h2 className="text-4xl font-bold text-[#000000ee]">Bem-vindo novamente,</h2>
+      <p className="text-[#8a8a8a] mt-[-.8rem] mb-6">por favor, preencha seus dados.</p>
       <input
         type="email"
         placeholder="E-mail"
         value={email}
         onChange={e => setEmail(e.target.value)}
         required
-        className="border p-2 rounded"
+        className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 w-full"
       />
       <input
         type="password"
@@ -41,12 +42,24 @@ const LoginForm: React.FC = () => {
         value={password}
         onChange={e => setPassword(e.target.value)}
         required
-        className="border p-2 rounded"
+        className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 w-full"
       />
-      <button type="submit" disabled={loading} className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+      <button
+        type="button"
+        className="text-sm text-[#8a8a8a] hover:underline text-left mb-2 w-fit ml-1"
+        tabIndex={-1}
+        style={{marginTop: '-.4rem'}}
+      >
+        Esqueceu sua senha?
+      </button>
+      <button type="submit" disabled={loading} className="bg-black text-white font-medium p-2 mt-6 rounded hover:opacity-85 w-full">
         {loading ? "Entrando..." : "Entrar"}
       </button>
       {error && <div className="text-red-600 text-sm">{error}</div>}
+      <div className="mt-2 ml-1 text-sm text-[#8a8a8a]">
+        Não possui uma conta?{' '}
+        <button type="button" className="font-bold text-black hover:underline">Cadastre-se</button>
+      </div>
     </form>
   );
 };
