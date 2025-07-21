@@ -7,7 +7,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,11 +20,19 @@ const RegisterForm: React.FC = () => {
     setError("");
     setSuccess("");
     setLoading(true);
+
+    if (password !== confirmPassword) {
+      setError("As senhas não coincidem.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       setSuccess("Cadastro realizado com sucesso! Redirecionando para login...");
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
       // Aguarda 2 segundos para mostrar a mensagem de sucesso antes de redirecionar
       setTimeout(() => {
         router.push("/login");
@@ -36,6 +46,10 @@ const RegisterForm: React.FC = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -65,6 +79,23 @@ const RegisterForm: React.FC = () => {
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8a8a8a] hover:text-gray-600 focus:outline-none"
         >
           {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+        </button>
+      </div>
+      <div className="relative">
+        <input
+          type={showConfirmPassword ? "text" : "password"}
+          placeholder="Confirmar Senha"
+          value={confirmPassword}
+          onChange={e => setConfirmPassword(e.target.value)}
+          required
+          className="border p-2 px-4 pr-12 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 w-full"
+        />
+        <button
+          type="button"
+          onClick={toggleConfirmPasswordVisibility}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8a8a8a] hover:text-gray-600 focus:outline-none"
+        >
+          {showConfirmPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
         </button>
       </div>
       <button type="submit" disabled={loading} className="bg-black text-white font-medium p-2 mt-6 rounded hover:opacity-85 w-full">
