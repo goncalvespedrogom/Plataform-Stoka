@@ -33,6 +33,8 @@ const TasksSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const tasksPerPage = 12;
   const [detailModalTask, setDetailModalTask] = useState<Task | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,14 +145,31 @@ const TasksSection = () => {
     if (updatedFields.completedAt === undefined) {
       delete updatedFields.completedAt;
     }
-    await updateTask(editingTask.id as string, updatedFields);
+    await updateTask(editingTask.id.toString(), updatedFields);
     setEditingTask(null);
     setNewTask({ title: '', description: '', priority: 'média', status: 'pendente', dueDate: new Date() });
     setErrors({});
     setIsModalOpen(false);
   };
-  const handleRemoveTask = async (taskId: string) => {
-    await removeTask(taskId);
+  const handleRemoveTask = async (taskId: number) => {
+    await removeTask(taskId.toString());
+  };
+  const handleDeleteClick = (task: Task) => {
+    setTaskToDelete(task);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (taskToDelete) {
+      await handleRemoveTask(taskToDelete.id);
+      setShowDeleteModal(false);
+      setTaskToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setTaskToDelete(null);
   };
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -186,7 +205,7 @@ const TasksSection = () => {
           className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]"
         >
           <HiFolderAdd size={26} className="align-middle flex-shrink-0 relative top-[-1px]" />
-          Adicionar
+          Adicionar uma tarefa
         </button>
         {/* Filtro por Prioridade */}
         <div className="relative w-44">
@@ -298,7 +317,7 @@ const TasksSection = () => {
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <div className="flex gap-2">
                     <button onClick={() => handleEditTask(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Editar tarefa"><IoPencil size={18} className="text-gray-500" /></button>
-                    <button onClick={() => handleRemoveTask(task.id)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Remover tarefa"><IoTrash size={18} className="text-gray-500" /></button>
+                    <button onClick={() => handleDeleteClick(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Remover tarefa"><IoTrash size={18} className="text-gray-500" /></button>
                   </div>
                 </td>
               </tr>
@@ -467,6 +486,31 @@ const TasksSection = () => {
                 className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium"
               >
                 Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de Confirmação de Exclusão */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Excluir tarefa</h2>
+            <p className="mb-12 text-gray-600">
+              Tem certeza que deseja excluir a tarefa "{taskToDelete?.title}"?
+            </p>
+            <div className="flex gap-4 w-full justify-center">
+              <button
+                onClick={handleCancelDelete}
+                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+              >
+                Excluir
               </button>
             </div>
           </div>

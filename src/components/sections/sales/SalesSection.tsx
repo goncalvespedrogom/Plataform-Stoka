@@ -5,6 +5,7 @@ import { Product } from '../../../types/Product';
 import { IoSearch } from "react-icons/io5";
 import { IoTrash } from "react-icons/io5";
 import { RxUpdate } from "react-icons/rx";
+import { Sale } from '../../../types/Sale';
 
 // Função para formatar valor em Real Brasileiro
 const formatToBRL = (value: string): string => {
@@ -37,6 +38,8 @@ const SalesSectionContent = () => {
   const [hiddenSales, setHiddenSales] = useState<number[]>([]);
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [resetReferenceDate, setResetReferenceDate] = useState<Date | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [saleToDelete, setSaleToDelete] = useState<Sale | null>(null);
 
   // Calcular saldo total (lucro - prejuízo)
   const filteredSales = resetReferenceDate
@@ -122,6 +125,24 @@ const SalesSectionContent = () => {
     await removeSale(saleId);
   };
 
+  const handleDeleteClick = (sale: Sale) => {
+    setSaleToDelete(sale);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (saleToDelete) {
+      await handleRemoveSale(saleToDelete.id.toString());
+      setShowDeleteModal(false);
+      setSaleToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setSaleToDelete(null);
+  };
+
   // Persistir referência de reset no localStorage
   useEffect(() => {
     if (resetReferenceDate && typeof window !== 'undefined') {
@@ -139,7 +160,7 @@ const SalesSectionContent = () => {
   return (
     <div className="flex flex-col gap-8">
       <div className="bg-white rounded-2xl p-8 shadow flex flex-col" style={{ minHeight: 120 }}>
-        <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registro de Vendas</span>
+        <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registrar Vendas</span>
         <div className="flex flex-col md:flex-row gap-4 items-center relative">
           <IoSearch
             style={{
@@ -153,7 +174,7 @@ const SalesSectionContent = () => {
           />
           <input
             type="text"
-            placeholder="Buscar produto pelo nome..."
+            placeholder="Digite o nome do produto que foi vendido..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             style={{
@@ -300,7 +321,7 @@ const SalesSectionContent = () => {
                       <td className="py-2 px-3 text-red-600">{sale.loss > 0 ? sale.loss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
                       <td className="py-2 px-3">
                         <button
-                          onClick={() => handleRemoveSale(sale.id)}
+                          onClick={() => handleDeleteClick(sale)}
                           className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                           title="Remover venda"
                         >
@@ -318,7 +339,7 @@ const SalesSectionContent = () => {
       {/* Box de Saldo Total */}
       <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start mt-2 relative" style={{ maxWidth: 320 }}>
         <div className="flex w-full items-center justify-between mb-2">
-          <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Total das Vendas</span>
+          <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Líquido das Vendas</span>
           <button
             onClick={() => setResetModalOpen(true)}
             className="p-1 rounded hover:bg-gray-100 transition"
@@ -354,6 +375,31 @@ const SalesSectionContent = () => {
                 className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
               >
                 Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de Confirmação de Exclusão */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Excluir venda</h2>
+            <p className="mb-12 text-gray-600">
+              Tem certeza que deseja excluir a venda do produto "{saleToDelete?.productName}"?
+            </p>
+            <div className="flex gap-4 w-full justify-center">
+              <button
+                onClick={handleCancelDelete}
+                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+              >
+                Excluir
               </button>
             </div>
           </div>

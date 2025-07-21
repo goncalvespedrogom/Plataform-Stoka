@@ -59,6 +59,8 @@ const RegisterSection = () => {
   // Estados para paginação
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   // Função para filtrar produtos baseado no termo de busca e categoria selecionada
   const filteredProducts = products.filter(product => {
@@ -321,6 +323,24 @@ const RegisterSection = () => {
     await removeProduct(productId);
   };
 
+  const handleDeleteClick = (product: Product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (productToDelete) {
+      await handleRemoveProduct(productToDelete.id.toString());
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
@@ -368,7 +388,7 @@ const RegisterSection = () => {
           className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]"
         >
           <HiFolderAdd size={26} className="align-middle flex-shrink-0 relative top-[-1px]" />
-          Adicionar
+          Adicionar um produto
         </button>
 
         {/* Filtro por Categoria */}
@@ -569,7 +589,7 @@ const RegisterSection = () => {
                       <IoPencil size={18} className="text-gray-500" />
                     </button>
                     <button
-                      onClick={() => handleRemoveProduct(product.id)}
+                      onClick={() => handleDeleteClick(product)}
                       className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Remover produto"
                     >
@@ -883,6 +903,31 @@ const RegisterSection = () => {
                 className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white cursor-pointer shadow hover:opacity-80 transition font-medium"
               >
                 Prosseguir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de Confirmação de Exclusão */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Excluir produto</h2>
+            <p className="mb-12 text-gray-600">
+              Tem certeza que deseja excluir o produto "{productToDelete?.name}"?
+            </p>
+            <div className="flex gap-4 w-full justify-center">
+              <button
+                onClick={handleCancelDelete}
+                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+              >
+                Excluir
               </button>
             </div>
           </div>

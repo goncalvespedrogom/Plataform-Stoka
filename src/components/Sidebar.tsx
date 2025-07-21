@@ -204,7 +204,7 @@ export default function Sidebar() {
               }`}
             >
               <FaClipboardList size={20} />
-              {isSidebarOpen && 'Registros'}
+              {isSidebarOpen && 'Produtos'}
             </a>
             <a 
               href="#" 
