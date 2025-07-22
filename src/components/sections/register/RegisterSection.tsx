@@ -22,7 +22,7 @@ const PRODUCT_CATEGORIES = [
   'Casa e Jardim',
   'Esportes',
   'Livros',
-  'Beleza e Saúde',
+  'Saúde',
   'Automotivo',
   'Brinquedos',
   'Ferramentas'

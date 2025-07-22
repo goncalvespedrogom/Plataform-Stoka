@@ -40,6 +40,9 @@ const SalesSectionContent = () => {
   const [resetReferenceDate, setResetReferenceDate] = useState<Date | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [saleToDelete, setSaleToDelete] = useState<Sale | null>(null);
+  // Estado para reset do saldo bruto
+  const [resetGrossModalOpen, setResetGrossModalOpen] = useState(false);
+  const [resetGrossReferenceDate, setResetGrossReferenceDate] = useState<Date | null>(null);
 
   // Calcular saldo total (lucro - prejuízo)
   const filteredSales = resetReferenceDate
@@ -49,6 +52,14 @@ const SalesSectionContent = () => {
       })
     : sales;
   const totalBalance = filteredSales.reduce((acc, sale) => acc + sale.profit - sale.loss, 0);
+  // Calcular Lucro Total (bruto) considerando reset próprio
+  const filteredGrossSales = resetGrossReferenceDate
+    ? sales.filter(sale => {
+        const saleDate = sale.saleDate instanceof Date ? sale.saleDate : new Date(sale.saleDate);
+        return saleDate > resetGrossReferenceDate;
+      })
+    : sales;
+  const totalGrossProfit = filteredGrossSales.reduce((acc, sale) => acc + (sale.salePrice * sale.quantity) - sale.loss, 0);
 
   // Busca produtos pelo nome
   const filteredProducts = products.filter(product =>
@@ -154,6 +165,19 @@ const SalesSectionContent = () => {
     if (typeof window !== 'undefined') {
       const ref = localStorage.getItem('salesResetReference');
       if (ref) setResetReferenceDate(new Date(ref));
+    }
+  }, []);
+  // Persistir referência de reset bruto no localStorage
+  useEffect(() => {
+    if (resetGrossReferenceDate && typeof window !== 'undefined') {
+      localStorage.setItem('salesGrossResetReference', resetGrossReferenceDate.toISOString());
+    }
+  }, [resetGrossReferenceDate]);
+  // Carregar referência de reset bruto ao montar
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const ref = localStorage.getItem('salesGrossResetReference');
+      if (ref) setResetGrossReferenceDate(new Date(ref));
     }
   }, []);
 
@@ -337,22 +361,42 @@ const SalesSectionContent = () => {
         )}
       </div>
       {/* Box de Saldo Total */}
-      <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start mt-2 relative" style={{ maxWidth: 320 }}>
-        <div className="flex w-full items-center justify-between mb-2">
-          <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Líquido das Vendas</span>
-          <button
-            onClick={() => setResetModalOpen(true)}
-            className="p-1 rounded hover:bg-gray-100 transition"
-            title="Zerar saldo total"
-          >
-            <RxUpdate size={22} className="text-gray-400" />
-          </button>
+      <div className="flex flex-row gap-4 mt-2">
+        <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start relative flex-1" style={{ maxWidth: 320 }}>
+          <div className="flex w-full items-center justify-between mb-2">
+            <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Líquido</span>
+            <button
+              onClick={() => setResetModalOpen(true)}
+              className="p-1 rounded hover:bg-gray-100 transition"
+              title="Zerar saldo total"
+            >
+              <RxUpdate size={22} className="text-gray-400" />
+            </button>
+          </div>
+          <span className={
+            totalBalance > 0 ? 'text-green-600 font-bold text-xl' : totalBalance < 0 ? 'text-red-600 font-bold text-xl' : 'text-gray-600 font-bold text-xl'
+          }>
+            {totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </span>
         </div>
-        <span className={
-          totalBalance > 0 ? 'text-green-600 font-bold text-xl' : totalBalance < 0 ? 'text-red-600 font-bold text-xl' : 'text-gray-600 font-bold text-xl'
-        }>
-          {totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-        </span>
+        {/* Box de Lucro Total (Bruto) */}
+        <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start relative flex-1" style={{ maxWidth: 320 }}>
+          <div className="flex w-full items-center justify-between mb-2">
+            <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Bruto</span>
+            <button
+              onClick={() => setResetGrossModalOpen(true)}
+              className="p-1 rounded hover:bg-gray-100 transition"
+              title="Zerar saldo bruto"
+            >
+              <RxUpdate size={22} className="text-gray-400" />
+            </button>
+          </div>
+          <span className={
+            totalGrossProfit > 0 ? 'text-green-600 font-bold text-xl' : totalGrossProfit < 0 ? 'text-red-600 font-bold text-xl' : 'text-gray-600 font-bold text-xl'
+          }>
+            {totalGrossProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </span>
+        </div>
       </div>
       {/* Modal de confirmação de reset do saldo total */}
       {resetModalOpen && (
@@ -371,6 +415,32 @@ const SalesSectionContent = () => {
                 onClick={() => {
                   setResetReferenceDate(new Date());
                   setResetModalOpen(false);
+                }}
+                className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de confirmação de reset do saldo bruto */}
+      {resetGrossModalOpen && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] flex flex-col gap-2 shadow">
+            <span className="text-lg font-medium text-gray-700">Deseja realmente zerar o saldo bruto?</span>
+            <span className="text-gray-500 text-sm">O saldo bruto será zerado e passará a contar apenas para as próximas vendas.</span>
+            <div className="flex gap-3 justify-end pt-6">
+              <button
+                onClick={() => setResetGrossModalOpen(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setResetGrossReferenceDate(new Date());
+                  setResetGrossModalOpen(false);
                 }}
                 className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
               >
