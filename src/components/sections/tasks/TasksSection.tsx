@@ -275,19 +275,47 @@ const TasksSection = () => {
           <thead>
             <tr className="bg-[#f5f6fa] text-xs">
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tl-2xl text-gray-600">
-                <button onClick={() => requestSort('title')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-sm">
+                <button onClick={() => requestSort('title')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Título
                   {sortConfig.key === 'title' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Prioridade</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Status</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Vencimento</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Criada em</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Descrição</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600 text-sm">Ações</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('priority')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
+                  Prioridade
+                  {sortConfig.key === 'priority' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('status')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
+                  Status
+                  {sortConfig.key === 'status' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('dueDate')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
+                  Vencimento
+                  {sortConfig.key === 'dueDate' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('createdAt')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
+                  Criada em
+                  {sortConfig.key === 'createdAt' ? (
+                    sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
+                  ) : <IoChevronDown className="text-gray-300" />}
+                </button>
+              </th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600 text-xs">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -414,7 +442,7 @@ const TasksSection = () => {
             </div>
             <div className="flex justify-end gap-3 mt-4">
               <button type="button" onClick={handleModalClose} className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition">Cancelar</button>
-              <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 transition-colors text-sm">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
+              <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 font-medium transition-colors text-sm">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
             </div>
           </div>
         </div>

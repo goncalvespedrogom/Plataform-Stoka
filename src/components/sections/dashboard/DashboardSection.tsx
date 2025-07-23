@@ -631,9 +631,11 @@ const DashboardSection = () => {
           </span>
           {/* Gráfico circular de saldo bruto x líquido */}
           {sales.length === 0 ? (
-            <span style={{ color: "#bbb", fontSize: 13, marginTop: 16 }}>
-              Nenhuma venda registrada.
-            </span>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: 68, minHeight: 120 }}>
+              <span style={{ color: "#bbb", fontSize: 13 }}>
+                Nenhuma venda registrada.
+              </span>
+            </div>
           ) : (
             <>
               {(() => {
@@ -1352,7 +1354,7 @@ const DashboardSection = () => {
                 );
               })()
             ) : (
-              <span style={{ color: "#999", fontSize: 14, marginTop: 32 }}>
+              <span style={{ color: "#bbb", fontSize: 13, marginTop: 32 }}>
                 Nenhum produto registrado.
               </span>
             )
@@ -1976,8 +1978,9 @@ const DashboardSection = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   height: "100%",
-                  color: "#999",
+                  color: "#bbb",
                   fontSize: 13,
+                  marginTop: -10,
                 }}
               >
                 <span>Nenhuma tarefa encontrada</span>
@@ -2099,7 +2102,7 @@ const DashboardSection = () => {
             {tasks.length === 0 && (
               <div
                 style={{
-                  color: "#999",
+                  color: "#bbb",
                   fontSize: 13,
                   textAlign: "center",
                   padding: 24,
