@@ -25,7 +25,9 @@ const PRODUCT_CATEGORIES = [
   'Saúde',
   'Automotivo',
   'Brinquedos',
-  'Ferramentas'
+  'Ferramentas',
+  'Papelaria',
+  'Pet Shop'
 ];
 
 // Função utilitária para capitalizar apenas a primeira letra da primeira palavra

@@ -28,8 +28,11 @@ import { useSalesContext } from "../sales/SalesContext";
 import { IoSearch } from "react-icons/io5";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../hooks/useAuth";
-import { useStockSnapshotAuto, getAllSnapshotsByUser } from '../../../hooks/useStockSnapshot';
-import { StockSnapshot } from '../../../types/StockSnapshot';
+import {
+  useStockSnapshotAuto,
+  getAllSnapshotsByUser,
+} from "../../../hooks/useStockSnapshot";
+import { StockSnapshot } from "../../../types/StockSnapshot";
 
 const DashboardSection = () => {
   // TODOS os hooks devem ser declarados aqui no topo!
@@ -77,6 +80,8 @@ const DashboardSection = () => {
     "Automotivo",
     "Brinquedos",
     "Ferramentas",
+    "Papelaria",
+    "Pet Shop",
   ];
   // Cálculo de categoriasData para garantir todas as categorias
   let categoriasData = todasCategorias.map((categoria) => {
@@ -341,9 +346,9 @@ const DashboardSection = () => {
             borderRadius: 8,
             padding: "6px 14px",
             fontWeight: 600,
-            fontSize: 14,
+            fontSize: 12,
             color: "#333",
-            boxShadow: "0 2px 8px #eee",
+            boxShadow: "1px 2px 5px #bbb",
             minWidth: 90,
           }}
         >
@@ -379,12 +384,12 @@ const DashboardSection = () => {
         >
           <span
             className="text-gray-400"
-            style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}
+            style={{ fontSize: 14, fontWeight: 500, marginBottom: 20 }}
           >
             Itens do Estoque por Categoria
           </span>
           {categoriasData.length === 0 ? (
-            <span style={{ color: "#bbb", fontSize: 15, marginTop: 16 }}>
+            <span style={{ color: "#bbb", fontSize: 14, marginTop: 16 }}>
               Nenhum produto cadastrado.
             </span>
           ) : (
@@ -457,15 +462,15 @@ const DashboardSection = () => {
                       <span
                         style={{
                           position: "absolute",
-                          left: 0,
-                          top: 0,
+                          left: 2,
+                          top: 2,
                           width: "88px",
                           height: "88px",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           fontWeight: 700,
-                          fontSize: 15,
+                          fontSize: 14,
                           color: "#888",
                           pointerEvents: "none",
                         }}
@@ -509,7 +514,7 @@ const DashboardSection = () => {
                       borderRadius: "50%",
                       cursor:
                         totalPaginasCategorias <= 1 ? "not-allowed" : "pointer",
-                      fontSize: 16,
+                      fontSize: 14,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -538,7 +543,7 @@ const DashboardSection = () => {
                     </svg>
                   </button>
                   <span
-                    style={{ fontSize: 12, color: "#616161", fontWeight: 500 }}
+                    style={{ fontSize: 11, color: "#616161", fontWeight: 500 }}
                   >
                     {currentCategoryPage + 1} de {totalPaginasCategorias}
                   </span>
@@ -553,7 +558,7 @@ const DashboardSection = () => {
                       borderRadius: "50%",
                       cursor:
                         totalPaginasCategorias <= 1 ? "not-allowed" : "pointer",
-                      fontSize: 16,
+                      fontSize: 14,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -606,7 +611,7 @@ const DashboardSection = () => {
           <span
             className="text-gray-400"
             style={{
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: 500,
               marginBottom: 32,
               textAlign: "left",
@@ -617,7 +622,7 @@ const DashboardSection = () => {
           </span>
           {/* Gráfico circular de saldo bruto x líquido */}
           {sales.length === 0 ? (
-            <span style={{ color: "#bbb", fontSize: 15, marginTop: 16 }}>
+            <span style={{ color: "#bbb", fontSize: 13, marginTop: 16 }}>
               Nenhuma venda registrada.
             </span>
           ) : (
@@ -668,7 +673,11 @@ const DashboardSection = () => {
                         marginRight: 16,
                       }}
                     >
-                      <PieChart width={140} height={140} style={{ display: "block", margin: "0 auto" }}>
+                      <PieChart
+                        width={140}
+                        height={140}
+                        style={{ display: "block", margin: "0 auto" }}
+                      >
                         <Pie
                           data={saldoData}
                           dataKey="value"
@@ -681,12 +690,14 @@ const DashboardSection = () => {
                           onMouseEnter={() => setSaldoTooltipActive(true)}
                           onMouseLeave={() => setSaldoTooltipActive(false)}
                           cornerRadius={10} // borda arredondada
-                          paddingAngle={4}  // espaço entre as fatias
+                          paddingAngle={4} // espaço entre as fatias
                         >
                           {saldoData.map((entry, idx) => (
                             <Cell
                               key={entry.name}
-                              fill={donutColorsSaldo[idx % donutColorsSaldo.length]}
+                              fill={
+                                donutColorsSaldo[idx % donutColorsSaldo.length]
+                              }
                             />
                           ))}
                         </Pie>
@@ -707,7 +718,7 @@ const DashboardSection = () => {
                             alignItems: "center",
                             justifyContent: "center",
                             fontWeight: 600,
-                            fontSize: 14,
+                            fontSize: 13,
                             color: "#888",
                             pointerEvents: "none",
                             textAlign: "center",
@@ -892,7 +903,7 @@ const DashboardSection = () => {
           <span
             className="text-gray-400"
             style={{
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: 500,
               marginBottom: 32,
               textAlign: "left",
@@ -917,31 +928,46 @@ const DashboardSection = () => {
             const hoje = new Date();
             const diaSemanaHoje = hoje.getDay() === 0 ? 6 : hoje.getDay() - 1; // 0=Domingo, 1=Segunda...
             // Para cada dia da semana, encontrar o snapshot mais recente daquele dia
-            const snapshotByWeekday: { [idx: number]: { date: string, totalQuantity: number } } = {};
+            const snapshotByWeekday: {
+              [idx: number]: { date: string; totalQuantity: number };
+            } = {};
             for (let idx = 0; idx < 7; idx++) {
               // Para o dia atual, snapshot de hoje (ou estoque atual)
               if (idx === diaSemanaHoje) continue;
               // Procurar o snapshot mais recente daquele dia da semana, cuja data seja anterior a hoje
-              const snap = snapshots.find(s => {
+              const snap = snapshots.find((s) => {
                 const d = new Date(s.date);
                 const weekDay = d.getDay() === 0 ? 6 : d.getDay() - 1;
                 // Data do snapshot deve ser < hoje
-                return weekDay === idx && d < new Date(hoje.toISOString().slice(0, 10));
+                return (
+                  weekDay === idx &&
+                  d < new Date(hoje.toISOString().slice(0, 10))
+                );
               });
               if (snap) {
-                snapshotByWeekday[idx] = { date: snap.date, totalQuantity: snap.maxQuantity ?? snap.totalQuantity };
+                snapshotByWeekday[idx] = {
+                  date: snap.date,
+                  totalQuantity: snap.maxQuantity ?? snap.totalQuantity,
+                };
               }
             }
             // Estoque atual
-            const totalEstoqueAtual = products.reduce((acc, p) => acc + p.quantity, 0);
+            const totalEstoqueAtual = products.reduce(
+              (acc, p) => acc + p.quantity,
+              0
+            );
             // Montar dados do gráfico para os 7 dias
             const maxEstoquePorDia = diasSemana.map((dia, idx) => {
               // Para o dia atual, mostrar o pico do snapshot de hoje (se houver), senão estoque atual
               if (idx === diaSemanaHoje) {
-                const snapHoje = snapshots.find(s => s.date === hoje.toISOString().slice(0, 10));
+                const snapHoje = snapshots.find(
+                  (s) => s.date === hoje.toISOString().slice(0, 10)
+                );
                 return {
                   dia,
-                  quantidade: snapHoje ? (snapHoje.maxQuantity ?? snapHoje.totalQuantity) : totalEstoqueAtual,
+                  quantidade: snapHoje
+                    ? snapHoje.maxQuantity ?? snapHoje.totalQuantity
+                    : totalEstoqueAtual,
                   isHoje: true,
                 };
               }
@@ -966,7 +992,7 @@ const DashboardSection = () => {
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis
                       dataKey="dia"
-                      tick={{ fontSize: 13, fill: "#666", fontWeight: 500 }}
+                      tick={{ fontSize: 12, fill: "#666", fontWeight: 500 }}
                       axisLine={false}
                       tickLine={false}
                     />
@@ -989,13 +1015,14 @@ const DashboardSection = () => {
                                 borderRadius: 8,
                                 padding: "6px 14px",
                                 fontWeight: 600,
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: "#333",
-                                boxShadow: "0 2px 8px #eee",
+                                boxShadow: "1px 2px 5px #bbb",
                                 minWidth: 90,
                               }}
                             >
-                              {payload[0].payload.dia}: <b>{payload[0].value}</b> itens
+                              {payload[0].payload.dia}:{" "}
+                              <b>{payload[0].value}</b> itens
                             </div>
                           );
                         }
@@ -1053,13 +1080,13 @@ const DashboardSection = () => {
                 position: "absolute",
                 top: 24,
                 left: 24,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 500,
               }}
             >
               Produtos Registrados
             </span>
-            <span style={{ fontWeight: "bold", fontSize: 40, marginTop: 28 }}>
+            <span style={{ fontWeight: "bold", fontSize: 38, marginTop: 28 }}>
               {isClient ? products.length : ""}
             </span>
           </div>
@@ -1083,13 +1110,13 @@ const DashboardSection = () => {
                 position: "absolute",
                 top: 24,
                 left: 24,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 500,
               }}
             >
               Itens Registrados
             </span>
-            <span style={{ fontWeight: "bold", fontSize: 40, marginTop: 28 }}>
+            <span style={{ fontWeight: "bold", fontSize: 38, marginTop: 28 }}>
               {isClient ? totalItens : ""}
             </span>
           </div>
@@ -1116,7 +1143,7 @@ const DashboardSection = () => {
               position: "absolute",
               top: 24,
               left: 24,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 500,
             }}
           >
@@ -1158,14 +1185,14 @@ const DashboardSection = () => {
                           style={{
                             color: "#363636",
                             fontWeight: 500,
-                            fontSize: 17,
+                            fontSize: 15,
                             marginTop: 2,
                           }}
                         >
                           {last.quantity}
                         </span>
                         <span
-                          style={{ color: "#888", fontSize: 13, marginTop: 2 }}
+                          style={{ color: "#888", fontSize: 12, marginTop: 2 }}
                         >
                           Quantidade
                         </span>
@@ -1188,14 +1215,14 @@ const DashboardSection = () => {
                           style={{
                             color: "#363636",
                             fontWeight: 500,
-                            fontSize: 17,
+                            fontSize: 15,
                             marginTop: 2,
                           }}
                         >
                           {formatarReal(last.unitPrice)}
                         </span>
                         <span
-                          style={{ color: "#888", fontSize: 13, marginTop: 2 }}
+                          style={{ color: "#888", fontSize: 12, marginTop: 2 }}
                         >
                           Valor Unitário
                         </span>
@@ -1218,14 +1245,14 @@ const DashboardSection = () => {
                           style={{
                             color: "#363636",
                             fontWeight: 500,
-                            fontSize: 17,
+                            fontSize: 15,
                             marginTop: 2,
                           }}
                         >
                           {formatarReal(valorTotal)}
                         </span>
                         <span
-                          style={{ color: "#888", fontSize: 13, marginTop: 2 }}
+                          style={{ color: "#888", fontSize: 12, marginTop: 2 }}
                         >
                           Valor Total
                         </span>
@@ -1266,14 +1293,14 @@ const DashboardSection = () => {
                           style={{
                             color: "#363636",
                             fontWeight: 500,
-                            fontSize: 17,
+                            fontSize: 15,
                             marginTop: 2,
                           }}
                         >
                           {new Date(last.date).toLocaleDateString("pt-BR")}
                         </span>
                         <span
-                          style={{ color: "#888", fontSize: 13, marginTop: 2 }}
+                          style={{ color: "#888", fontSize: 12, marginTop: 2 }}
                         >
                           Data
                         </span>
@@ -1297,7 +1324,7 @@ const DashboardSection = () => {
                       <span
                         style={{
                           fontWeight: 600,
-                          fontSize: 18,
+                          fontSize: 17,
                           color: "#333",
                           marginBottom: 6,
                         }}
@@ -1305,7 +1332,7 @@ const DashboardSection = () => {
                         {last.name}
                       </span>
                       <span
-                        style={{ color: "#666", fontSize: 14, lineHeight: 1.5 }}
+                        style={{ color: "#666", fontSize: 13, lineHeight: 1.5 }}
                       >
                         {last.description || (
                           <span style={{ color: "#bbb" }}>Sem descrição.</span>
@@ -1316,7 +1343,7 @@ const DashboardSection = () => {
                 );
               })()
             ) : (
-              <span style={{ color: "#999", fontSize: 15, marginTop: 32 }}>
+              <span style={{ color: "#999", fontSize: 14, marginTop: 32 }}>
                 Nenhum produto registrado.
               </span>
             )
@@ -1362,7 +1389,7 @@ const DashboardSection = () => {
                 padding: "8px 14px",
                 borderRadius: 8,
                 border: "1px solid #e0e0e0",
-                fontSize: 14,
+                fontSize: 13,
                 outline: "none",
                 boxSizing: "border-box",
                 marginBottom: 12,
@@ -1387,7 +1414,7 @@ const DashboardSection = () => {
                 flex: 1,
               }}
             >
-              <span style={{ color: "#bbb", fontSize: 14 }}>
+              <span style={{ color: "#bbb", fontSize: 13 }}>
                 Digite para buscar um produto ou tarefa.
               </span>
             </div>
@@ -1411,14 +1438,14 @@ const DashboardSection = () => {
                 <span
                   style={{
                     fontWeight: 600,
-                    fontSize: 18,
+                    fontSize: 16,
                     color: "#333",
                     marginBottom: 6,
                   }}
                 >
                   {searchResult.data.name}
                 </span>
-                <span style={{ color: "#666", fontSize: 14, lineHeight: 1.5 }}>
+                <span style={{ color: "#666", fontSize: 13, lineHeight: 1.5 }}>
                   {searchResult.data.description || (
                     <span style={{ color: "#bbb" }}>Sem descrição.</span>
                   )}
@@ -1450,13 +1477,13 @@ const DashboardSection = () => {
                       style={{
                         color: "#363636",
                         fontWeight: 500,
-                        fontSize: 17,
+                        fontSize: 15,
                         marginTop: 2,
                       }}
                     >
                       {searchResult.data.quantity}
                     </span>
-                    <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                    <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                       Quantidade
                     </span>
                   </div>
@@ -1478,13 +1505,13 @@ const DashboardSection = () => {
                       style={{
                         color: "#363636",
                         fontWeight: 500,
-                        fontSize: 17,
+                        fontSize: 15,
                         marginTop: 2,
                       }}
                     >
                       {formatarReal(searchResult.data.unitPrice)}
                     </span>
-                    <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                    <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                       Valor Unitário
                     </span>
                   </div>
@@ -1506,7 +1533,7 @@ const DashboardSection = () => {
                       style={{
                         color: "#363636",
                         fontWeight: 500,
-                        fontSize: 17,
+                        fontSize: 15,
                         marginTop: 2,
                       }}
                     >
@@ -1514,7 +1541,7 @@ const DashboardSection = () => {
                         searchResult.data.unitPrice * searchResult.data.quantity
                       )}
                     </span>
-                    <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                    <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                       Valor Total
                     </span>
                   </div>
@@ -1554,7 +1581,7 @@ const DashboardSection = () => {
                       style={{
                         color: "#363636",
                         fontWeight: 500,
-                        fontSize: 17,
+                        fontSize: 15,
                         marginTop: 2,
                       }}
                     >
@@ -1562,7 +1589,7 @@ const DashboardSection = () => {
                         "pt-BR"
                       )}
                     </span>
-                    <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                    <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                       Data
                     </span>
                   </div>
@@ -1587,14 +1614,14 @@ const DashboardSection = () => {
                 <span
                   style={{
                     fontWeight: 600,
-                    fontSize: 18,
+                    fontSize: 16,
                     color: "#333",
                     marginBottom: 6,
                   }}
                 >
                   {searchResult.data.title}
                 </span>
-                <span style={{ color: "#666", fontSize: 14, lineHeight: 1.5 }}>
+                <span style={{ color: "#666", fontSize: 13, lineHeight: 1.5 }}>
                   {searchResult.data.description || (
                     <span style={{ color: "#bbb" }}>Sem descrição.</span>
                   )}
@@ -1604,7 +1631,7 @@ const DashboardSection = () => {
                     style={{
                       padding: "4px 8px",
                       borderRadius: 12,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: "bold",
                       background:
                         searchResult.data.status === "concluída"
@@ -1625,7 +1652,7 @@ const DashboardSection = () => {
                     style={{
                       padding: "4px 8px",
                       borderRadius: 12,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: "bold",
                       background:
                         searchResult.data.priority === "alta"
@@ -1640,7 +1667,7 @@ const DashboardSection = () => {
                       searchResult.data.priority.slice(1)}
                   </span>
                 </div>
-                <div style={{ fontSize: 13, color: "#999", marginTop: 12 }}>
+                <div style={{ fontSize: 12, color: "#999", marginTop: 12 }}>
                   Criada em:{" "}
                   {new Date(searchResult.data.createdAt).toLocaleDateString(
                     "pt-BR"
@@ -1657,7 +1684,7 @@ const DashboardSection = () => {
               </div>
             )
           ) : (
-            <span style={{ color: "#999", fontSize: 15, marginTop: 32 }}>
+            <span style={{ color: "#bbb", fontSize: 13, marginTop: 76 }}>
               Nenhum produto ou tarefa encontrado.
             </span>
           )}
@@ -1682,7 +1709,7 @@ const DashboardSection = () => {
               position: "absolute",
               top: 24,
               left: 24,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 500,
             }}
           >
@@ -1693,7 +1720,7 @@ const DashboardSection = () => {
           <div
             style={{
               position: "absolute",
-              top: 24,
+              top: 22,
               right: 24,
               display: "flex",
               gap: "8px",
@@ -1757,7 +1784,7 @@ const DashboardSection = () => {
                       style={{
                         padding: "4px 8px",
                         borderRadius: 12,
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: "bold",
                         background:
                           filteredTasks[currentTaskIndex].status === "concluída"
@@ -1780,7 +1807,7 @@ const DashboardSection = () => {
                       style={{
                         padding: "4px 8px",
                         borderRadius: 12,
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: "bold",
                         background:
                           filteredTasks[currentTaskIndex].priority === "alta"
@@ -1801,7 +1828,7 @@ const DashboardSection = () => {
 
                   <h3
                     style={{
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: "bold",
                       margin: 0,
                       color: "#333",
@@ -1812,7 +1839,7 @@ const DashboardSection = () => {
 
                   <p
                     style={{
-                      fontSize: 14,
+                      fontSize: 13,
                       color: "#666",
                       margin: 0,
                       lineHeight: 1.5,
@@ -1858,7 +1885,7 @@ const DashboardSection = () => {
                       borderRadius: "50%",
                       cursor:
                         filteredTasks.length <= 1 ? "not-allowed" : "pointer",
-                      fontSize: 16,
+                      fontSize: 15,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1887,7 +1914,7 @@ const DashboardSection = () => {
                     </svg>
                   </button>
                   <span
-                    style={{ fontSize: 12, color: "#616161", fontWeight: 500 }}
+                    style={{ fontSize: 11, color: "#616161", fontWeight: 500 }}
                   >
                     {currentTaskIndex + 1} de {filteredTasks.length}
                   </span>
@@ -1902,7 +1929,7 @@ const DashboardSection = () => {
                       borderRadius: "50%",
                       cursor:
                         filteredTasks.length <= 1 ? "not-allowed" : "pointer",
-                      fontSize: 16,
+                      fontSize: 15,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1941,11 +1968,11 @@ const DashboardSection = () => {
                   justifyContent: "center",
                   height: "100%",
                   color: "#999",
-                  fontSize: 14,
+                  fontSize: 13,
                 }}
               >
                 <span>Nenhuma tarefa encontrada</span>
-                <span style={{ fontSize: 12, marginTop: 4 }}>
+                <span style={{ fontSize: 11, marginTop: 4 }}>
                   {taskFilter === "todas"
                     ? "Adicione tarefas para começar"
                     : `Nenhuma tarefa ${taskFilter}`}
@@ -1973,7 +2000,7 @@ const DashboardSection = () => {
               position: "absolute",
               top: 24,
               left: 24,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 500,
             }}
           >
@@ -2064,7 +2091,7 @@ const DashboardSection = () => {
               <div
                 style={{
                   color: "#999",
-                  fontSize: 14,
+                  fontSize: 13,
                   textAlign: "center",
                   padding: 24,
                 }}
@@ -2108,7 +2135,7 @@ const DashboardSection = () => {
                 position: "absolute",
                 top: 24,
                 left: 24,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 500,
               }}
             >
@@ -2117,7 +2144,7 @@ const DashboardSection = () => {
             <span
               style={{
                 fontWeight: "bold",
-                fontSize: 32,
+                fontSize: 30,
                 marginTop: 28,
                 color:
                   saldoTotal > 0
@@ -2151,7 +2178,7 @@ const DashboardSection = () => {
                 position: "absolute",
                 top: 24,
                 left: 24,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 500,
               }}
             >
@@ -2160,7 +2187,7 @@ const DashboardSection = () => {
             <span
               style={{
                 fontWeight: "bold",
-                fontSize: 32,
+                fontSize: 30,
                 marginTop: 28,
                 color:
                   saldoSemanal > 0
@@ -2196,7 +2223,7 @@ const DashboardSection = () => {
               position: "absolute",
               top: 24,
               left: 24,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 500,
             }}
           >
@@ -2232,13 +2259,13 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
                     {ultimaVenda.quantity}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Quantidade
                   </span>
                 </div>
@@ -2260,13 +2287,13 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
                     {formatarReal(ultimaVenda.salePrice)}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Valor Unitário
                   </span>
                 </div>
@@ -2288,13 +2315,13 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
                     {formatarReal(ultimaVenda.salePrice * ultimaVenda.quantity)}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Valor Total
                   </span>
                 </div>
@@ -2334,13 +2361,13 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
                     {new Date(ultimaVenda.saleDate).toLocaleDateString("pt-BR")}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Data
                   </span>
                 </div>
@@ -2362,7 +2389,7 @@ const DashboardSection = () => {
                 <span
                   style={{
                     fontWeight: 600,
-                    fontSize: 18,
+                    fontSize: 16,
                     color: "#333",
                     marginBottom: 6,
                   }}
@@ -2372,7 +2399,7 @@ const DashboardSection = () => {
                 <span
                   style={{
                     color: "#666",
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: 400,
                     lineHeight: 1.5,
                   }}
@@ -2387,7 +2414,7 @@ const DashboardSection = () => {
                           ? "#ef4444"
                           : "#888",
                       fontWeight: 600,
-                      fontSize: 14,
+                      fontSize: 13,
                     }}
                   >
                     {formatarReal(ultimaVenda.profit - ultimaVenda.loss)}
@@ -2396,7 +2423,7 @@ const DashboardSection = () => {
               </div>
             </>
           ) : (
-            <span style={{ color: "#999", fontSize: 15, marginTop: 32 }}>
+            <span style={{ color: "#bbb", fontSize: 13, marginTop: 32 }}>
               Nenhuma venda registrada.
             </span>
           )}
@@ -2440,7 +2467,7 @@ const DashboardSection = () => {
                 padding: "8px 14px",
                 borderRadius: 8,
                 border: "1px solid #e0e0e0",
-                fontSize: 14,
+                fontSize: 13,
                 outline: "none",
                 boxSizing: "border-box",
                 marginBottom: 12,
@@ -2464,7 +2491,7 @@ const DashboardSection = () => {
                 flex: 1,
               }}
             >
-              <span style={{ color: "#bbb", fontSize: 14 }}>
+              <span style={{ color: "#bbb", fontSize: 13 }}>
                 Digite para buscar uma venda.
               </span>
             </div>
@@ -2486,7 +2513,7 @@ const DashboardSection = () => {
               <span
                 style={{
                   fontWeight: 600,
-                  fontSize: 18,
+                  fontSize: 16,
                   color: "#333",
                   marginBottom: 6,
                 }}
@@ -2496,7 +2523,7 @@ const DashboardSection = () => {
               <span
                 style={{
                   color: "#666",
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: 500,
                   lineHeight: 1.5,
                 }}
@@ -2545,13 +2572,13 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
                     {searchVendaResult.quantity}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Quantidade
                   </span>
                 </div>
@@ -2573,13 +2600,13 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
                     {formatarReal(searchVendaResult.salePrice)}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Valor Unitário
                   </span>
                 </div>
@@ -2601,7 +2628,7 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
@@ -2609,7 +2636,7 @@ const DashboardSection = () => {
                       searchVendaResult.salePrice * searchVendaResult.quantity
                     )}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Valor Total
                   </span>
                 </div>
@@ -2649,7 +2676,7 @@ const DashboardSection = () => {
                     style={{
                       color: "#363636",
                       fontWeight: 500,
-                      fontSize: 17,
+                      fontSize: 15,
                       marginTop: 2,
                     }}
                   >
@@ -2657,7 +2684,7 @@ const DashboardSection = () => {
                       "pt-BR"
                     )}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13, marginTop: 2 }}>
+                  <span style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
                     Data
                   </span>
                 </div>
