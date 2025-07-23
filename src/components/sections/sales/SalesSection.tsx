@@ -184,7 +184,7 @@ const SalesSectionContent = () => {
   return (
     <div className="flex flex-col gap-8">
       <div className="bg-white rounded-2xl p-8 shadow flex flex-col" style={{ minHeight: 120 }}>
-        <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registrar Vendas</span>
+        <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registrar Vendas</span>
         <div className="flex flex-col md:flex-row gap-4 items-center relative">
           <IoSearch
             style={{
@@ -208,7 +208,7 @@ const SalesSectionContent = () => {
               padding: '8px 14px',
               borderRadius: 8,
               border: '1px solid #e0e0e0',
-              fontSize: 14,
+              fontSize: 13,
               outline: 'none',
               boxSizing: 'border-box',
               marginBottom: 12,
@@ -223,17 +223,17 @@ const SalesSectionContent = () => {
         {searchTerm && (
           <div className="flex flex-col pt-2 gap-4 mt-4 overflow-y-auto" style={{ maxHeight: 3 * 72 + 16 }}>
             {filteredProducts.length === 0 && (
-              <span className="text-gray-400">Nenhum produto encontrado.</span>
+              <span className="text-gray-400 text-sm ml-0.5">Nenhum produto encontrado.</span>
             )}
             {filteredProducts.slice(0, 3).map(product => (
               <div key={product.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 shadow-sm">
                 <div>
-                  <div className="font-semibold text-lg text-gray-700">{product.name}</div>
+                  <div className="font-semibold text-base text-gray-700">{product.name}</div>
                   <div className="text-sm text-gray-500">{product.description || 'Sem descrição.'}</div>
-                  <div className="text-xs text-gray-400">Estoque: {product.quantity} | Valor unitário: R$ {product.unitPrice.toFixed(2)}</div>
+                  <div className="text-xs text-gray-400 mt-2">Estoque: {product.quantity} | Valor unitário: R$ {product.unitPrice.toFixed(2)}</div>
                 </div>
                 <button
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:opacity-80 transition"
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:opacity-80 transition text-sm"
                   onClick={() => handleRegisterSale(product)}
                   disabled={product.quantity === 0}
                   title={product.quantity === 0 ? 'Sem estoque' : 'Registrar venda'}
@@ -249,21 +249,21 @@ const SalesSectionContent = () => {
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
             <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow">
               <div className="flex flex-col gap-1">
-                <label className="text-gray-600 text-sm font-medium">Produto</label>
-                <div className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222]">{selectedProduct.name}</div>
+                <label className="text-gray-600 text-xs font-medium">Produto</label>
+                <div className="w-full text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222]">{selectedProduct.name}</div>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-gray-600 text-sm font-medium">Valor unitário da venda <span className="text-red-500">*</span></label>
+                <label className="text-gray-600 text-xs font-medium">Valor unitário da venda <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   placeholder="R$ 0,00"
                   value={formattedSalePrice}
                   onChange={handleSalePriceChange}
-                  className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-gray-600 text-sm font-medium">Quantidade <span className="text-red-500">*</span></label>
+                <label className="text-gray-600 text-xs font-medium">Quantidade <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <input
                     type="number"
@@ -281,7 +281,7 @@ const SalesSectionContent = () => {
                       }
                       if (error) setError('');
                     }}
-                    className={`w-full appearance-none px-3 py-2 rounded-lg border pr-10 sm:text-sm border-[#e0e0e0] bg-[#f5f6fa] ${saleQuantity === 0 ? 'text-gray-400' : 'text-[#222]'} focus:outline-none focus:ring-2 focus:ring-gray-300`}
+                    className={`w-full appearance-none px-3 py-2 rounded-lg border pr-10 text-sm border-[#e0e0e0] bg-[#f5f6fa] ${saleQuantity === 0 ? 'text-gray-400' : 'text-[#222]'} focus:outline-none focus:ring-2 focus:ring-gray-300`}
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-[.55rem] pointer-events-none">
                     {/* Espaço reservado para ícone se quiser adicionar */}
@@ -289,17 +289,17 @@ const SalesSectionContent = () => {
                 </div>
                 <div className="text-xs text-gray-500 mt-1">Quantidade disponível: {selectedProduct.quantity}</div>
               </div>
-              {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+              {error && <span className="text-red-500 text-[11px] mt-1">{error}</span>}
               <div className="flex gap-3 justify-end pt-4">
                 <button
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-[#231f20] cursor-pointer hover:bg-gray-100 transition"
+                  className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleConfirmSale}
-                  className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white cursor-pointer shadow hover:opacity-80 transition font-medium"
+                  className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white cursor-pointer shadow hover:opacity-80 transition font-medium text-sm"
                 >
                   Registrar
                 </button>
@@ -310,43 +310,43 @@ const SalesSectionContent = () => {
       </div>
       {/* Listagem de vendas */}
       <div className="bg-white rounded-2xl p-8 shadow flex flex-col">
-        <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Histórico de Vendas</span>
+        <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Histórico de Vendas</span>
         {sales.length === 0 ? (
-          <span className="text-gray-400">Nenhuma venda registrada ainda.</span>
+          <span className="text-gray-400 text-sm">Nenhuma venda registrada ainda.</span>
         ) : (
           <div className="border border-gray-200 rounded-2xl overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#f5f6fa]">
-                  <th className="py-2 px-3 font-medium text-gray-600 rounded-tl-2xl">Produto</th>
-                  <th className="py-2 px-3 font-medium text-gray-600">Data</th>
-                  <th className="py-2 px-3 font-medium text-gray-600">Quantidade</th>
-                  <th className="py-2 px-3 font-medium text-gray-600">Valor unitário da venda</th>
-                  <th className="py-2 px-3 font-medium text-gray-600">Total</th>
-                  <th className="py-2 px-3 font-medium text-gray-600">Lucro</th>
-                  <th className="py-2 px-3 font-medium text-gray-600">Prejuízo</th>
-                  <th className="py-2 px-3 font-medium text-gray-600 rounded-tr-2xl">Ações</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 rounded-tl-2xl text-xs">Produto</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 text-xs">Data</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 text-xs">Quantidade</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 text-xs">Valor unitário da venda</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 text-xs">Total</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 text-xs">Lucro</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 text-xs">Prejuízo</th>
+                  <th className="py-2 px-3 font-medium text-gray-600 rounded-tr-2xl text-xs">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {sales.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center text-gray-400 py-6">Nenhuma venda registrada.</td>
+                    <td colSpan={8} className="text-center text-gray-400 py-6 text-sm">Nenhuma venda registrada.</td>
                   </tr>
                 ) : (
                   sales.map((sale) => (
                     <tr key={sale.id} className="border-t">
-                      <td className="py-2 px-3">{sale.productName}</td>
-                      <td className="py-2 px-3">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
-                      <td className="py-2 px-3">{sale.quantity}</td>
-                      <td className="py-2 px-3">{sale.salePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                      <td className="py-2 px-3">{(sale.salePrice * sale.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                      <td className="py-2 px-3 text-green-600">{sale.profit > 0 ? sale.profit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
-                      <td className="py-2 px-3 text-red-600">{sale.loss > 0 ? sale.loss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
-                      <td className="py-2 px-3">
+                      <td className="py-2 px-3 text-sm">{sale.productName}</td>
+                      <td className="py-2 px-3 text-sm">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
+                      <td className="py-2 px-3 text-sm">{sale.quantity}</td>
+                      <td className="py-2 px-3 text-sm">{sale.salePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td className="py-2 px-3 text-sm">{(sale.salePrice * sale.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td className="py-2 px-3 text-green-600 text-sm">{sale.profit > 0 ? sale.profit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
+                      <td className="py-2 px-3 text-red-600 text-sm">{sale.loss > 0 ? sale.loss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}</td>
+                      <td className="py-2 px-3 text-sm">
                         <button
                           onClick={() => handleDeleteClick(sale)}
-                          className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
+                          className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition text-xs"
                           title="Remover venda"
                         >
                           <IoTrash size={18} className="text-gray-500" />
@@ -364,17 +364,17 @@ const SalesSectionContent = () => {
       <div className="flex flex-row gap-4 mt-2">
         <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start relative flex-1" style={{ maxWidth: 320 }}>
           <div className="flex w-full items-center justify-between mb-2">
-            <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Líquido</span>
+            <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500 }}>Saldo Líquido</span>
             <button
               onClick={() => setResetModalOpen(true)}
               className="p-1 rounded hover:bg-gray-100 transition"
               title="Zerar saldo total"
             >
-              <RxUpdate size={22} className="text-gray-400" />
+              <RxUpdate size={20} className="text-gray-400" />
             </button>
           </div>
           <span className={
-            totalBalance > 0 ? 'text-green-600 font-bold text-xl' : totalBalance < 0 ? 'text-red-600 font-bold text-xl' : 'text-gray-600 font-bold text-xl'
+            totalBalance > 0 ? 'text-green-600 font-bold text-lg' : totalBalance < 0 ? 'text-red-600 font-bold text-lg' : 'text-gray-600 font-bold text-lg'
           }>
             {totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </span>
@@ -382,17 +382,17 @@ const SalesSectionContent = () => {
         {/* Box de Lucro Total (Bruto) */}
         <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start relative flex-1" style={{ maxWidth: 320 }}>
           <div className="flex w-full items-center justify-between mb-2">
-            <span className="text-gray-400" style={{ fontSize: 16, fontWeight: 500 }}>Saldo Bruto</span>
+            <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500 }}>Saldo Bruto</span>
             <button
               onClick={() => setResetGrossModalOpen(true)}
               className="p-1 rounded hover:bg-gray-100 transition"
               title="Zerar saldo bruto"
             >
-              <RxUpdate size={22} className="text-gray-400" />
+              <RxUpdate size={20} className="text-gray-400" />
             </button>
           </div>
           <span className={
-            totalGrossProfit > 0 ? 'text-green-600 font-bold text-xl' : totalGrossProfit < 0 ? 'text-red-600 font-bold text-xl' : 'text-gray-600 font-bold text-xl'
+            totalGrossProfit > 0 ? 'text-green-600 font-bold text-lg' : totalGrossProfit < 0 ? 'text-red-600 font-bold text-lg' : 'text-gray-600 font-bold text-lg'
           }>
             {totalGrossProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </span>
@@ -402,12 +402,12 @@ const SalesSectionContent = () => {
       {resetModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
           <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] flex flex-col gap-2 shadow">
-            <span className="text-lg font-medium text-gray-700">Deseja realmente zerar o saldo total?</span>
+            <span className="text-xl font-medium text-gray-700">Deseja realmente zerar o saldo total?</span>
             <span className="text-gray-500 text-sm">O saldo será zerado e passará a contar apenas para as próximas vendas.</span>
             <div className="flex gap-3 justify-end pt-6">
               <button
                 onClick={() => setResetModalOpen(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
+                className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
               >
                 Cancelar
               </button>
@@ -416,7 +416,7 @@ const SalesSectionContent = () => {
                   setResetReferenceDate(new Date());
                   setResetModalOpen(false);
                 }}
-                className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
+                className="px-4 py-2 text-sm rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
               >
                 Confirmar
               </button>
@@ -428,12 +428,12 @@ const SalesSectionContent = () => {
       {resetGrossModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
           <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] flex flex-col gap-2 shadow">
-            <span className="text-lg font-medium text-gray-700">Deseja realmente zerar o saldo bruto?</span>
+            <span className="text-xl font-medium text-gray-700">Deseja realmente zerar o saldo bruto?</span>
             <span className="text-gray-500 text-sm">O saldo bruto será zerado e passará a contar apenas para as próximas vendas.</span>
             <div className="flex gap-3 justify-end pt-6">
               <button
                 onClick={() => setResetGrossModalOpen(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
+                className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
               >
                 Cancelar
               </button>
@@ -442,7 +442,7 @@ const SalesSectionContent = () => {
                   setResetGrossReferenceDate(new Date());
                   setResetGrossModalOpen(false);
                 }}
-                className="px-4 py-2 rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
+                className="px-4 py-2 text-sm rounded-lg border-none bg-gray-600 text-white font-medium hover:opacity-80 transition"
               >
                 Confirmar
               </button>
@@ -454,20 +454,20 @@ const SalesSectionContent = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
           <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Excluir venda</h2>
-            <p className="mb-12 text-gray-600">
+            <h2 className="text-xl font-bold mb-2 text-gray-800">Excluir venda</h2>
+            <p className="mb-12 text-gray-600 text-sm">
               Tem certeza que deseja excluir a venda do produto "{saleToDelete?.productName}"?
             </p>
             <div className="flex gap-4 w-full justify-center">
               <button
                 onClick={handleCancelDelete}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+                className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium text-sm"
               >
                 Excluir
               </button>

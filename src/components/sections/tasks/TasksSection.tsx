@@ -202,16 +202,16 @@ const TasksSection = () => {
       <div className="flex items-center gap-4">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]"
+          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm"
         >
-          <HiFolderAdd size={26} className="align-middle flex-shrink-0 relative top-[-1px]" />
+          <HiFolderAdd size={24} className="align-middle flex-shrink-0 relative top-[-2px]" />
           Adicionar uma tarefa
         </button>
         {/* Filtro por Prioridade */}
         <div className="relative w-44">
           <Listbox value={selectedPriorityFilter} onChange={setSelectedPriorityFilter}>
             <div className="relative">
-              <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c`}>
+              <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between text-sm font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm`}>
                 <span className="block truncate">
                   {selectedPriorityFilter || 'Todas as prioridades'}
                 </span>
@@ -236,7 +236,7 @@ const TasksSection = () => {
         <div className="relative w-44">
           <Listbox value={selectedStatusFilter} onChange={setSelectedStatusFilter}>
             <div className="relative">
-              <Listbox.Button className={`bg-[#fff] shadow ${selectedStatusFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]`}>
+              <Listbox.Button className={`bg-[#fff] shadow ${selectedStatusFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm`}>
                 <span className="block truncate">
                   {selectedStatusFilter || 'Todos os status'}
                 </span>
@@ -265,49 +265,49 @@ const TasksSection = () => {
             placeholder="Buscar por título ou descrição..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-[#fff] text-[#231f20] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent shadow"
+            className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-[#fff] text-[#231f20] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent shadow text-sm"
           />
         </div>
       </div>
       {/* Tabela de Tarefas */}
       <div className="bg-[#fff] rounded-2xl pt-0 pb-6 px-0 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
-        <table className="w-full border-collapse text-[#231f20]">
+        <table className="w-full border-collapse text-[#231f20] text-sm">
           <thead>
-            <tr className="bg-[#f5f6fa]">
+            <tr className="bg-[#f5f6fa] text-xs">
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tl-2xl text-gray-600">
-                <button onClick={() => requestSort('title')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                <button onClick={() => requestSort('title')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-sm">
                   Título
                   {sortConfig.key === 'title' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Prioridade</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Status</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Vencimento</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Criada em</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Descrição</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600">Ações</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Prioridade</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Status</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Vencimento</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Criada em</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-sm">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600 text-sm">Ações</th>
             </tr>
           </thead>
           <tbody>
             {currentTasks.map((task) => (
               <tr key={task.id}>
-                <td className="p-3 border-b border-[#e0e0e0]">{task.title}</td>
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">{task.title}</td>
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getPriorityColor(task.priority)}`}>{task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getStatusColor(task.status)}`}>{task.status.replace('_', ' ').charAt(0).toUpperCase() + task.status.replace('_', ' ').slice(1)}</span>
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   <span>{formatDate(task.dueDate)}</span>
                   {isOverdue(task.dueDate) && (<span className="ml-2 text-xs text-red-600 font-medium">Atrasada</span>)}
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">{formatDate(task.createdAt)}</td>
-                <td className="p-3 border-b border-[#e0e0e0] max-w-xs truncate">
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">{formatDate(task.createdAt)}</td>
+                <td className="p-3 border-b border-[#e0e0e0] max-w-xs truncate text-sm">
                   <button
-                    className="w-full text-left truncate hover:underline focus:outline-none"
+                    className="w-full text-left truncate hover:underline focus:outline-none text-sm"
                     title="Ver detalhes da tarefa"
                     onClick={() => setDetailModalTask(task)}
                   >
@@ -326,7 +326,7 @@ const TasksSection = () => {
         </table>
         {/* Mensagem quando não há tarefas */}
         {sortedTasks.length === 0 && (
-          <div className="text-center pt-10 pb-3 text-gray-400">
+          <div className="text-center pt-10 pb-3 text-gray-400 text-sm">
             {searchTerm || selectedPriorityFilter || selectedStatusFilter
               ? `Nenhuma tarefa encontrada${searchTerm ? ` com o termo "${searchTerm}"` : ''}${selectedPriorityFilter ? ` com prioridade "${selectedPriorityFilter}"` : ''}${selectedStatusFilter ? ` com status "${selectedStatusFilter}"` : ''}.`
               : 'Não há tarefas cadastradas no momento.'}
@@ -353,25 +353,25 @@ const TasksSection = () => {
       {/* Modal de Adição/Edição de Tarefa */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow text-sm">
             <div className="flex justify-end">
               <button onClick={handleModalClose} className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"><CgClose size={22} style={{ strokeWidth: 1.2 }} /></button>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Título <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Título <span className="text-red-500">*</span></label>
               <input type="text" placeholder="Digite o título da tarefa" value={newTask.title} onChange={(e) => setNewTask({ ...newTask, title: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1) })} className={`w-full px-3 py-2 rounded-lg border ${errors.title ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent`} />
-              {errors.title && (<p className="mt-1 text-sm text-red-600">{errors.title}</p>)}
+              {errors.title && (<p className="mt-1 text-xs text-red-600">{errors.title}</p>)}
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Descrição <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Descrição <span className="text-red-500">*</span></label>
               <textarea value={newTask.description} onChange={(e) => setNewTask({ ...newTask, description: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1) })} rows={3} className={`w-full px-3 py-2 rounded-lg border ${errors.description ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent`} placeholder="Digite a descrição da tarefa" />
-              {errors.description && (<p className="mt-1 text-sm text-red-600">{errors.description}</p>)}
+              {errors.description && (<p className="mt-1 text-xs text-red-600">{errors.description}</p>)}
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Prioridade</label>
+              <label className="text-gray-600 text-xs font-medium">Prioridade</label>
               <Listbox value={newTask.priority} onChange={(priority) => setNewTask({ ...newTask, priority })}>
                 <div className="relative">
-                  <Listbox.Button className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]">
+                  <Listbox.Button className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm">
                     <span className="block truncate">{newTask.priority.charAt(0).toUpperCase() + newTask.priority.slice(1)}</span>
                     <HiSelector className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
                   </Listbox.Button>
@@ -388,10 +388,10 @@ const TasksSection = () => {
               </Listbox>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Status</label>
+              <label className="text-gray-600 text-xs font-medium">Status</label>
               <Listbox value={newTask.status} onChange={(status) => setNewTask({ ...newTask, status })}>
                 <div className="relative">
-                  <Listbox.Button className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]">
+                  <Listbox.Button className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm">
                     <span className="block truncate">{newTask.status.replace('_', ' ').charAt(0).toUpperCase() + newTask.status.replace('_', ' ').slice(1)}</span>
                     <HiSelector className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
                   </Listbox.Button>
@@ -408,13 +408,13 @@ const TasksSection = () => {
               </Listbox>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Data de Vencimento <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Data de Vencimento <span className="text-red-500">*</span></label>
               <DatePicker selected={newTask.dueDate} onChange={(date) => setNewTask({ ...newTask, dueDate: date || new Date() })} dateFormat="dd/MM/yyyy" className={`w-full px-3 py-2 rounded-lg border ${errors.dueDate ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent`} placeholderText="Selecione a data de vencimento" />
-              {errors.dueDate && (<p className="mt-1 text-sm text-red-600">{errors.dueDate}</p>)}
+              {errors.dueDate && (<p className="mt-1 text-xs text-red-600">{errors.dueDate}</p>)}
             </div>
             <div className="flex justify-end gap-3 mt-4">
-              <button type="button" onClick={handleModalClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancelar</button>
-              <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 transition-colors">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
+              <button type="button" onClick={handleModalClose} className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition">Cancelar</button>
+              <button type="button" onClick={editingTask ? handleUpdateTask : handleAddTask} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 transition-colors text-sm">{editingTask ? 'Atualizar' : 'Adicionar'}</button>
             </div>
           </div>
         </div>
@@ -422,9 +422,9 @@ const TasksSection = () => {
       {/* Modal de Detalhes da Tarefa */}
       {detailModalTask && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-0 rounded-2xl w-full max-w-md shadow-2xl relative animate-fadeIn">
+          <div className="bg-white p-0 rounded-2xl w-full max-w-md shadow-2xl relative animate-fadeIn text-sm">
             <div className="flex justify-between items-center border-b px-7 py-5 rounded-t-2xl bg-gradient-to-r from-gray-100 to-gray-50">
-              <h2 className="text-2xl font-bold text-gray-400 tracking-tight">Detalhes da Tarefa</h2>
+              <h2 className="text-xl font-bold text-gray-400 tracking-tight">Detalhes da Tarefa</h2>
               <button
                 onClick={() => setDetailModalTask(null)}
                 className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
@@ -437,44 +437,44 @@ const TasksSection = () => {
               {/* Grupo: Título e Descrição */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500 text-sm font-medium">Título</span>
+                  <span className="text-gray-500 text-xs font-medium">Título</span>
                 </div>
-                <div className="text-base text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner break-words">
+                <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner break-words">
                   {detailModalTask.title}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <span className="text-gray-500 text-sm font-medium">Descrição</span>
-                <div className="text-base text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 whitespace-pre-line break-words max-h-40 overflow-auto shadow-inner">
+                <span className="text-gray-500 text-xs font-medium">Descrição</span>
+                <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 whitespace-pre-line break-words max-h-40 overflow-auto shadow-inner">
                   {detailModalTask.description}
                 </div>
               </div>
               {/* Grupo: Prioridade e Status */}
               <div className="flex flex-row gap-4 items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500 text-sm font-medium">Prioridade</span>
+                  <span className="text-gray-500 text-xs font-medium">Prioridade</span>
                   <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(detailModalTask.priority)}`}>{detailModalTask.priority.charAt(0).toUpperCase() + detailModalTask.priority.slice(1)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500 text-sm font-medium">Status</span>
+                  <span className="text-gray-500 text-xs font-medium">Status</span>
                   <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(detailModalTask.status)}`}>{detailModalTask.status.replace('_', ' ').charAt(0).toUpperCase() + detailModalTask.status.replace('_', ' ').slice(1)}</span>
                 </div>
               </div>
               {/* Grupo: Datas */}
               <div className="flex flex-col gap-2 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500 text-sm font-medium">Vencimento</span>
-                  <span className="text-[#231f20] font-medium">{formatDate(detailModalTask.dueDate)}</span>
+                  <span className="text-gray-500 text-xs font-medium">Vencimento</span>
+                  <span className="text-[#231f20] font-medium text-xs">{formatDate(detailModalTask.dueDate)}</span>
                   {isOverdue(detailModalTask.dueDate) && (<span className="ml-2 text-xs text-red-600 font-medium">Atrasada</span>)}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500 text-sm font-medium">Criada em</span>
-                  <span className="text-[#231f20]">{formatDate(detailModalTask.createdAt)}</span>
+                  <span className="text-gray-500 text-xs font-medium">Criada em</span>
+                  <span className="text-[#231f20] text-xs">{formatDate(detailModalTask.createdAt)}</span>
                 </div>
                 {detailModalTask.completedAt && (
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm font-medium">Concluída em</span>
-                    <span className="text-[#231f20]">{formatDate(detailModalTask.completedAt)}</span>
+                    <span className="text-gray-500 text-xs font-medium">Concluída em</span>
+                    <span className="text-[#231f20] text-xs">{formatDate(detailModalTask.completedAt)}</span>
                   </div>
                 )}
               </div>
@@ -483,7 +483,7 @@ const TasksSection = () => {
               <button
                 type="button"
                 onClick={() => setDetailModalTask(null)}
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium"
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium text-sm"
               >
                 Fechar
               </button>
@@ -495,20 +495,20 @@ const TasksSection = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
           <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Excluir tarefa</h2>
-            <p className="mb-12 text-gray-600">
+            <h2 className="text-xl font-bold mb-2 text-gray-800">Excluir tarefa</h2>
+            <p className="mb-12 text-gray-600 text-sm">
               Tem certeza que deseja excluir a tarefa "{taskToDelete?.title}"?
             </p>
             <div className="flex gap-4 w-full justify-center">
               <button
                 onClick={handleCancelDelete}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+                className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium text-sm"
               >
                 Excluir
               </button>

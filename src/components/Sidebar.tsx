@@ -132,7 +132,7 @@ export default function Sidebar() {
                   }}
                   aria-label="Fechar menu"
                 >
-                  <FaChevronLeft size={14} />
+                  <FaChevronLeft size={12} />
                 </button>
               </>
             ) : (
@@ -160,7 +160,7 @@ export default function Sidebar() {
                   }}
                   aria-label="Abrir menu"
                 >
-                  <FaChevronRight size={14} />
+                  <FaChevronRight size={12} />
                 </button>
                 <img
                   src={LogoSidebar.src}
@@ -179,71 +179,71 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('dashboard')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'dashboard' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaHome size={20} />
+              <FaHome size={19} />
               {isSidebarOpen && 'Dashboard'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('analytics')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'analytics' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaBookmark size={20} />
+              <FaBookmark size={19} />
               {isSidebarOpen && 'Tarefas'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('databases')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'databases' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaClipboardList size={20} />
+              <FaClipboardList size={19} />
               {isSidebarOpen && 'Produtos'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('sales')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'sales' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaQuestionCircle size={20} />
+              <FaQuestionCircle size={19} />
               {isSidebarOpen && 'Vendas'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('settings')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'settings' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaCog size={20} />
+              <FaCog size={19} />
               {isSidebarOpen && 'Configurações'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('profile')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'profile' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaUser size={20} />
+              <FaUser size={19} />
               {isSidebarOpen && 'Perfil'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('logout')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-4 w-full ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-4 ml-[.1rem] w-full text-[14px] ${
                 selectedSection === 'logout' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
-              <FaSignOutAlt size={20} />
+              <FaSignOutAlt size={19} />
               {isSidebarOpen && 'Sair'}
             </a>
           </nav>
@@ -254,18 +254,18 @@ export default function Sidebar() {
         {showLogoutModal && (
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
               <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col ">
-                <h2 className="text-2xl font-bold mb-2 text-gray-800">Logout</h2>
-                <p className="mb-12 text-gray-600">Tem certeza que deseja sair da sua conta?</p>
+                <h2 className="text-xl font-bold mb-2 text-gray-800">Logout</h2>
+                <p className="mb-12 text-gray-600 text-sm">Tem certeza que deseja sair da sua conta?</p>
                 <div className="flex gap-4 w-full justify-center">
                   <button
                     onClick={handleCancelLogout}
-                    className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+                    className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition text-sm"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleConfirmLogout}
-                    className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+                    className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium text-sm"
                   >
                     Confirmar
                   </button>

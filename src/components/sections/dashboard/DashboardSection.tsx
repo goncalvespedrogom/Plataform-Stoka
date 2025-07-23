@@ -372,6 +372,7 @@ const DashboardSection = () => {
             background: "#fff",
             borderRadius: 16,
             padding: 24,
+            paddingTop: 56, // aumenta o espaço entre o título e o conteúdo
             flex: 1,
             minWidth: 360,
             maxWidth: 420,
@@ -380,11 +381,18 @@ const DashboardSection = () => {
             flexDirection: "column",
             alignItems: "flex-start",
             justifyContent: "center",
+            position: "relative", // ADICIONADO para alinhar o título
           }}
         >
           <span
             className="text-gray-400"
-            style={{ fontSize: 14, fontWeight: 500, marginBottom: 20 }}
+            style={{
+              position: "absolute",
+              top: 23,
+              left: 24,
+              fontSize: 14,
+              fontWeight: 500,
+            }}
           >
             Itens do Estoque por Categoria
           </span>
@@ -498,7 +506,8 @@ const DashboardSection = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: 20,
+                    marginTop: 22,
+                    marginBottom: -18,
                     gap: 10,
                     width: "100%",
                   }}
@@ -613,7 +622,7 @@ const DashboardSection = () => {
             style={{
               fontSize: 14,
               fontWeight: 500,
-              marginBottom: 32,
+              marginBottom: 22,
               textAlign: "left",
               width: "100%",
             }}
@@ -2691,7 +2700,7 @@ const DashboardSection = () => {
               </div>
             </div>
           ) : (
-            <span style={{ color: "#999", fontSize: 15, marginTop: 32 }}>
+            <span style={{ color: "#bbb", fontSize: 13, marginTop: 74 }}>
               Nenhuma venda encontrada.
             </span>
           )}

@@ -355,7 +355,7 @@ const RegisterSection = () => {
   const handleIncrementProductQuantity = async (productId: string) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      const newQuantity = product.quantity + 1;
+      const newQuantity = Number(product.quantity) + 1;
       await updateProduct(productId, {
         quantity: newQuantity,
         totalValue: newQuantity * product.unitPrice,
@@ -367,7 +367,7 @@ const RegisterSection = () => {
   const handleDecrementProductQuantity = async (productId: string) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      const newQuantity = Math.max(0, product.quantity - 1);
+      const newQuantity = Math.max(0, Number(product.quantity) - 1);
       await updateProduct(productId, {
         quantity: newQuantity,
         totalValue: newQuantity * product.unitPrice,
@@ -387,9 +387,9 @@ const RegisterSection = () => {
       <div className="flex items-center gap-4">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]"
+          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm"
         >
-          <HiFolderAdd size={26} className="align-middle flex-shrink-0 relative top-[-1px]" />
+          <HiFolderAdd size={24} className="align-middle flex-shrink-0 relative top-[-2px]" />
           Adicionar um produto
         </button>
 
@@ -401,7 +401,7 @@ const RegisterSection = () => {
           >
             <div className="relative">
               <Listbox.Button 
-                className={`bg-[#fff] shadow ${selectedCategoryFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]`}
+                className={`bg-[#fff] shadow ${selectedCategoryFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm`}
               >
                 <span className="block truncate">
                   {selectedCategoryFilter || "Todas as categorias"}
@@ -484,72 +484,72 @@ const RegisterSection = () => {
             placeholder="Buscar por nome do produto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-[#fff] text-[#231f20] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent shadow"
+            className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-[#fff] text-[#231f20] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent shadow text-sm"
           />
         </div>
       </div>
 
       {/* Tabela de Produtos */}
       <div className="bg-[#fff] rounded-2xl pt-0 pb-6 px-0 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
-        <table className="w-full border-collapse text-[#231f20]">
+        <table className="w-full border-collapse text-[#231f20] text-sm">
           <thead>
-            <tr className="bg-[#f5f6fa]">
+            <tr className="bg-[#f5f6fa] text-xs">
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tl-2xl text-gray-600">
-                <button onClick={() => requestSort('name')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+                <button onClick={() => requestSort('name')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Nome
                   {sortConfig.key === 'name' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
-                <button onClick={() => requestSort('category')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('category')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Categoria
                   {sortConfig.key === 'category' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
-                <button onClick={() => requestSort('quantity')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('quantity')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Quantidade
                   {sortConfig.key === 'quantity' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
-                <button onClick={() => requestSort('unitPrice')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('unitPrice')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Preço Unitário
                   {sortConfig.key === 'unitPrice' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
-                <button onClick={() => requestSort('totalValue')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('totalValue')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Valor Total
                   {sortConfig.key === 'totalValue' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">
-                <button onClick={() => requestSort('date')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+                <button onClick={() => requestSort('date')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Data
                   {sortConfig.key === 'date' ? (
                     sortConfig.direction === 'ascending' ? <IoChevronUp /> : <IoChevronDown />
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600">Descrição</th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600">Ações</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600 text-xs">Ações</th>
             </tr>
           </thead>
           <tbody>
             {currentProducts.map((product) => (
               <tr key={product.id}>
-                <td className="p-3 border-b border-[#e0e0e0]">{product.name}</td>
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">{product.name}</td>
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <span 
                     className="px-2 py-1 bg-[#f0f0f0] rounded-full text-xs font-medium transition-colors duration-200 cursor-default"
@@ -560,8 +560,8 @@ const RegisterSection = () => {
                     {product.category}
                   </span>
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">{product.quantity}</td>
-                <td className="p-3 border-b border-[#e0e0e0]">
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">{product.quantity}</td>
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   {product.unitPrice.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -569,7 +569,7 @@ const RegisterSection = () => {
                     maximumFractionDigits: 2
                   })}
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   {product.totalValue.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -577,11 +577,11 @@ const RegisterSection = () => {
                     maximumFractionDigits: 2
                   })}
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   {product.date ? new Date(product.date).toLocaleDateString('pt-BR') : ''}
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">{product.description}</td>
-                <td className="p-3 border-b border-[#e0e0e0]">
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">{product.description}</td>
+                <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditProduct(product)}
@@ -620,7 +620,7 @@ const RegisterSection = () => {
         
         {/* Mensagem quando não há produtos ou quando a busca não retorna resultados */}
         {sortedProducts.length === 0 && (
-          <div className="text-center pt-10 pb-3 text-gray-400">
+          <div className="text-center pt-10 pb-3 text-gray-400 text-sm">
             {searchTerm || selectedCategoryFilter 
               ? `Nenhum produto encontrado${searchTerm ? ` com o nome "${searchTerm}"` : ''}${selectedCategoryFilter ? ` na categoria "${selectedCategoryFilter}"` : ''}.` 
               : 'Não há produtos registrados no momento.'}
@@ -650,8 +650,8 @@ const RegisterSection = () => {
                 {getPageNumbers().map((pageNumber) => (
                   <button
                     key={pageNumber}
-                    onClick={() => goToPage(pageNumber)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${pageNumber === currentPage ? 'bg-gray-400 text-white' : 'border border-gray-300 text-gray-500 hover:bg-gray-100'}`}
+                    onClick={() => goToPage(Number(pageNumber))}
+                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${pageNumber === currentPage ? 'bg-gray-400 text-white' : 'border border-gray-300 text-gray-500 hover:bg-gray-100'}`}
                   >
                     {isClient ? pageNumber : ''}
                   </button>
@@ -674,7 +674,7 @@ const RegisterSection = () => {
       {/* Modal de Adição/Edição de Produto */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow text-sm">
             {/* Header com X alinhado à direita */}
             <div className="flex justify-end">
               <button
@@ -686,7 +686,7 @@ const RegisterSection = () => {
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Nome do Produto <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Nome do Produto <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="Digite o nome do produto"
@@ -703,7 +703,7 @@ const RegisterSection = () => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Categoria <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Categoria <span className="text-red-500">*</span></label>
               <Listbox
                 value={newProduct.category}
                 onChange={(value) => {
@@ -766,7 +766,7 @@ const RegisterSection = () => {
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Quantidade <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Quantidade <span className="text-red-500">*</span></label>
               <div className="relative">
                 <input
                   type="number"
@@ -813,7 +813,7 @@ const RegisterSection = () => {
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Preço Unitário <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Preço Unitário <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="R$ 0,00"
@@ -827,8 +827,8 @@ const RegisterSection = () => {
             {/* Exibição do valor total calculado */}
             {newProduct.quantity > 0 && newProduct.unitPrice > 0 && (
               <div className="flex flex-col gap-1">
-                <label className="text-gray-600 text-sm font-medium">Valor Total</label>
-                <div className="px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f8f9fa] text-[#222] sm:text-sm">
+                <label className="text-gray-600 text-xs font-medium">Valor Total</label>
+                <div className="px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f8f9fa] text-[#222] text-sm">
                   {calculateTotalValue(newProduct.quantity, newProduct.unitPrice).toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -840,7 +840,7 @@ const RegisterSection = () => {
             )}
             
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Data <span className="text-red-500">*</span></label>
+              <label className="text-gray-600 text-xs font-medium">Data <span className="text-red-500">*</span></label>
               <DatePicker
                 selected={newProduct.date}
                 onChange={(date: Date | null) => { setNewProduct({ ...newProduct, date: date || new Date() }); if (errors.date) setErrors({ ...errors, date: undefined }); }}
@@ -853,7 +853,7 @@ const RegisterSection = () => {
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="text-gray-600 text-sm font-medium">Descrição <span className="text-gray-400 font-normal">(opcional)</span></label>
+              <label className="text-gray-600 text-xs font-medium">Descrição <span className="text-gray-400 font-normal">(opcional)</span></label>
               <textarea
                 placeholder="Digite uma descrição para o produto"
                 value={newProduct.description}
@@ -862,14 +862,14 @@ const RegisterSection = () => {
                   const formatted = value.charAt(0).toUpperCase() + value.slice(1);
                   setNewProduct({ ...newProduct, description: formatted });
                 }}
-                className="w-full sm:text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
             
             <div className="flex gap-3 justify-end">
               <button
                 onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
-                className="mt-4 px-4 py-2 rounded-lg border-none bg-gray-600 text-[#fff] cursor-pointer shadow flex items-center gap-2 transition-opacity duration-200 hover:opacity-80 font-medium"
+                className="mt-4 px-4 py-2 rounded-lg border-none bg-gray-600 text-[#fff] cursor-pointer shadow flex items-center gap-2 transition-opacity duration-200 hover:opacity-80 font-medium text-sm"
               >
                 {editingProduct ? (
                   <>
@@ -890,13 +890,13 @@ const RegisterSection = () => {
       {/* Modal de Confirmação de Mesclagem */}
       {isConfirmMergeModalOpen && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow-lg">
+          <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow-lg text-sm">
             <div className="text-lg font-semibold text-gray-600">Produto já registrado</div>
-            <div className="text-[#231f208e] text-base">Este produto já está registrado na lista, portanto ele será recalculado e adicionado ao produto já existente.</div>
+            <div className="text-gray-500 text-sm">Este produto já está registrado na lista, portanto ele será recalculado e adicionado ao produto já existente.</div>
             <div className="flex gap-3 justify-end pt-8">
               <button
                 onClick={handleCancelMerge}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-[#231f20] cursor-pointer hover:bg-gray-100 transition"
+                className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
               >
                 Cancelar
               </button>
@@ -913,21 +913,21 @@ const RegisterSection = () => {
       {/* Modal de Confirmação de Exclusão */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Excluir produto</h2>
-            <p className="mb-12 text-gray-600">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col text-sm">
+            <h2 className="text-xl font-bold mb-2 text-gray-800">Excluir produto</h2>
+            <p className="mb-12 text-gray-600 text-sm">
               Tem certeza que deseja excluir o produto "{productToDelete?.name}"?
             </p>
             <div className="flex gap-4 w-full justify-center">
               <button
                 onClick={handleCancelDelete}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-medium"
+                className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded bg-gray-600 text-white hover:opacity-80 transition font-medium"
+                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium"
               >
                 Excluir
               </button>
