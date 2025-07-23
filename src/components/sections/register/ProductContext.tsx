@@ -22,6 +22,11 @@ export const useProductContext = () => {
   return context;
 };
 
+// Função utilitária para calcular o total de itens em estoque
+export function getTotalEstoqueAtual(products: Product[]): number {
+  return products.reduce((acc, p) => acc + p.quantity, 0);
+}
+
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);

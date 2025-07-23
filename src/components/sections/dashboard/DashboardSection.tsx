@@ -14,6 +14,8 @@ import {
   Pie,
   Cell,
   Legend,
+  BarChart,
+  Bar,
 } from "recharts";
 import { FaSortAmountDownAlt } from "react-icons/fa";
 import { LuWeight } from "react-icons/lu";
@@ -26,6 +28,8 @@ import { useSalesContext } from "../sales/SalesContext";
 import { IoSearch } from "react-icons/io5";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../hooks/useAuth";
+import { useStockSnapshotAuto, getAllSnapshotsByUser } from '../../../hooks/useStockSnapshot';
+import { StockSnapshot } from '../../../types/StockSnapshot';
 
 const DashboardSection = () => {
   // TODOS os hooks devem ser declarados aqui no topo!
@@ -196,6 +200,15 @@ const DashboardSection = () => {
   // Estado para controlar se o tooltip está ativo (donut de saldo)
   const [saldoTooltipActive, setSaldoTooltipActive] = useState(false);
 
+  useStockSnapshotAuto();
+
+  const [snapshots, setSnapshots] = useState<StockSnapshot[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    getAllSnapshotsByUser(user.uid).then(setSnapshots);
+  }, [user]);
+
   if (loading || !user || !isClient) {
     return <div className="text-center mt-10">Carregando...</div>;
   }
@@ -321,18 +334,23 @@ const DashboardSection = () => {
   const CustomSaldoTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div style={{
-          background: '#fff',
-          border: '1px solid #e0e0e0',
-          borderRadius: 8,
-          padding: '6px 14px',
-          fontWeight: 600,
-          fontSize: 14,
-          color: '#333',
-          boxShadow: '0 2px 8px #eee',
-          minWidth: 90
-        }}>
-          <span style={{ color: payload[0].color, fontWeight: 700 }}>{payload[0].name}:</span> {formatarReal(payload[0].value)}
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #e0e0e0",
+            borderRadius: 8,
+            padding: "6px 14px",
+            fontWeight: 600,
+            fontSize: 14,
+            color: "#333",
+            boxShadow: "0 2px 8px #eee",
+            minWidth: 90,
+          }}
+        >
+          <span style={{ color: payload[0].color, fontWeight: 700 }}>
+            {payload[0].name}:
+          </span>{" "}
+          {formatarReal(payload[0].value)}
         </div>
       );
     }
@@ -341,160 +359,667 @@ const DashboardSection = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      {/* Linha de cards principais */}
-      {/* REMOVIDO: Linha de cards principais (Revenue, Spend, Reports, etc.) */}
-      {/* Linha de gráficos e progresso */}
-      <div style={{ display: "flex", gap: "24px" }}>
+      {/* NOVA PRIMEIRA LINHA: Boxes de Categorias, Saldo de Vendas e Quantidade Semanal do Estoque */}
+      <div style={{ display: "flex", gap: 24, marginTop: 0, width: "100%" }}>
+        {/* Box de Categorias */}
         <div
           style={{
             background: "#fff",
             borderRadius: 16,
             padding: 24,
-            paddingRight: 10,
-            flex: 2,
-            minHeight: 260,
+            flex: 1,
+            minWidth: 360,
+            maxWidth: 420,
             boxShadow: "0 2px 8px #e0e0e0",
-            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "center",
           }}
         >
           <span
             className="text-gray-400"
-            style={{
-              position: "absolute",
-              top: 24,
-              left: 24,
-              fontSize: 16,
-              fontWeight: 500,
-            }}
+            style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}
           >
-            Valor Total dos Produtos
+            Itens do Estoque por Categoria
           </span>
-          <div
-            style={{
-              width: "100%",
-              height: 200,
-              paddingLeft: 0,
-              marginLeft: -12,
-              paddingTop: 12,
-            }}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={gastosPorDia}
-                margin={{ top: 32, right: 16, left: 0, bottom: 0 }}
+          {categoriasData.length === 0 ? (
+            <span style={{ color: "#bbb", fontSize: 15, marginTop: 16 }}>
+              Nenhum produto cadastrado.
+            </span>
+          ) : (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 18,
+                  alignItems: "center",
+                  flexWrap: "nowrap",
+                  minHeight: 120,
+                  justifyContent: "center",
+                  width: "100%",
+                }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="dia" tick={<CustomTick />} />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={formatarNumero}
-                  ticks={[1000, 5000, 10000, 15000, 20000]}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="valor"
-                  stroke="#333"
-                  strokeWidth={3}
-                  dot={{ r: 6, fill: "#333", stroke: "#333", strokeWidth: 2 }}
-                  activeDot={{
-                    r: 8,
-                    fill: "#333",
-                    stroke: "#333",
-                    strokeWidth: 2,
+                {categoriasPaginaAtual.map((cat, idx) => (
+                  <div
+                    key={cat.name}
+                    style={{
+                      position: "relative",
+                      width: 96,
+                      height: 116,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      marginBottom: 2,
+                      minWidth: 96,
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "relative",
+                        width: 86,
+                        height: 86,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <PieChart width={86} height={86}>
+                        <Pie
+                          data={[
+                            cat,
+                            {
+                              ...cat,
+                              value: totalItensCategorias - cat.value,
+                              fill: "#f3f4f6",
+                            },
+                          ]}
+                          dataKey="value"
+                          startAngle={90}
+                          endAngle={-270}
+                          innerRadius={30}
+                          outerRadius={40}
+                          stroke="none"
+                        >
+                          <Cell
+                            key="cat"
+                            fill={
+                              donutColors[
+                                (currentCategoryPage * categoriasPorPagina +
+                                  idx) %
+                                  donutColors.length
+                              ]
+                            }
+                          />
+                          <Cell key="rest" fill="#f3f4f6" />
+                        </Pie>
+                      </PieChart>
+                      <span
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: 0,
+                          width: "88px",
+                          height: "88px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 700,
+                          fontSize: 15,
+                          color: "#888",
+                          pointerEvents: "none",
+                        }}
+                      >
+                        {cat.percent}%
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontWeight: 500,
+                        fontSize: 12,
+                        color: "#888",
+                        marginTop: 8,
+                      }}
+                    >
+                      {cat.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {/* Navegação de páginas */}
+              {totalPaginasCategorias > 1 && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 20,
+                    gap: 10,
+                    width: "100%",
                   }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+                >
+                  <button
+                    onClick={prevCategoryPage}
+                    disabled={totalPaginasCategorias <= 1}
+                    style={{
+                      padding: 0,
+                      border: "none",
+                      background: "#F3F4F6",
+                      color: "#616161",
+                      borderRadius: "50%",
+                      cursor:
+                        totalPaginasCategorias <= 1 ? "not-allowed" : "pointer",
+                      fontSize: 16,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 32,
+                      height: 32,
+                      transition: "background 0.2s, color 0.2s",
+                      outline: "none",
+                      opacity: totalPaginasCategorias <= 1 ? 0.5 : 1,
+                    }}
+                    aria-label="Anterior"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M15.5 19L9.5 12L15.5 5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <span
+                    style={{ fontSize: 12, color: "#616161", fontWeight: 500 }}
+                  >
+                    {currentCategoryPage + 1} de {totalPaginasCategorias}
+                  </span>
+                  <button
+                    onClick={nextCategoryPage}
+                    disabled={totalPaginasCategorias <= 1}
+                    style={{
+                      padding: 0,
+                      border: "none",
+                      background: "#F3F4F6",
+                      color: "#616161",
+                      borderRadius: "50%",
+                      cursor:
+                        totalPaginasCategorias <= 1 ? "not-allowed" : "pointer",
+                      fontSize: 16,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 32,
+                      height: 32,
+                      transition: "background 0.2s, color 0.2s",
+                      outline: "none",
+                      opacity: totalPaginasCategorias <= 1 ? 0.5 : 1,
+                    }}
+                    aria-label="Próxima"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M8.5 5L14.5 12L8.5 19"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
-        {/* NOVO GRÁFICO: Quantidade de Itens por Produto por Semana */}
+        {/* Box 2 - Saldo de Vendas */}
         <div
           style={{
             background: "#fff",
             borderRadius: 16,
             padding: 24,
-            paddingRight: 10,
-            flex: 2,
-            minHeight: 260,
+            flex: 1,
+            minWidth: 260,
+            maxWidth: 340,
             boxShadow: "0 2px 8px #e0e0e0",
-            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            minHeight: 180,
           }}
         >
           <span
             className="text-gray-400"
             style={{
-              position: "absolute",
-              top: 24,
-              left: 24,
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: 500,
-            }}
-          >
-            Quantidade Total de Itens
-          </span>
-          <div
-            style={{
+              marginBottom: 32,
+              textAlign: "left",
               width: "100%",
-              height: 200,
-              paddingLeft: 0,
-              marginLeft: -12,
-              paddingTop: 12,
             }}
           >
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={itensPorDia}
-                margin={{ top: 32, right: 16, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="dia" tick={<CustomTick />} />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(valor) => formatarNumero(valor)}
-                  domain={[1000, 10000]}
-                  ticks={[1000, 4000, 7000, 10000]}
-                  allowDecimals={false}
-                />
-                <Tooltip
-                  content={({ active, payload }: any) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div
+            Saldo de Vendas
+          </span>
+          {/* Gráfico circular de saldo bruto x líquido */}
+          {sales.length === 0 ? (
+            <span style={{ color: "#bbb", fontSize: 15, marginTop: 16 }}>
+              Nenhuma venda registrada.
+            </span>
+          ) : (
+            <>
+              {(() => {
+                // Cálculo dos saldos
+                const saldoBruto = sales.reduce(
+                  (acc, sale) => acc + sale.salePrice * sale.quantity,
+                  0
+                );
+                const saldoLiquido = sales.reduce(
+                  (acc, sale) => acc + sale.profit - sale.loss,
+                  0
+                );
+                const saldoPerda = saldoBruto - saldoLiquido;
+                const saldoData = [
+                  {
+                    name: "Saldo Líquido",
+                    value: saldoLiquido > 0 ? saldoLiquido : 0,
+                  },
+                  { name: "Perdas", value: saldoPerda > 0 ? saldoPerda : 0 },
+                ];
+                const donutColorsSaldo = ["#a78bfa", "#fbbf24"];
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      minHeight: 120,
+                      background: "#fff",
+                      borderRadius: 16,
+                      padding: 18,
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    {/* Donut */}
+                    <div
+                      style={{
+                        position: "relative",
+                        width: 140,
+                        height: 140,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 16,
+                      }}
+                    >
+                      <PieChart width={140} height={140} style={{ display: "block", margin: "0 auto" }}>
+                        <Pie
+                          data={saldoData}
+                          dataKey="value"
+                          nameKey="name"
+                          startAngle={90}
+                          endAngle={-270}
+                          innerRadius={52}
+                          outerRadius={64}
+                          stroke="none"
+                          onMouseEnter={() => setSaldoTooltipActive(true)}
+                          onMouseLeave={() => setSaldoTooltipActive(false)}
+                          cornerRadius={10} // borda arredondada
+                          paddingAngle={4}  // espaço entre as fatias
+                        >
+                          {saldoData.map((entry, idx) => (
+                            <Cell
+                              key={entry.name}
+                              fill={donutColorsSaldo[idx % donutColorsSaldo.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          content={<CustomSaldoTooltip />}
+                          wrapperStyle={{ outline: "none" }}
+                        />
+                      </PieChart>
+                      {!saldoTooltipActive && (
+                        <span
                           style={{
-                            background: "#fff",
-                            border: "1px solid #e0e0e0",
-                            borderRadius: 8,
-                            padding: "6px 12px",
-                            fontWeight: 500,
+                            position: "absolute",
+                            left: 0,
+                            top: 2,
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: 600,
                             fontSize: 14,
+                            color: "#888",
+                            pointerEvents: "none",
+                            textAlign: "center",
+                            flexDirection: "column",
                           }}
                         >
-                          {formatarNumero(payload[0].value)} itens
+                          {formatarReal(saldoBruto)}
+                        </span>
+                      )}
+                    </div>
+                    {/* Legendas */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        gap: 16,
+                        marginTop: 0,
+                        justifyContent: "center",
+                        height: "100%",
+                      }}
+                    >
+                      {/* Saldo Bruto */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                            background: "#999",
+                            display: "inline-block",
+                            border: "2px solid #999",
+                          }}
+                        ></span>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            lineHeight: 1,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 13,
+                              color: "#777",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {formatarReal(saldoBruto)}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: "#888",
+                              fontWeight: 500,
+                              marginTop: 1,
+                            }}
+                          >
+                            Saldo Bruto
+                          </span>
                         </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="quantidade"
-                  stroke="#333"
-                  strokeWidth={3}
-                  dot={{ r: 6, fill: "#333", stroke: "#333", strokeWidth: 2 }}
-                  activeDot={{
-                    r: 8,
-                    fill: "#333",
-                    stroke: "#333",
-                    strokeWidth: 2,
-                  }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                            background: "#a78bfa",
+                            display: "inline-block",
+                            border: "2px solid #a78bfa",
+                          }}
+                        ></span>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            lineHeight: 1,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 13,
+                              color: "#777",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {formatarReal(saldoLiquido)}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: "#888",
+                              fontWeight: 500,
+                              marginTop: 1,
+                            }}
+                          >
+                            Saldo Líquido
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                            background: "#fbbf24",
+                            display: "inline-block",
+                            border: "2px solid #fbbf24",
+                          }}
+                        ></span>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            lineHeight: 1,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 13,
+                              color: "#777",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {formatarReal(saldoPerda)}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: "#888",
+                              fontWeight: 500,
+                              marginTop: 1,
+                            }}
+                          >
+                            Custos
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </>
+          )}
         </div>
-        {/* <div style={{ background: '#fff', borderRadius: 16, padding: 24, flex: 2, minHeight: 260, boxShadow: '0 2px 8px #e0e0e0' }}>Project Completion</div> */}
+        {/* Box 3 - Quantidade Semanal do Estoque */}
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 16,
+            padding: 24,
+            flex: 2,
+            minHeight: 200,
+            boxShadow: "0 2px 8px #e0e0e0",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            position: "relative",
+          }}
+        >
+          <span
+            className="text-gray-400"
+            style={{
+              fontSize: 15,
+              fontWeight: 500,
+              marginBottom: 32,
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            Quantidade Semanal do Estoque
+          </span>
+          {/* Gráfico de barras semanal do estoque */}
+          {(() => {
+            // Dias da semana (segunda a domingo)
+            const diasSemana = [
+              "Segunda",
+              "Terça",
+              "Quarta",
+              "Quinta",
+              "Sexta",
+              "Sábado",
+              "Domingo",
+            ];
+            // Data de hoje
+            const hoje = new Date();
+            const diaSemanaHoje = hoje.getDay() === 0 ? 6 : hoje.getDay() - 1; // 0=Domingo, 1=Segunda...
+            // Para cada dia da semana, encontrar o snapshot mais recente daquele dia
+            const snapshotByWeekday: { [idx: number]: { date: string, totalQuantity: number } } = {};
+            for (let idx = 0; idx < 7; idx++) {
+              // Para o dia atual, snapshot de hoje (ou estoque atual)
+              if (idx === diaSemanaHoje) continue;
+              // Procurar o snapshot mais recente daquele dia da semana, cuja data seja anterior a hoje
+              const snap = snapshots.find(s => {
+                const d = new Date(s.date);
+                const weekDay = d.getDay() === 0 ? 6 : d.getDay() - 1;
+                // Data do snapshot deve ser < hoje
+                return weekDay === idx && d < new Date(hoje.toISOString().slice(0, 10));
+              });
+              if (snap) {
+                snapshotByWeekday[idx] = { date: snap.date, totalQuantity: snap.maxQuantity ?? snap.totalQuantity };
+              }
+            }
+            // Estoque atual
+            const totalEstoqueAtual = products.reduce((acc, p) => acc + p.quantity, 0);
+            // Montar dados do gráfico para os 7 dias
+            const maxEstoquePorDia = diasSemana.map((dia, idx) => {
+              // Para o dia atual, mostrar o pico do snapshot de hoje (se houver), senão estoque atual
+              if (idx === diaSemanaHoje) {
+                const snapHoje = snapshots.find(s => s.date === hoje.toISOString().slice(0, 10));
+                return {
+                  dia,
+                  quantidade: snapHoje ? (snapHoje.maxQuantity ?? snapHoje.totalQuantity) : totalEstoqueAtual,
+                  isHoje: true,
+                };
+              }
+              // Para os outros dias, mostrar o pico do snapshot mais recente daquele dia da semana
+              return {
+                dia,
+                quantidade: snapshotByWeekday[idx]?.totalQuantity || 0,
+                isHoje: false,
+              };
+            });
+            // Cores
+            const corBarra = "#60a5fa"; // azul claro
+            const corBarraHoje = "#06b6d4"; // azul escuro
+            const yTicks = [0, 100, 500, 1000, 1500];
+            return (
+              <div style={{ width: "100%", height: 180, marginTop: 0 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={maxEstoquePorDia}
+                    margin={{ top: 8, right: 24, left: 0, bottom: 16 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="dia"
+                      tick={{ fontSize: 13, fill: "#666", fontWeight: 500 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      ticks={yTicks}
+                      domain={[0, 1500]}
+                      tick={{ fontSize: 12, fill: "#888" }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "#e0e7ef", opacity: 0.3 }}
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div
+                              style={{
+                                background: "#fff",
+                                border: "1px solid #e0e0e0",
+                                borderRadius: 8,
+                                padding: "6px 14px",
+                                fontWeight: 600,
+                                fontSize: 14,
+                                color: "#333",
+                                boxShadow: "0 2px 8px #eee",
+                                minWidth: 90,
+                              }}
+                            >
+                              {payload[0].payload.dia}: <b>{payload[0].value}</b> itens
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Bar
+                      dataKey="quantidade"
+                      radius={[6, 6, 0, 0]}
+                      minPointSize={2}
+                    >
+                      {maxEstoquePorDia.map((entry, idx) => (
+                        <Cell
+                          key={`cell-${idx}`}
+                          fill={entry.isHoje ? corBarraHoje : corBarra}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          })()}
+        </div>
       </div>
       {/* Linha de membros, tarefas, outreach e storage */}
       <div style={{ display: "flex", gap: "24px" }}>
@@ -2143,553 +2668,6 @@ const DashboardSection = () => {
               Nenhuma venda encontrada.
             </span>
           )}
-        </div>
-      </div>
-      {/* NOVA LINHA: Box de Categorias + futuras boxes */}
-      <div style={{ display: "flex", gap: 24, marginTop: 0, width: "100%" }}>
-        {/* Box de Categorias */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 24,
-            flex: 1,
-            minWidth: 360,
-            maxWidth: 420,
-            boxShadow: "0 2px 8px #e0e0e0",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "center",
-          }}
-        >
-          <span
-            className="text-gray-400"
-            style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}
-          >
-            Itens do Estoque por Categoria
-          </span>
-          {categoriasData.length === 0 ? (
-            <span style={{ color: "#bbb", fontSize: 15, marginTop: 16 }}>
-              Nenhum produto cadastrado.
-            </span>
-          ) : (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 18,
-                  alignItems: "center",
-                  flexWrap: "nowrap",
-                  minHeight: 120,
-                  justifyContent: "center",
-                  width: "100%",
-                }}
-              >
-                {categoriasPaginaAtual.map((cat, idx) => (
-                  <div
-                    key={cat.name}
-                    style={{
-                      position: "relative",
-                      width: 96,
-                      height: 116,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      marginBottom: 2,
-                      minWidth: 96,
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        width: 86,
-                        height: 86,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <PieChart width={86} height={86}>
-                        <Pie
-                          data={[
-                            cat,
-                            {
-                              ...cat,
-                              value: totalItensCategorias - cat.value,
-                              fill: "#f3f4f6",
-                            },
-                          ]}
-                          dataKey="value"
-                          startAngle={90}
-                          endAngle={-270}
-                          innerRadius={30}
-                          outerRadius={40}
-                          stroke="none"
-                        >
-                          <Cell
-                            key="cat"
-                            fill={
-                              donutColors[
-                                (currentCategoryPage * categoriasPorPagina +
-                                  idx) %
-                                  donutColors.length
-                              ]
-                            }
-                          />
-                          <Cell key="rest" fill="#f3f4f6" />
-                        </Pie>
-                      </PieChart>
-                      <span
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          top: 0,
-                          width: "88px",
-                          height: "88px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 700,
-                          fontSize: 15,
-                          color: "#888",
-                          pointerEvents: "none",
-                        }}
-                      >
-                        {cat.percent}%
-                      </span>
-                    </div>
-                    <span
-                      style={{
-                        fontWeight: 500,
-                        fontSize: 12,
-                        color: "#888",
-                        marginTop: 8,
-                      }}
-                    >
-                      {cat.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {/* Navegação de páginas */}
-              {totalPaginasCategorias > 1 && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: 20,
-                    gap: 10,
-                    width: "100%",
-                  }}
-                >
-                  <button
-                    onClick={prevCategoryPage}
-                    disabled={totalPaginasCategorias <= 1}
-                    style={{
-                      padding: 0,
-                      border: "none",
-                      background: "#F3F4F6",
-                      color: "#616161",
-                      borderRadius: "50%",
-                      cursor:
-                        totalPaginasCategorias <= 1 ? "not-allowed" : "pointer",
-                      fontSize: 16,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 32,
-                      height: 32,
-                      transition: "background 0.2s, color 0.2s",
-                      outline: "none",
-                      opacity: totalPaginasCategorias <= 1 ? 0.5 : 1,
-                    }}
-                    aria-label="Anterior"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M15.5 19L9.5 12L15.5 5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                  <span
-                    style={{ fontSize: 12, color: "#616161", fontWeight: 500 }}
-                  >
-                    {currentCategoryPage + 1} de {totalPaginasCategorias}
-                  </span>
-                  <button
-                    onClick={nextCategoryPage}
-                    disabled={totalPaginasCategorias <= 1}
-                    style={{
-                      padding: 0,
-                      border: "none",
-                      background: "#F3F4F6",
-                      color: "#616161",
-                      borderRadius: "50%",
-                      cursor:
-                        totalPaginasCategorias <= 1 ? "not-allowed" : "pointer",
-                      fontSize: 16,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 32,
-                      height: 32,
-                      transition: "background 0.2s, color 0.2s",
-                      outline: "none",
-                      opacity: totalPaginasCategorias <= 1 ? 0.5 : 1,
-                    }}
-                    aria-label="Próxima"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M8.5 5L14.5 12L8.5 19"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-        {/* Box 2 - Saldo de Vendas */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 24,
-            flex: 1,
-            minWidth: 260,
-            maxWidth: 340,
-            boxShadow: "0 2px 8px #e0e0e0",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            minHeight: 180,
-          }}
-        >
-          <span
-            className="text-gray-400"
-            style={{
-              fontSize: 15,
-              fontWeight: 500,
-              marginBottom: 32,
-              textAlign: "left",
-              width: "100%",
-            }}
-          >
-            Saldo de Vendas
-          </span>
-          {/* Gráfico circular de saldo bruto x líquido */}
-          {sales.length === 0 ? (
-            <span style={{ color: "#bbb", fontSize: 15, marginTop: 16 }}>
-              Nenhuma venda registrada.
-            </span>
-          ) : (
-            <>
-              {(() => {
-                // Cálculo dos saldos
-                const saldoBruto = sales.reduce(
-                  (acc, sale) => acc + sale.salePrice * sale.quantity,
-                  0
-                );
-                const saldoLiquido = sales.reduce(
-                  (acc, sale) => acc + sale.profit - sale.loss,
-                  0
-                );
-                const saldoPerda = saldoBruto - saldoLiquido;
-                const saldoData = [
-                  {
-                    name: "Saldo Líquido",
-                    value: saldoLiquido > 0 ? saldoLiquido : 0,
-                  },
-                  { name: "Perdas", value: saldoPerda > 0 ? saldoPerda : 0 },
-                ];
-                const donutColorsSaldo = ["#a78bfa", "#fbbf24"]; // azul e verde
-                return (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100%",
-                    }}
-                  >
-                    {/* Donut */}
-                    <div
-                      style={{
-                        position: "relative",
-                        width: 120,
-                        height: 120,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginRight: 24,
-                      }}
-                    >
-                      <PieChart width={120} height={120}>
-                        <Pie
-                          data={saldoData}
-                          dataKey="value"
-                          nameKey="name"
-                          startAngle={90}
-                          endAngle={-270}
-                          innerRadius={44}
-                          outerRadius={56}
-                          stroke="none"
-                          onMouseEnter={() => setSaldoTooltipActive(true)}
-                          onMouseLeave={() => setSaldoTooltipActive(false)}
-                        >
-                          {saldoData.map((entry, idx) => (
-                            <Cell
-                              key={entry.name}
-                              fill={
-                                donutColorsSaldo[idx % donutColorsSaldo.length]
-                              }
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip content={<CustomSaldoTooltip />} wrapperStyle={{ outline: 'none' }} />
-                      </PieChart>
-                      {!saldoTooltipActive && (
-                        <span
-                          style={{
-                            position: "absolute",
-                            left: 0,
-                            top: 0,
-                            width: "120px",
-                            height: "120px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontWeight: 600,
-                            fontSize: 15,
-                            color: "#888",
-                            pointerEvents: "none",
-                            textAlign: "center",
-                            flexDirection: "column",
-                          }}
-                        >
-                          {formatarReal(saldoBruto)}
-                        </span>
-                      )}
-                    </div>
-                    {/* Legendas */}
-
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        gap: 16,
-                        marginTop: 'auto',
-                      }}
-                    >
-                      {/* Saldo Bruto */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            background: "#999",
-                            display: "inline-block",
-                            border: "2px solid #999",
-                          }}
-                        ></span>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            lineHeight: 1,
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 13,
-                              color: "#777",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {formatarReal(saldoBruto)}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: 12,
-                              color: "#888",
-                              fontWeight: 500,
-                              marginTop: 1,
-                            }}
-                          >
-                            Saldo Bruto
-                          </span>
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            background: "#a78bfa",
-                            display: "inline-block",
-                            border: "2px solid #a78bfa",
-                          }}
-                        ></span>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            lineHeight: 1,
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 13,
-                              color: "#777",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {formatarReal(saldoLiquido)}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: 12,
-                              color: "#888",
-                              fontWeight: 500,
-                              marginTop: 1,
-                            }}
-                          >
-                            Saldo Líquido
-                          </span>
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            background: "#fbbf24",
-                            display: "inline-block",
-                            border: "2px solid #fbbf24",
-                          }}
-                        ></span>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            lineHeight: 1,
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 13,
-                              color: "#777",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {formatarReal(saldoPerda)}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: 12,
-                              color: "#888",
-                              fontWeight: 500,
-                              marginTop: 1,
-                            }}
-                          >
-                            Custos
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </>
-          )}
-        </div>
-        {/* Box 3 - Em breve */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 18,
-            flex: 1,
-            minWidth: 260,
-            maxWidth: 340,
-            boxShadow: "0 2px 8px #e0e0e0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: 180,
-          }}
-        >
-          <span style={{ color: "#bbb", fontSize: 18, fontWeight: 500 }}>
-            Em breve...
-          </span>
-        </div>
-        {/* Box 3 - Em breve */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 18,
-            flex: 1,
-            minWidth: 260,
-            maxWidth: 340,
-            boxShadow: "0 2px 8px #e0e0e0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: 180,
-          }}
-        >
-          <span style={{ color: "#bbb", fontSize: 18, fontWeight: 500 }}>
-            Em breve...
-          </span>
         </div>
       </div>
     </div>
