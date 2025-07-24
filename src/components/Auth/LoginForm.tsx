@@ -3,14 +3,17 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { useRouter } from "next/router";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const LoginForm: React.FC = () => {
+  console.log("LoginForm renderizou");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  // Remover estados e funções relacionados ao modal de recuperação de senha
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +26,25 @@ const LoginForm: React.FC = () => {
       setError(err.message || "Erro ao fazer login.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Tentando enviar e-mail de recuperação para:', resetEmail);
+    setResetError("");
+    setResetMessage("");
+    setResetLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetMessage("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+      console.log('E-mail de recuperação enviado com sucesso!');
+      // Não fechar o modal automaticamente
+    } catch (err: any) {
+      setResetError(err.message || "Erro ao enviar e-mail de recuperação.");
+      console.error('Erro ao enviar e-mail de recuperação:', err);
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -64,6 +86,7 @@ const LoginForm: React.FC = () => {
         className="text-sm text-[#8a8a8a] hover:underline text-left mb-2 w-fit ml-1"
         tabIndex={-1}
         style={{marginTop: '-.4rem'}}
+        onClick={() => router.push('/forgot-password')}
       >
         Esqueceu sua senha?
       </button>
@@ -81,6 +104,7 @@ const LoginForm: React.FC = () => {
           Cadastre-se
         </button>
       </div>
+      {/* Remover o código do modal de recuperação de senha */}
     </form>
   );
 };
