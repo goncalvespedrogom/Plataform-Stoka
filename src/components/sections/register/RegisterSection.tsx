@@ -308,7 +308,7 @@ const RegisterSection = () => {
     if (!validateFields()) return;
     if (editingProduct) {
       const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
-      await updateProduct(editingProduct.id as string, {
+      await updateProduct(editingProduct.id.toString(), {
         ...newProduct,
         totalValue,
         date: newProduct.date,
@@ -353,7 +353,7 @@ const RegisterSection = () => {
 
   // Função para incrementar a quantidade de um produto na tabela
   const handleIncrementProductQuantity = async (productId: string) => {
-    const product = products.find(p => p.id === productId);
+    const product = products.find(p => p.id.toString() === productId);
     if (product) {
       const newQuantity = Number(product.quantity) + 1;
       await updateProduct(productId, {
@@ -365,7 +365,7 @@ const RegisterSection = () => {
 
   // Função para decrementar a quantidade de um produto na tabela
   const handleDecrementProductQuantity = async (productId: string) => {
-    const product = products.find(p => p.id === productId);
+    const product = products.find(p => p.id.toString() === productId);
     if (product) {
       const newQuantity = Math.max(0, Number(product.quantity) - 1);
       await updateProduct(productId, {
@@ -598,14 +598,14 @@ const RegisterSection = () => {
                       <IoTrash size={18} className="text-gray-500" />
                     </button>
                     <button
-                      onClick={() => handleIncrementProductQuantity(product.id)}
+                      onClick={() => handleIncrementProductQuantity(product.id.toString())}
                       className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Adicionar quantidade"
                     >
                       <IoMdAdd size={18} className="text-gray-500" />
                     </button>
                     <button
-                      onClick={() => handleDecrementProductQuantity(product.id)}
+                      onClick={() => handleDecrementProductQuantity(product.id.toString())}
                       className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition"
                       title="Diminuir quantidade"
                     >
