@@ -211,7 +211,7 @@ const TasksSection = () => {
         <div className="relative w-44">
           <Listbox value={selectedPriorityFilter} onChange={setSelectedPriorityFilter}>
             <div className="relative">
-              <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between text-sm font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm`}>
+              <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between text-sm font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]`}>
                 <span className="block truncate">
                   {selectedPriorityFilter || 'Todas as prioridades'}
                 </span>

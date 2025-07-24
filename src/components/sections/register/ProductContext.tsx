@@ -45,11 +45,19 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     const q = query(collection(db, 'products'), where('userId', '==', user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const prods: Product[] = snapshot.docs.map(docSnap => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-        date: docSnap.data().date ? docSnap.data().date.toDate ? docSnap.data().date.toDate() : new Date(docSnap.data().date) : undefined,
-      }) as Product);
+      const prods: Product[] = snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+          id: Number(docSnap.id) || 0, // Conversão para number, fallback para 0
+          name: data.name || '',
+          category: data.category || '',
+          quantity: typeof data.quantity === 'number' ? data.quantity : 0,
+          unitPrice: typeof data.unitPrice === 'number' ? data.unitPrice : 0,
+          totalValue: typeof data.totalValue === 'number' ? data.totalValue : 0,
+          date: data.date ? (data.date.toDate ? data.date.toDate() : new Date(data.date)) : new Date(),
+          description: data.description || '',
+        } as Product;
+      });
       setProducts(prods);
       setLoading(false);
     });
