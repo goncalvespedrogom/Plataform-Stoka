@@ -259,7 +259,7 @@ export default function Sidebar() {
                 <div className="flex gap-4 w-full justify-center">
                   <button
                     onClick={handleCancelLogout}
-                    className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition text-sm"
+                    className="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
                   >
                     Cancelar
                   </button>

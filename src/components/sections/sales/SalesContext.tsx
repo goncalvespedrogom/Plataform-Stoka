@@ -40,11 +40,19 @@ export const SalesProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     const q = query(collection(db, 'sales'), where('userId', '==', user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const sals: Sale[] = snapshot.docs.map(docSnap => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-        saleDate: docSnap.data().saleDate ? docSnap.data().saleDate.toDate ? docSnap.data().saleDate.toDate() : new Date(docSnap.data().saleDate) : undefined,
-      }) as Sale);
+      const sals: Sale[] = snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+          id: Number(docSnap.id) || 0,
+          productId: typeof data.productId === 'number' ? data.productId : 0,
+          productName: data.productName || '',
+          quantity: typeof data.quantity === 'number' ? data.quantity : 0,
+          salePrice: typeof data.salePrice === 'number' ? data.salePrice : 0,
+          saleDate: data.saleDate ? (data.saleDate.toDate ? data.saleDate.toDate() : new Date(data.saleDate)) : new Date(),
+          profit: typeof data.profit === 'number' ? data.profit : 0,
+          loss: typeof data.loss === 'number' ? data.loss : 0,
+        } as Sale;
+      });
       setSales(sals);
       setLoading(false);
     });

@@ -40,12 +40,19 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     const q = query(collection(db, 'tasks'), where('userId', '==', user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const tsks: Task[] = snapshot.docs.map(docSnap => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-        dueDate: docSnap.data().dueDate ? docSnap.data().dueDate.toDate ? docSnap.data().dueDate.toDate() : new Date(docSnap.data().dueDate) : undefined,
-        createdAt: docSnap.data().createdAt ? docSnap.data().createdAt.toDate ? docSnap.data().createdAt.toDate() : new Date(docSnap.data().createdAt) : undefined,
-      }) as Task);
+      const tsks: Task[] = snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+          id: Number(docSnap.id) || 0,
+          title: data.title || '',
+          description: data.description || '',
+          priority: data.priority || 'média',
+          status: data.status || 'pendente',
+          dueDate: data.dueDate ? (data.dueDate.toDate ? data.dueDate.toDate() : new Date(data.dueDate)) : new Date(),
+          createdAt: data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt)) : new Date(),
+          completedAt: data.completedAt ? (data.completedAt.toDate ? data.completedAt.toDate() : new Date(data.completedAt)) : undefined,
+        } as Task;
+      });
       setTasks(tsks);
       setLoading(false);
     });
