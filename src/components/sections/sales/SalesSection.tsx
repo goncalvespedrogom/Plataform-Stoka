@@ -108,7 +108,7 @@ const SalesSectionContent = () => {
     const unitProfit = price - selectedProduct.unitPrice;
     const totalProfit = unitProfit * quantity;
     // Atualizar estoque do produto
-    await updateProduct(selectedProduct.id.toString(), {
+    await updateProduct(selectedProduct.id, {
       quantity: Math.max(0, Number(selectedProduct.quantity) - quantity)
     });
     // Registrar venda
