@@ -308,7 +308,7 @@ const RegisterSection = () => {
     if (!validateFields()) return;
     if (editingProduct) {
       const totalValue = calculateTotalValue(newProduct.quantity, newProduct.unitPrice);
-      await updateProduct(editingProduct.id.toString(), {
+      await updateProduct(editingProduct.id, {
         ...newProduct,
         totalValue,
         date: newProduct.date,
@@ -332,7 +332,7 @@ const RegisterSection = () => {
 
   const handleConfirmDelete = async () => {
     if (productToDelete) {
-      await handleRemoveProduct(productToDelete.id.toString());
+      await handleRemoveProduct(productToDelete.id);
       setShowDeleteModal(false);
       setProductToDelete(null);
     }

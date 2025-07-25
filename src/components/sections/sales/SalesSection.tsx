@@ -143,7 +143,7 @@ const SalesSectionContent = () => {
 
   const handleConfirmDelete = async () => {
     if (saleToDelete) {
-      await handleRemoveSale(saleToDelete.id.toString());
+      await handleRemoveSale(saleToDelete.id);
       setShowDeleteModal(false);
       setSaleToDelete(null);
     }

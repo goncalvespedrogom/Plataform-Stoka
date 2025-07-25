@@ -13,6 +13,12 @@ type SortableKeys = 'title' | 'priority' | 'status' | 'dueDate' | 'createdAt';
 const PRIORITIES = ['baixa', 'média', 'alta'];
 const STATUS_OPTIONS = ['pendente', 'em_andamento', 'concluída'];
 
+function formatLabel(value: string) {
+  return value
+    .replace(/_/g, ' ')
+    .replace(/(^|\s)([a-zá-ú])/g, (match) => match.toUpperCase());
+}
+
 const TasksSection = () => {
   const [isClient, setIsClient] = useState(false);
   const { tasks, addTask, updateTask, removeTask } = useTaskContext();
@@ -151,8 +157,8 @@ const TasksSection = () => {
     setErrors({});
     setIsModalOpen(false);
   };
-  const handleRemoveTask = async (taskId: number) => {
-    await removeTask(taskId.toString());
+  const handleRemoveTask = async (taskId: string) => {
+    await removeTask(taskId);
   };
   const handleDeleteClick = (task: Task) => {
     setTaskToDelete(task);
@@ -213,7 +219,7 @@ const TasksSection = () => {
             <div className="relative">
               <Listbox.Button className={`bg-[#fff] shadow ${selectedPriorityFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between text-sm font-medium transition-opacity duration-200 hover:bg-[#ffffff7c]`}>
                 <span className="block truncate">
-                  {selectedPriorityFilter || 'Todas as prioridades'}
+                  {selectedPriorityFilter ? formatLabel(selectedPriorityFilter) : 'Todas as prioridades'}
                 </span>
                 <HiSelector className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
               </Listbox.Button>
@@ -224,7 +230,7 @@ const TasksSection = () => {
                   </Listbox.Option>
                   {PRIORITIES.map((priority) => (
                     <Listbox.Option key={priority} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'}`} value={priority}>
-                      {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{priority.charAt(0).toUpperCase() + priority.slice(1)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
+                      {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{formatLabel(priority)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
                     </Listbox.Option>
                   ))}
                 </Listbox.Options>
@@ -238,7 +244,7 @@ const TasksSection = () => {
             <div className="relative">
               <Listbox.Button className={`bg-[#fff] shadow ${selectedStatusFilter ? 'text-[#231f20]' : 'text-gray-400'} px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm`}>
                 <span className="block truncate">
-                  {selectedStatusFilter || 'Todos os status'}
+                  {selectedStatusFilter ? formatLabel(selectedStatusFilter) : 'Todos os status'}
                 </span>
                 <HiSelector className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
               </Listbox.Button>
@@ -249,7 +255,7 @@ const TasksSection = () => {
                   </Listbox.Option>
                   {STATUS_OPTIONS.map((status) => (
                     <Listbox.Option key={status} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'}`} value={status}>
-                      {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{status.replace('_', ' ').charAt(0).toUpperCase() + status.replace('_', ' ').slice(1)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
+                      {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{formatLabel(status)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
                     </Listbox.Option>
                   ))}
                 </Listbox.Options>
@@ -323,10 +329,10 @@ const TasksSection = () => {
               <tr key={task.id}>
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">{task.title}</td>
                 <td className="p-3 border-b border-[#e0e0e0]">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getPriorityColor(task.priority)}`}>{task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getPriorityColor(task.priority)}`}>{formatLabel(task.priority)}</span>
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0]">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getStatusColor(task.status)}`}>{task.status.replace('_', ' ').charAt(0).toUpperCase() + task.status.replace('_', ' ').slice(1)}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getStatusColor(task.status)}`}>{formatLabel(task.status)}</span>
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   <span>{formatDate(task.dueDate)}</span>
@@ -356,7 +362,7 @@ const TasksSection = () => {
         {sortedTasks.length === 0 && (
           <div className="text-center pt-10 pb-3 text-gray-400 text-sm">
             {searchTerm || selectedPriorityFilter || selectedStatusFilter
-              ? `Nenhuma tarefa encontrada${searchTerm ? ` com o termo "${searchTerm}"` : ''}${selectedPriorityFilter ? ` com prioridade "${selectedPriorityFilter}"` : ''}${selectedStatusFilter ? ` com status "${selectedStatusFilter}"` : ''}.`
+              ? `Nenhuma tarefa encontrada${searchTerm ? ` com o termo "${searchTerm}"` : ''}${selectedPriorityFilter ? ` com prioridade "${formatLabel(selectedPriorityFilter)}"` : ''}${selectedStatusFilter ? ` com status "${formatLabel(selectedStatusFilter)}"` : ''}.`
               : 'Não há tarefas cadastradas no momento.'}
           </div>
         )}
@@ -400,14 +406,14 @@ const TasksSection = () => {
               <Listbox value={newTask.priority} onChange={(priority) => setNewTask({ ...newTask, priority })}>
                 <div className="relative">
                   <Listbox.Button className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm">
-                    <span className="block truncate">{newTask.priority.charAt(0).toUpperCase() + newTask.priority.slice(1)}</span>
+                    <span className="block truncate">{formatLabel(newTask.priority)}</span>
                     <HiSelector className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
                   </Listbox.Button>
                   <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
                     <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                       {PRIORITIES.map((priority) => (
                         <Listbox.Option key={priority} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'}`} value={priority}>
-                          {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{priority.charAt(0).toUpperCase() + priority.slice(1)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
+                          {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{formatLabel(priority)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
                         </Listbox.Option>
                       ))}
                     </Listbox.Options>
@@ -420,14 +426,14 @@ const TasksSection = () => {
               <Listbox value={newTask.status} onChange={(status) => setNewTask({ ...newTask, status })}>
                 <div className="relative">
                   <Listbox.Button className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-full flex items-center justify-between font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm">
-                    <span className="block truncate">{newTask.status.replace('_', ' ').charAt(0).toUpperCase() + newTask.status.replace('_', ' ').slice(1)}</span>
+                    <span className="block truncate">{formatLabel(newTask.status)}</span>
                     <HiSelector className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
                   </Listbox.Button>
                   <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
                     <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                       {STATUS_OPTIONS.map((status) => (
                         <Listbox.Option key={status} className={({ active }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-900'}`} value={status}>
-                          {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{status.replace('_', ' ').charAt(0).toUpperCase() + status.replace('_', ' ').slice(1)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
+                          {({ selected }) => (<><span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{formatLabel(status)}</span>{selected ? (<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600"><HiCheck className="h-5 w-5" aria-hidden="true" /></span>) : null}</>)}
                         </Listbox.Option>
                       ))}
                     </Listbox.Options>
@@ -481,11 +487,11 @@ const TasksSection = () => {
               <div className="flex flex-row gap-4 items-center">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 text-xs font-medium">Prioridade</span>
-                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(detailModalTask.priority)}`}>{detailModalTask.priority.charAt(0).toUpperCase() + detailModalTask.priority.slice(1)}</span>
+                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(detailModalTask.priority)}`}>{formatLabel(detailModalTask.priority)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 text-xs font-medium">Status</span>
-                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(detailModalTask.status)}`}>{detailModalTask.status.replace('_', ' ').charAt(0).toUpperCase() + detailModalTask.status.replace('_', ' ').slice(1)}</span>
+                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(detailModalTask.status)}`}>{formatLabel(detailModalTask.status)}</span>
                 </div>
               </div>
               {/* Grupo: Datas */}

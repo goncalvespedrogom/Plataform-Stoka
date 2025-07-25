@@ -48,7 +48,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
       const prods: Product[] = snapshot.docs.map(docSnap => {
         const data = docSnap.data();
         return {
-          id: Number(docSnap.id) || 0, // Conversão para number, fallback para 0
+          id: docSnap.id, // Corrigido para string
           name: data.name || '',
           category: data.category || '',
           quantity: typeof data.quantity === 'number' ? data.quantity : 0,

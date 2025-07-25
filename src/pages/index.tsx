@@ -1,10 +1,12 @@
 import Sidebar from "../components/Sidebar";
+import PlatformLayout from "../components/PlatformLayout";
 
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-[#f5f6fa] flex">
-      <Sidebar />
-      <main className="flex-1"></main>
-    </div>
-  );
+function HomePage() {
+  return <div className="flex-1"></div>;
 }
+
+HomePage.getLayout = function getLayout(page: React.ReactNode) {
+  return <PlatformLayout>{page}</PlatformLayout>;
+};
+
+export default HomePage;

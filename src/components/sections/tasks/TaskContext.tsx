@@ -43,7 +43,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       const tsks: Task[] = snapshot.docs.map(docSnap => {
         const data = docSnap.data();
         return {
-          id: Number(docSnap.id) || 0,
+          id: docSnap.id, // Corrigido para string
           title: data.title || '',
           description: data.description || '',
           priority: data.priority || 'média',
