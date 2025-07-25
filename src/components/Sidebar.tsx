@@ -12,6 +12,7 @@ import { SalesProvider } from './sections/sales/SalesContext';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useRouter } from "next/router";
+import SettingsSection from './sections/settings';
 
 export default function Sidebar() {
   const [selectedSection, setSelectedSection] = useState('dashboard');
@@ -55,6 +56,8 @@ export default function Sidebar() {
         return <RegisterSection />;
       case 'sales':
         return <SalesSection />;
+      case 'settings':
+        return <SettingsSection />;
       default:
         return (
           <SalesProvider>
@@ -221,16 +224,6 @@ export default function Sidebar() {
               onClick={() => handleSectionClick('settings')}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
                 selectedSection === 'settings' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
-              }`}
-            >
-              <FaCog size={19} />
-              {isSidebarOpen && 'Configurações'}
-            </a>
-            <a 
-              href="#" 
-              onClick={() => handleSectionClick('profile')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
-                selectedSection === 'profile' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
             >
               <FaUser size={19} />
