@@ -35,7 +35,7 @@ const SalesSectionContent = () => {
   const [saleQuantity, setSaleQuantity] = useState(1);
   const [error, setError] = useState('');
   const [formattedSalePrice, setFormattedSalePrice] = useState('');
-  const [hiddenSales, setHiddenSales] = useState<number[]>([]);
+  const [hiddenSales, setHiddenSales] = useState<string[]>([]);
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [resetReferenceDate, setResetReferenceDate] = useState<Date | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -127,7 +127,7 @@ const SalesSectionContent = () => {
   };
 
   // Função para ocultar venda visualmente
-  const handleHideSale = (saleId: number) => {
+  const handleHideSale = (saleId: string) => {
     setHiddenSales(prev => [...prev, saleId]);
   };
 
