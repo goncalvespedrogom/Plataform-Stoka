@@ -44,7 +44,7 @@ export const SalesProvider = ({ children }: { children: ReactNode }) => {
         const data = docSnap.data();
         return {
           id: docSnap.id, // Corrigido para string
-          productId: typeof data.productId === 'number' ? data.productId : 0,
+          productId: typeof data.productId === 'string' ? data.productId : String(data.productId ?? ''),
           productName: data.productName || '',
           quantity: typeof data.quantity === 'number' ? data.quantity : 0,
           salePrice: typeof data.salePrice === 'number' ? data.salePrice : 0,
