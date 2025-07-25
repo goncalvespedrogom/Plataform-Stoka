@@ -3,7 +3,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { useRouter } from "next/router";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { sendPasswordResetEmail } from "firebase/auth";
 
 const LoginForm: React.FC = () => {
   console.log("LoginForm renderizou");
@@ -26,25 +25,6 @@ const LoginForm: React.FC = () => {
       setError(err.message || "Erro ao fazer login.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handlePasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Tentando enviar e-mail de recuperação para:', resetEmail);
-    setResetError("");
-    setResetMessage("");
-    setResetLoading(true);
-    try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      setResetMessage("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
-      console.log('E-mail de recuperação enviado com sucesso!');
-      // Não fechar o modal automaticamente
-    } catch (err: any) {
-      setResetError(err.message || "Erro ao enviar e-mail de recuperação.");
-      console.error('Erro ao enviar e-mail de recuperação:', err);
-    } finally {
-      setResetLoading(false);
     }
   };
 
