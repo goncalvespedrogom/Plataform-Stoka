@@ -115,7 +115,21 @@ const DashboardSection = () => {
     "#818cf8",
   ];
   // --- Variáveis de paginação das categorias ---
-  const categoriasPorPagina = 3;
+  const [categoriasPorPagina, setCategoriasPorPagina] = useState(3);
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 370) {
+        setCategoriasPorPagina(1);
+      } else if (window.innerWidth < 480) {
+        setCategoriasPorPagina(2);
+      } else {
+        setCategoriasPorPagina(3);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const totalPaginasCategorias = Math.ceil(
     categoriasData.length / categoriasPorPagina
   );
@@ -213,6 +227,36 @@ const DashboardSection = () => {
     if (!user) return;
     getAllSnapshotsByUser(user.uid).then(setSnapshots);
   }, [user]);
+
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsNarrow(window.innerWidth < 1540);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const [isVerySmall, setIsVerySmall] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsVerySmall(window.innerWidth < 410);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const [showTaskFilters, setShowTaskFilters] = useState(true);
+  useEffect(() => {
+    const handleResize = () => {
+      setShowTaskFilters(window.innerWidth >= 505);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   if (loading || !user || !isClient) {
     return <div className="text-center mt-10">Carregando...</div>;
@@ -365,9 +409,10 @@ const DashboardSection = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
       {/* NOVA PRIMEIRA LINHA: Boxes de Categorias, Saldo de Vendas e Quantidade Semanal do Estoque */}
-      <div style={{ display: "flex", gap: 24, marginTop: 0, width: "100%" }}>
+      <div className="dashboard-boxes-row" style={{ display: "flex", gap: 24, marginTop: 0, width: "100%" }}>
         {/* Box de Categorias */}
         <div
+          className="dashboard-box-categorias"
           style={{
             background: "#fff",
             borderRadius: 16,
@@ -385,7 +430,7 @@ const DashboardSection = () => {
           }}
         >
           <span
-            className="text-gray-400"
+            className="text-gray-400 dashboard-categorias-title"
             style={{
               position: "absolute",
               top: 23,
@@ -403,6 +448,7 @@ const DashboardSection = () => {
           ) : (
             <>
               <div
+                className="dashboard-categorias-circles"
                 style={{
                   display: "flex",
                   gap: 18,
@@ -502,6 +548,7 @@ const DashboardSection = () => {
               {/* Navegação de páginas */}
               {totalPaginasCategorias > 1 && (
                 <div
+                  className="dashboard-categorias-pagination"
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -602,6 +649,7 @@ const DashboardSection = () => {
         </div>
         {/* Box 2 - Saldo de Vendas */}
         <div
+          className="dashboard-box-saldo-vendas"
           style={{
             background: "#fff",
             borderRadius: 16,
@@ -659,6 +707,7 @@ const DashboardSection = () => {
                 const donutColorsSaldo = ["#a78bfa", "#fbbf24"];
                 return (
                   <div
+                    className="dashboard-saldo-grafico-legenda"
                     style={{
                       display: "flex",
                       flexDirection: "row",
@@ -672,8 +721,8 @@ const DashboardSection = () => {
                       boxSizing: "border-box",
                     }}
                   >
-                    {/* Donut */}
                     <div
+                      className="dashboard-saldo-grafico-donut"
                       style={{
                         position: "relative",
                         width: 140,
@@ -740,25 +789,12 @@ const DashboardSection = () => {
                         </span>
                       )}
                     </div>
-                    {/* Legendas */}
                     <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        gap: 16,
-                        marginTop: 0,
-                        justifyContent: "center",
-                        height: "100%",
-                      }}
+                      className="dashboard-saldo-legendas"
                     >
                       {/* Saldo Bruto */}
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
+                        className="dashboard-saldo-legenda-item"
                       >
                         <span
                           style={{
@@ -794,16 +830,12 @@ const DashboardSection = () => {
                               marginTop: 1,
                             }}
                           >
-                            Saldo Bruto
+                            {isVerySmall ? 'Bruto' : 'Saldo Bruto'}
                           </span>
                         </div>
                       </div>
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
+                        className="dashboard-saldo-legenda-item"
                       >
                         <span
                           style={{
@@ -839,16 +871,12 @@ const DashboardSection = () => {
                               marginTop: 1,
                             }}
                           >
-                            Saldo Líquido
+                            {isVerySmall ? 'Líquido' : 'Saldo Líquido'}
                           </span>
                         </div>
                       </div>
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
+                        className="dashboard-saldo-legenda-item"
                       >
                         <span
                           style={{
@@ -895,172 +923,342 @@ const DashboardSection = () => {
             </>
           )}
         </div>
-        {/* Box 3 - Quantidade Semanal do Estoque */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 24,
-            flex: 2,
-            minHeight: 200,
-            boxShadow: "0 2px 8px #e0e0e0",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            position: "relative",
-          }}
-        >
-          <span
-            className="text-gray-400"
+        {!isNarrow && (
+          // Box 3 - Quantidade Semanal do Estoque
+          <div
+            className="dashboard-box-quantidade-semanal"
             style={{
-              fontSize: 14,
-              fontWeight: 500,
-              marginBottom: 32,
-              textAlign: "left",
-              width: "100%",
+              background: "#fff",
+              borderRadius: 16,
+              padding: 24,
+              flex: 2,
+              minHeight: 200,
+              boxShadow: "0 2px 8px #e0e0e0",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              position: "relative",
             }}
           >
-            Quantidade Semanal do Estoque
-          </span>
-          {/* Gráfico de barras semanal do estoque */}
-          {(() => {
-            // Dias da semana (segunda a domingo)
-            const diasSemana = [
-              "Segunda",
-              "Terça",
-              "Quarta",
-              "Quinta",
-              "Sexta",
-              "Sábado",
-              "Domingo",
-            ];
-            // Data de hoje
-            const hoje = new Date();
-            const diaSemanaHoje = hoje.getDay() === 0 ? 6 : hoje.getDay() - 1; // 0=Domingo, 1=Segunda...
-            // Para cada dia da semana, encontrar o snapshot mais recente daquele dia
-            const snapshotByWeekday: {
-              [idx: number]: { date: string; totalQuantity: number };
-            } = {};
-            for (let idx = 0; idx < 7; idx++) {
-              // Para o dia atual, snapshot de hoje (ou estoque atual)
-              if (idx === diaSemanaHoje) continue;
-              // Procurar o snapshot mais recente daquele dia da semana, cuja data seja anterior a hoje
-              const snap = snapshots.find((s) => {
-                const d = new Date(s.date);
-                const weekDay = d.getDay() === 0 ? 6 : d.getDay() - 1;
-                // Data do snapshot deve ser < hoje
-                return (
-                  weekDay === idx &&
-                  d < new Date(hoje.toISOString().slice(0, 10))
-                );
-              });
-              if (snap) {
-                snapshotByWeekday[idx] = {
-                  date: snap.date,
-                  totalQuantity: snap.maxQuantity ?? snap.totalQuantity,
-                };
+            <span
+              className="text-gray-400"
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                marginBottom: 32,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Quantidade Semanal do Estoque
+            </span>
+            {/* Gráfico de barras semanal do estoque */}
+            {(() => {
+              // Dias da semana (segunda a domingo)
+              const diasSemana = [
+                "Segunda",
+                "Terça",
+                "Quarta",
+                "Quinta",
+                "Sexta",
+                "Sábado",
+                "Domingo",
+              ];
+              // Data de hoje
+              const hoje = new Date();
+              const diaSemanaHoje = hoje.getDay() === 0 ? 6 : hoje.getDay() - 1; // 0=Domingo, 1=Segunda...
+              // Para cada dia da semana, encontrar o snapshot mais recente daquele dia
+              const snapshotByWeekday: {
+                [idx: number]: { date: string; totalQuantity: number };
+              } = {};
+              for (let idx = 0; idx < 7; idx++) {
+                // Para o dia atual, snapshot de hoje (ou estoque atual)
+                if (idx === diaSemanaHoje) continue;
+                // Procurar o snapshot mais recente daquele dia da semana, cuja data seja anterior a hoje
+                const snap = snapshots.find((s) => {
+                  const d = new Date(s.date);
+                  const weekDay = d.getDay() === 0 ? 6 : d.getDay() - 1;
+                  // Data do snapshot deve ser < hoje
+                  return (
+                    weekDay === idx &&
+                    d < new Date(hoje.toISOString().slice(0, 10))
+                  );
+                });
+                if (snap) {
+                  snapshotByWeekday[idx] = {
+                    date: snap.date,
+                    totalQuantity: snap.maxQuantity ?? snap.totalQuantity,
+                  };
+                }
               }
-            }
-            // Estoque atual
-            const totalEstoqueAtual = products.reduce(
-              (acc, p) => acc + p.quantity,
-              0
-            );
-            // Montar dados do gráfico para os 7 dias
-            const maxEstoquePorDia = diasSemana.map((dia, idx) => {
-              // Para o dia atual, mostrar o pico do snapshot de hoje (se houver), senão estoque atual
-              if (idx === diaSemanaHoje) {
-                const snapHoje = snapshots.find(
-                  (s) => s.date === hoje.toISOString().slice(0, 10)
-                );
+              // Estoque atual
+              const totalEstoqueAtual = products.reduce(
+                (acc, p) => acc + p.quantity,
+                0
+              );
+              // Montar dados do gráfico para os 7 dias
+              const maxEstoquePorDia = diasSemana.map((dia, idx) => {
+                // Para o dia atual, mostrar o pico do snapshot de hoje (se houver), senão estoque atual
+                if (idx === diaSemanaHoje) {
+                  const snapHoje = snapshots.find(
+                    (s) => s.date === hoje.toISOString().slice(0, 10)
+                  );
+                  return {
+                    dia,
+                    quantidade: snapHoje
+                      ? snapHoje.maxQuantity ?? snapHoje.totalQuantity
+                      : totalEstoqueAtual,
+                    isHoje: true,
+                  };
+                }
+                // Para os outros dias, mostrar o pico do snapshot mais recente daquele dia da semana
                 return {
                   dia,
-                  quantidade: snapHoje
-                    ? snapHoje.maxQuantity ?? snapHoje.totalQuantity
-                    : totalEstoqueAtual,
-                  isHoje: true,
+                  quantidade: snapshotByWeekday[idx]?.totalQuantity || 0,
+                  isHoje: false,
                 };
-              }
-              // Para os outros dias, mostrar o pico do snapshot mais recente daquele dia da semana
-              return {
-                dia,
-                quantidade: snapshotByWeekday[idx]?.totalQuantity || 0,
-                isHoje: false,
-              };
-            });
-            // Cores
-            const corBarra = "#60a5fa"; // azul claro
-            const corBarraHoje = "#06b6d4"; // azul escuro
-            const yTicks = [0, 100, 500, 1000, 1500];
-            return (
-              <div style={{ width: "100%", height: 180, marginTop: 0 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={maxEstoquePorDia}
-                    margin={{ top: 8, right: 24, left: 0, bottom: 16 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="dia"
-                      tick={{ fontSize: 12, fill: "#666", fontWeight: 500 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      ticks={yTicks}
-                      domain={[0, 1500]}
-                      tick={{ fontSize: 12, fill: "#888" }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      cursor={{ fill: "#e0e7ef", opacity: 0.3 }}
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div
-                              style={{
-                                background: "#fff",
-                                border: "1px solid #e0e0e0",
-                                borderRadius: 8,
-                                padding: "6px 14px",
-                                fontWeight: 600,
-                                fontSize: 12,
-                                color: "#333",
-                                boxShadow: "1px 2px 5px #bbb",
-                                minWidth: 90,
-                              }}
-                            >
-                              {payload[0].payload.dia}:{" "}
-                              <b>{payload[0].value}</b> itens
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Bar
-                      dataKey="quantidade"
-                      radius={[6, 6, 0, 0]}
-                      minPointSize={2}
+              });
+              // Cores
+              const corBarra = "#60a5fa"; // azul claro
+              const corBarraHoje = "#06b6d4"; // azul escuro
+              const yTicks = [0, 100, 500, 1000, 1500];
+              return (
+                <div style={{ width: "100%", height: 180, marginTop: 0 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={maxEstoquePorDia}
+                      margin={{ top: 8, right: 24, left: 0, bottom: 16 }}
                     >
-                      {maxEstoquePorDia.map((entry, idx) => (
-                        <Cell
-                          key={`cell-${idx}`}
-                          fill={entry.isHoje ? corBarraHoje : corBarra}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            );
-          })()}
-        </div>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="dia"
+                        tick={{ fontSize: 12, fill: "#666", fontWeight: 500, className: "dashboard-estoque-xaxis-tick" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        ticks={yTicks}
+                        domain={[0, 1500]}
+                        tick={{ fontSize: 12, fill: "#888" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        cursor={{ fill: "#e0e7ef", opacity: 0.3 }}
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div
+                                style={{
+                                  background: "#fff",
+                                  border: "1px solid #e0e0e0",
+                                  borderRadius: 8,
+                                  padding: "6px 14px",
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  color: "#333",
+                                  boxShadow: "1px 2px 5px #bbb",
+                                  minWidth: 90,
+                                }}
+                              >
+                                {payload[0].payload.dia}:{" "}
+                                <b>{payload[0].value}</b> itens
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar
+                        dataKey="quantidade"
+                        radius={[6, 6, 0, 0]}
+                        minPointSize={2}
+                      >
+                        {maxEstoquePorDia.map((entry, idx) => (
+                          <Cell
+                            key={`cell-${idx}`}
+                            fill={entry.isHoje ? corBarraHoje : corBarra}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              );
+            })()}
+          </div>
+        )}
       </div>
+      {isNarrow && (
+        <div className="dashboard-boxes-row-estoque">
+          <div
+            className="dashboard-box-quantidade-semanal"
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: 24,
+              flex: 2,
+              minHeight: 200,
+              boxShadow: "0 2px 8px #e0e0e0",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              position: "relative",
+            }}
+          >
+            <span
+              className="text-gray-400"
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                marginBottom: 32,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Quantidade Semanal do Estoque
+            </span>
+            {/* Gráfico de barras semanal do estoque */}
+            {(() => {
+              // Dias da semana (segunda a domingo)
+              const diasSemana = [
+                "Segunda",
+                "Terça",
+                "Quarta",
+                "Quinta",
+                "Sexta",
+                "Sábado",
+                "Domingo",
+              ];
+              // Data de hoje
+              const hoje = new Date();
+              const diaSemanaHoje = hoje.getDay() === 0 ? 6 : hoje.getDay() - 1; // 0=Domingo, 1=Segunda...
+              // Para cada dia da semana, encontrar o snapshot mais recente daquele dia
+              const snapshotByWeekday: {
+                [idx: number]: { date: string; totalQuantity: number };
+              } = {};
+              for (let idx = 0; idx < 7; idx++) {
+                // Para o dia atual, snapshot de hoje (ou estoque atual)
+                if (idx === diaSemanaHoje) continue;
+                // Procurar o snapshot mais recente daquele dia da semana, cuja data seja anterior a hoje
+                const snap = snapshots.find((s) => {
+                  const d = new Date(s.date);
+                  const weekDay = d.getDay() === 0 ? 6 : d.getDay() - 1;
+                  // Data do snapshot deve ser < hoje
+                  return (
+                    weekDay === idx &&
+                    d < new Date(hoje.toISOString().slice(0, 10))
+                  );
+                });
+                if (snap) {
+                  snapshotByWeekday[idx] = {
+                    date: snap.date,
+                    totalQuantity: snap.maxQuantity ?? snap.totalQuantity,
+                  };
+                }
+              }
+              // Estoque atual
+              const totalEstoqueAtual = products.reduce(
+                (acc, p) => acc + p.quantity,
+                0
+              );
+              // Montar dados do gráfico para os 7 dias
+              const maxEstoquePorDia = diasSemana.map((dia, idx) => {
+                // Para o dia atual, mostrar o pico do snapshot de hoje (se houver), senão estoque atual
+                if (idx === diaSemanaHoje) {
+                  const snapHoje = snapshots.find(
+                    (s) => s.date === hoje.toISOString().slice(0, 10)
+                  );
+                  return {
+                    dia,
+                    quantidade: snapHoje
+                      ? snapHoje.maxQuantity ?? snapHoje.totalQuantity
+                      : totalEstoqueAtual,
+                    isHoje: true,
+                  };
+                }
+                // Para os outros dias, mostrar o pico do snapshot mais recente daquele dia da semana
+                return {
+                  dia,
+                  quantidade: snapshotByWeekday[idx]?.totalQuantity || 0,
+                  isHoje: false,
+                };
+              });
+              // Cores
+              const corBarra = "#60a5fa"; // azul claro
+              const corBarraHoje = "#06b6d4"; // azul escuro
+              const yTicks = [0, 100, 500, 1000, 1500];
+              return (
+                <div style={{ width: "100%", height: 180, marginTop: 0 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={maxEstoquePorDia}
+                      margin={{ top: 8, right: 24, left: 0, bottom: 16 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="dia"
+                        tick={{ fontSize: 12, fill: "#666", fontWeight: 500, className: "dashboard-estoque-xaxis-tick" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        ticks={yTicks}
+                        domain={[0, 1500]}
+                        tick={{ fontSize: 12, fill: "#888" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        cursor={{ fill: "#e0e7ef", opacity: 0.3 }}
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div
+                                style={{
+                                  background: "#fff",
+                                  border: "1px solid #e0e0e0",
+                                  borderRadius: 8,
+                                  padding: "6px 14px",
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  color: "#333",
+                                  boxShadow: "1px 2px 5px #bbb",
+                                  minWidth: 90,
+                                }}
+                              >
+                                {payload[0].payload.dia}:{" "}
+                                <b>{payload[0].value}</b> itens
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar
+                        dataKey="quantidade"
+                        radius={[6, 6, 0, 0]}
+                        minPointSize={2}
+                      >
+                        {maxEstoquePorDia.map((entry, idx) => (
+                          <Cell
+                            key={`cell-${idx}`}
+                            fill={entry.isHoje ? corBarraHoje : corBarra}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
       {/* Linha de membros, tarefas, outreach e storage */}
-      <div style={{ display: "flex", gap: "24px" }}>
+      <div className="dashboard-row-produtos" style={{ display: "flex", gap: "24px" }}>
         {/* Coluna empilhada: Produtos Registrados e Itens Registrados */}
         <div
           style={{
@@ -1702,7 +1900,7 @@ const DashboardSection = () => {
         </div>
       </div>
       {/* Tarefas e Nova Box */}
-      <div style={{ display: "flex", gap: "24px" }}>
+      <div className="dashboard-row-tarefas" style={{ display: "flex", gap: "24px" }}>
         <div
           style={{
             background: "#fff",
@@ -1728,38 +1926,32 @@ const DashboardSection = () => {
           </span>
 
           {/* Filtros */}
-          <div
-            style={{
-              position: "absolute",
-              top: 22,
-              right: 24,
-              display: "flex",
-              gap: "8px",
-            }}
-          >
-            {(
-              ["todas", "pendentes", "em_andamento", "concluídas"] as const
-            ).map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setTaskFilter(filter)}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: 12,
-                  borderRadius: 12,
-                  border: "none",
-                  background: taskFilter === filter ? "#333" : "#f0f0f0",
-                  color: taskFilter === filter ? "#fff" : "#666",
-                  cursor: "pointer",
-                  fontWeight: taskFilter === filter ? "bold" : "normal",
-                }}
-              >
-                {filter === "em_andamento"
-                  ? "Em Andamento"
-                  : filter.charAt(0).toUpperCase() + filter.slice(1)}
-              </button>
-            ))}
-          </div>
+          {showTaskFilters && (
+            <div className="dashboard-tarefas-filtros" style={{ position: "absolute", top: 22, right: 24, display: "flex", gap: "8px" }}>
+              {(
+                ["todas", "pendentes", "em_andamento", "concluídas"] as const
+              ).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setTaskFilter(filter)}
+                  style={{
+                    padding: "4px 8px",
+                    fontSize: 12,
+                    borderRadius: 12,
+                    border: "none",
+                    background: taskFilter === filter ? "#333" : "#f0f0f0",
+                    color: taskFilter === filter ? "#fff" : "#666",
+                    cursor: "pointer",
+                    fontWeight: taskFilter === filter ? "bold" : "normal",
+                  }}
+                >
+                  {filter === "em_andamento"
+                    ? "Em Andamento"
+                    : filter.charAt(0).toUpperCase() + filter.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Conteúdo das tarefas */}
           <div
@@ -2115,7 +2307,7 @@ const DashboardSection = () => {
         </div>
       </div>
       {/* NOVA LINHA: Boxes de Vendas */}
-      <div style={{ display: "flex", gap: "24px", marginTop: 0 }}>
+      <div className="dashboard-row-vendas" style={{ display: "flex", gap: "24px", marginTop: 0 }}>
         {/* Coluna empilhada: Saldo total e Saldo semanal */}
         <div
           style={{

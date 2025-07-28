@@ -185,7 +185,7 @@ const SalesSectionContent = () => {
     <div className="flex flex-col gap-8">
       <div className="bg-white rounded-2xl p-8 shadow flex flex-col" style={{ minHeight: 120 }}>
         <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Registrar Vendas</span>
-        <div className="flex flex-col md:flex-row gap-4 items-center relative">
+        <div className="flex flex-col md:flex-row gap-4 items-center relative sales-search-input-wrapper">
           <IoSearch
             style={{
               position: 'absolute',
@@ -314,7 +314,7 @@ const SalesSectionContent = () => {
         {sales.length === 0 ? (
           <span className="text-gray-400 text-sm">Nenhuma venda registrada ainda.</span>
         ) : (
-          <div className="border border-gray-200 rounded-2xl overflow-hidden">
+          <div className="border border-gray-200 rounded-2xl overflow-hidden sales-history-table-wrapper">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#f5f6fa]">
@@ -361,7 +361,7 @@ const SalesSectionContent = () => {
         )}
       </div>
       {/* Box de Saldo Total */}
-      <div className="flex flex-row gap-4 mt-2">
+      <div className="flex flex-row gap-4 mt-2 balance-boxes-wrapper">
         <div className="bg-white rounded-2xl p-6 shadow flex flex-col items-start relative flex-1" style={{ maxWidth: 320 }}>
           <div className="flex w-full items-center justify-between mb-2">
             <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500 }}>Saldo Líquido</span>

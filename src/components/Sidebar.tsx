@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaClipboardList, FaHome, FaChartBar, FaDatabase, FaQuestionCircle, FaCog, FaUser, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaBookmark } from "react-icons/fa";
 import DashboardSection from './sections/dashboard/index';
 import RegisterSection from './sections/register/index';
@@ -18,7 +18,24 @@ export default function Sidebar() {
   const [selectedSection, setSelectedSection] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    // Função para verificar largura da tela
+    const handleResize = () => {
+      if (window.innerWidth < 885) {
+        setIsSidebarOpen(false);
+        setIsMobile(true);
+      } else {
+        setIsSidebarOpen(true);
+        setIsMobile(false);
+      }
+    };
+    handleResize(); // Chama ao montar
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleSectionClick = (section: string) => {
     if (section === 'logout') {
@@ -112,59 +129,65 @@ export default function Sidebar() {
                     transition: 'max-width 0.2s',
                   }}
                 />
-                <button
-                  onClick={toggleSidebar}
-                  style={{
-                    position: 'absolute',
-                    right: -34,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    background: '#231f20',
-                    color: '#fff',
-                    border: 'none',
-                    boxShadow: '0 2px 8px #e0e0e0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    zIndex: 10,
-                    padding: 0,
-                  }}
-                  aria-label="Fechar menu"
-                >
-                  <FaChevronLeft size={12} />
-                </button>
+                {/* Esconde o botão em telas pequenas */}
+                {!isMobile && (
+                  <button
+                    onClick={toggleSidebar}
+                    style={{
+                      position: 'absolute',
+                      right: -34,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: '#231f20',
+                      color: '#fff',
+                      border: 'none',
+                      boxShadow: '0 2px 8px #e0e0e0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 10,
+                      padding: 0,
+                    }}
+                    aria-label="Fechar menu"
+                  >
+                    <FaChevronLeft size={12} />
+                  </button>
+                )}
               </>
             ) : (
               <>
-                <button
-                  onClick={toggleSidebar}
-                  style={{
-                    position: 'absolute',
-                    right: -23,
-                    top: '50%',
-                    transform: 'translateY(-80%)',
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    background: '#231f20',
-                    color: '#fff',
-                    border: 'none',
-                    boxShadow: '0 2px 8px #e0e0e0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    zIndex: 10,
-                    padding: 0,
-                  }}
-                  aria-label="Abrir menu"
-                >
-                  <FaChevronRight size={12} />
-                </button>
+                {/* Esconde o botão em telas pequenas */}
+                {!isMobile && (
+                  <button
+                    onClick={toggleSidebar}
+                    style={{
+                      position: 'absolute',
+                      right: -23,
+                      top: '50%',
+                      transform: 'translateY(-80%)',
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: '#231f20',
+                      color: '#fff',
+                      border: 'none',
+                      boxShadow: '0 2px 8px #e0e0e0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 10,
+                      padding: 0,
+                    }}
+                    aria-label="Abrir menu"
+                  >
+                    <FaChevronRight size={12} />
+                  </button>
+                )}
                 <img
                   src={LogoSidebar.src}
                   alt="Logo"

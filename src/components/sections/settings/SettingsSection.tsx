@@ -110,14 +110,14 @@ const SettingsSection = () => {
           </div>
           <div className="flex items-start gap-4 py-8">
             <label htmlFor="photo" className="text-sm font-medium text-gray-700 w-48 pt-1">Foto de Perfil</label>
-            <div className="flex items-center gap-4 flex-1">
+            <div className="flex items-center gap-4 flex-1 profile-photo-input-wrapper">
               <input
                 id="photo"
                 name="photo"
                 type="file"
                 accept="image/*"
                 onChange={handlePhotoChange}
-                className="border p-12 px-10 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 text-sm file:text-sm file:py-2 file:px-3 file:rounded file:bg-gray-400 file:font-medium file:text-white file:border-none"
+                className="border p-12 px-10 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 text-sm file:text-sm file:py-2 file:px-3 file:rounded file:bg-gray-400 file:font-medium file:text-white file:border-none responsive-photo-input"
                 style={{ fontSize: '0.75rem' }}
               />
               {profile.photoURL && (

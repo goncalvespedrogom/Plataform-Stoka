@@ -384,7 +384,7 @@ const RegisterSection = () => {
     <div className="flex flex-col gap-8">
       
       {/* Botão Adicionar Produto e Input de Busca */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 register-header-actions">
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm"
@@ -490,7 +490,7 @@ const RegisterSection = () => {
       </div>
 
       {/* Tabela de Produtos */}
-      <div className="bg-[#fff] rounded-2xl pt-0 pb-6 px-0 shadow" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
+      <div className="bg-[#fff] rounded-2xl pt-0 pb-6 px-0 shadow products-table-wrapper" style={{ boxShadow: '0 2px 8px #e0e0e0' }}>
         <table className="w-full border-collapse text-[#231f20] text-sm">
           <thead>
             <tr className="bg-[#f5f6fa] text-xs">

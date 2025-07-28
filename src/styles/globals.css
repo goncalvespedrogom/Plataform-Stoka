@@ -139,3 +139,232 @@ body {
 .react-datepicker__input-container input:focus + .react-datepicker {
   outline: 2px solid #1f1f1f;
 }
+
+@media (max-width: 1065px) {
+  .responsive-photo-input {
+    width: 290px !important;
+    padding: 8px 6px !important;
+  }
+  .profile-photo-input-wrapper {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 1010px) {
+  .sales-history-table-wrapper {
+    overflow-x: auto !important;
+    width: 100%;
+    /* Garante barra de rolagem embaixo */
+    -webkit-overflow-scrolling: touch;
+  }
+  .sales-history-table-wrapper table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-search-input-wrapper {
+    align-items: flex-start !important;
+  }
+  .sales-search-input-wrapper input[type="text"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    text-align: left !important;
+  }
+  .sales-search-input-wrapper svg {
+    left: 12px !important;
+    top: 17px !important;
+  }
+}
+
+@media (max-width: 495px) {
+  .balance-boxes-wrapper {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 1125px) {
+  .products-table-wrapper {
+    overflow-x: auto !important;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .products-table-wrapper table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 765px) {
+  .register-header-actions {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .register-header-actions > button {
+    flex: 0 0 auto !important;
+    margin-bottom: 0 !important;
+  }
+  .register-header-actions > div {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 1125px) {
+  .tasks-table-wrapper {
+    overflow-x: auto !important;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tasks-table-wrapper table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 1025px) {
+  .tasks-header-actions {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .tasks-header-actions > button {
+    flex: 0 0 auto !important;
+    margin-bottom: 0 !important;
+  }
+  .tasks-header-actions > div {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 1540px) {
+  .dashboard-boxes-row-estoque {
+    width: 100%;
+    margin-top: 0 !important;
+    display: flex;
+  }
+  .dashboard-box-quantidade-semanal {
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .dashboard-boxes-row {
+    flex-direction: column !important;
+    gap: 32px !important;
+  }
+  .dashboard-box-categorias,
+  .dashboard-box-saldo-vendas {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .dashboard-box-categorias .dashboard-categorias-pagination {
+    margin-bottom: 6px !important;
+  }
+  .dashboard-box-categorias .dashboard-categorias-circles {
+    padding-top: 16px !important;
+  }
+}
+
+@media (max-width: 410px) {
+  .dashboard-saldo-grafico-legenda {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: 100%;
+  }
+  .dashboard-saldo-grafico-donut {
+    margin-right: 0 !important;
+  }
+  .dashboard-saldo-legendas {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    width: 100%;
+  }
+  .dashboard-saldo-legenda-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    width: 100%;
+  }
+  .dashboard-saldo-legenda-item > span,
+  .dashboard-saldo-legenda-item span {
+    display: block !important;
+    text-align: center !important;
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .dashboard-saldo-legendas {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .dashboard-estoque-xaxis-tick {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 405px) {
+  .dashboard-estoque-xaxis-tick {
+    display: none !important;
+  }
+}
+
+@media (max-width: 615px) {
+  .dashboard-estoque-xaxis-tick {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 1380px) {
+  .dashboard-row-produtos {
+    flex-direction: column !important;
+    gap: 32px !important;
+  }
+  .dashboard-row-vendas {
+    flex-direction: column !important;
+    gap: 32px !important;
+  }
+}
+
+@media (max-width: 1570px) {
+  .dashboard-row-tarefas {
+    flex-direction: column !important;
+    gap: 32px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-tarefas-filtros {
+    position: static !important;
+    margin-top: 50px !important;
+    margin-bottom: -34px !important;
+    margin-left: 0 !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    width: 100%;
+  }
+}
