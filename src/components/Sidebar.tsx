@@ -261,7 +261,7 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('logout')}
-              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-6 ${isSidebarOpen ? 'ml-[0rem] w-full' : 'w-10'} text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-6 ${isSidebarOpen ? 'ml-[.1rem] w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'logout' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
               style={{ minHeight: '40px' }}
