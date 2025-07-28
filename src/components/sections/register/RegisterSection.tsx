@@ -1,8 +1,7 @@
 import React, { useState, Fragment, useMemo, useEffect } from 'react';
 import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
-import { IoPencil, IoTrash } from "react-icons/io5";
+import { IoPencil, IoTrash, IoAddCircleOutline } from "react-icons/io5";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
-import { RiCloseCircleFill } from "react-icons/ri";
 import { IoSearch } from "react-icons/io5";
 import { RxUpdate } from "react-icons/rx";
 import { CgClose } from "react-icons/cg";
@@ -394,10 +393,10 @@ const RegisterSection = () => {
       <div className="flex items-center gap-4 register-header-actions">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm"
+          className="bg-gray-600 shadow text-white px-5 py-[.6rem] rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:opacity-80 text-sm"
         >
-          <HiFolderAdd size={24} className="align-middle flex-shrink-0 relative top-[-2px]" />
-          Adicionar um produto
+          <IoAddCircleOutline size={24} className="flex-shrink-0" />
+          Novo produto
         </button>
 
         {/* Filtro por Categoria */}

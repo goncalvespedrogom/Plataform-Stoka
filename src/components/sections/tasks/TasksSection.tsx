@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useMemo } from 'react';
-import { HiFolderAdd, HiCheck, HiSelector } from "react-icons/hi";
-import { IoPencil, IoTrash, IoSearch } from "react-icons/io5";
+import { HiCheck, HiSelector } from "react-icons/hi";
+import { IoPencil, IoTrash, IoSearch, IoAddCircleOutline } from "react-icons/io5";
 import { CgClose } from "react-icons/cg";
 import { Listbox, Transition } from '@headlessui/react';
 import { IoChevronBack, IoChevronForward, IoChevronUp, IoChevronDown } from "react-icons/io5";
@@ -211,10 +211,10 @@ const TasksSection = () => {
       <div className="flex items-center gap-4 tasks-header-actions">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#fff] shadow text-[#231f20] px-5 py-3 rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:bg-[#ffffff7c] text-sm"
+          className="bg-gray-600 shadow text-white px-5 py-[.6rem] rounded-lg border-none cursor-pointer w-fit flex items-center gap-2 font-medium transition-opacity duration-200 hover:opacity-80 text-sm"
         >
-          <HiFolderAdd size={24} className="align-middle flex-shrink-0 relative top-[-2px]" />
-          Adicionar uma tarefa
+          <IoAddCircleOutline size={24} className="align-middle flex-shrink-0" />
+          Nova tarefa
         </button>
         {/* Filtro por Prioridade */}
         <div className="relative w-44">
