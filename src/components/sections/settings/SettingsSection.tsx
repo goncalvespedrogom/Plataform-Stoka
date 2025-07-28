@@ -127,7 +127,7 @@ const SettingsSection = () => {
           </div>
           <button
             type="submit"
-            className="bg-gray-600 hover:opacity-80 text-white font-semibold py-2 px-6 rounded-lg transition self-end text-sm"
+            className="bg-gray-600 hover:opacity-80 text-white font-semibold py-2 px-6 rounded-lg transition self-end text-sm max-[495px]:self-center max-[495px]:w-full"
             disabled={saving}
           >
             {saving ? 'Salvando...' : 'Salvar' }

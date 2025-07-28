@@ -63,6 +63,8 @@ const RegisterSection = () => {
   const productsPerPage = 12;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [selectedProductDescription, setSelectedProductDescription] = useState<{ name: string; description: string } | null>(null);
 
   // Função para filtrar produtos baseado no termo de busca e categoria selecionada
   const filteredProducts = products.filter(product => {
@@ -343,6 +345,19 @@ const RegisterSection = () => {
     setProductToDelete(null);
   };
 
+  const handleViewDescription = (product: Product) => {
+    setSelectedProductDescription({
+      name: product.name,
+      description: product.description || 'Nenhuma descrição disponível.'
+    });
+    setShowDescriptionModal(true);
+  };
+
+  const handleCloseDescriptionModal = () => {
+    setShowDescriptionModal(false);
+    setSelectedProductDescription(null);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
@@ -542,7 +557,7 @@ const RegisterSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs hidden xl:table-cell">Descrição</th>
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600 text-xs">Ações</th>
             </tr>
           </thead>
@@ -580,7 +595,7 @@ const RegisterSection = () => {
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   {product.date ? new Date(product.date).toLocaleDateString('pt-BR') : ''}
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0] text-sm">{product.description}</td>
+                <td className="p-3 border-b border-[#e0e0e0] text-sm hidden xl:table-cell">{product.description}</td>
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   <div className="flex gap-2">
                     <button
@@ -610,6 +625,13 @@ const RegisterSection = () => {
                       title="Diminuir quantidade"
                     >
                       <IoMdRemove size={18} className="text-gray-500" />
+                    </button>
+                    <button
+                      onClick={() => handleViewDescription(product)}
+                      className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition xl:hidden"
+                      title="Visualizar descrição"
+                    >
+                      <span className="text-xs text-gray-500 font-medium">Visualizar descrição</span>
                     </button>
                   </div>
                 </td>
@@ -930,6 +952,37 @@ const RegisterSection = () => {
                 className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium"
               >
                 Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Visualização de Descrição */}
+      {showDescriptionModal && selectedProductDescription && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-md flex flex-col text-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Descrição do Produto</h2>
+              <button
+                onClick={handleCloseDescriptionModal}
+                className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
+              >
+                <CgClose size={22} style={{ strokeWidth: 1.2 }} />
+              </button>
+            </div>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">{selectedProductDescription.name}</h3>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                {selectedProductDescription.description}
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={handleCloseDescriptionModal}
+                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium"
+              >
+                Fechar
               </button>
             </div>
           </div>

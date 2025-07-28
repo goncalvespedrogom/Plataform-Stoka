@@ -41,6 +41,8 @@ const TasksSection = () => {
   const [detailModalTask, setDetailModalTask] = useState<Task | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [selectedTaskDescription, setSelectedTaskDescription] = useState<{ title: string; description: string } | null>(null);
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -176,6 +178,19 @@ const TasksSection = () => {
   const handleCancelDelete = () => {
     setShowDeleteModal(false);
     setTaskToDelete(null);
+  };
+
+  const handleViewDescription = (task: Task) => {
+    setSelectedTaskDescription({
+      title: task.title,
+      description: task.description || 'Nenhuma descrição disponível.'
+    });
+    setShowDescriptionModal(true);
+  };
+
+  const handleCloseDescriptionModal = () => {
+    setShowDescriptionModal(false);
+    setSelectedTaskDescription(null);
   };
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -320,7 +335,7 @@ const TasksSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">Descrição</th>
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs hidden xl:table-cell">Descrição</th>
               <th className="text-left font-medium p-3 border-b border-[#e0e0e0] rounded-tr-2xl text-gray-600 text-xs">Ações</th>
             </tr>
           </thead>
@@ -339,7 +354,7 @@ const TasksSection = () => {
                   {isOverdue(task.dueDate) && (<span className="ml-2 text-xs text-red-600 font-medium">Atrasada</span>)}
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">{formatDate(task.createdAt)}</td>
-                <td className="p-3 border-b border-[#e0e0e0] max-w-xs truncate text-sm">
+                <td className="p-3 border-b border-[#e0e0e0] max-w-xs truncate text-sm hidden xl:table-cell">
                   <button
                     className="w-full text-left truncate hover:underline focus:outline-none text-sm"
                     title="Ver detalhes da tarefa"
@@ -352,6 +367,13 @@ const TasksSection = () => {
                   <div className="flex gap-2">
                     <button onClick={() => handleEditTask(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Editar tarefa"><IoPencil size={18} className="text-gray-500" /></button>
                     <button onClick={() => handleDeleteClick(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Remover tarefa"><IoTrash size={18} className="text-gray-500" /></button>
+                    <button
+                      onClick={() => handleViewDescription(task)}
+                      className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition xl:hidden"
+                      title="Visualizar descrição"
+                    >
+                      <span className="text-xs text-gray-500 font-medium">Visualizar descrição</span>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -545,6 +567,37 @@ const TasksSection = () => {
                 className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium text-sm"
               >
                 Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Visualização de Descrição */}
+      {showDescriptionModal && selectedTaskDescription && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-md flex flex-col text-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Descrição da Tarefa</h2>
+              <button
+                onClick={handleCloseDescriptionModal}
+                className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
+              >
+                <CgClose size={22} style={{ strokeWidth: 1.2 }} />
+              </button>
+            </div>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">{selectedTaskDescription.title}</h3>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                {selectedTaskDescription.description}
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={handleCloseDescriptionModal}
+                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium"
+              >
+                Fechar
               </button>
             </div>
           </div>

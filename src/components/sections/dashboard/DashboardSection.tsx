@@ -239,9 +239,33 @@ const DashboardSection = () => {
   }, []);
 
   const [isVerySmall, setIsVerySmall] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isVerySmallScreen, setIsVerySmallScreen] = useState(false);
+  const [isTinyScreen, setIsTinyScreen] = useState(false);
+  const [isTaskInfoStacked, setIsTaskInfoStacked] = useState(false);
+  const [isTaskStatusStacked, setIsTaskStatusStacked] = useState(false);
+  const [isSearchTaskInfoStacked, setIsSearchTaskInfoStacked] = useState(false);
+  const [isBadgeTextCentered, setIsBadgeTextCentered] = useState(false);
+  const [isSearchTaskDateStacked, setIsSearchTaskDateStacked] = useState(false);
+  const [isLastRegisterStacked, setIsLastRegisterStacked] = useState(false);
+  const [isSearchProductStacked, setIsSearchProductStacked] = useState(false);
+  const [isLastSaleStacked, setIsLastSaleStacked] = useState(false);
+  const [isSearchSaleStacked, setIsSearchSaleStacked] = useState(false);
   useEffect(() => {
     const handleResize = () => {
       setIsVerySmall(window.innerWidth < 410);
+      setIsSmallScreen(window.innerWidth < 515);
+      setIsVerySmallScreen(window.innerWidth < 400);
+      setIsTinyScreen(window.innerWidth < 340);
+      setIsTaskInfoStacked(window.innerWidth < 455);
+      setIsTaskStatusStacked(window.innerWidth < 360);
+      setIsSearchTaskInfoStacked(window.innerWidth < 420);
+      setIsBadgeTextCentered(window.innerWidth < 345);
+      setIsSearchTaskDateStacked(window.innerWidth < 490);
+      setIsLastRegisterStacked(window.innerWidth < 510);
+      setIsSearchProductStacked(window.innerWidth < 580);
+      setIsLastSaleStacked(window.innerWidth < 560);
+      setIsSearchSaleStacked(window.innerWidth < 560);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -1369,16 +1393,18 @@ const DashboardSection = () => {
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-end",
+                        justifyContent: isLastRegisterStacked ? "center" : "space-between",
+                        alignItems: isLastRegisterStacked ? "center" : "flex-end",
                         margin: "40px 0 8px 0",
                         width: "100%",
-                        paddingRight: 24,
+                        paddingRight: isLastRegisterStacked ? 0 : 24,
+                        flexDirection: isLastRegisterStacked ? "column" : "row",
+                        gap: isLastRegisterStacked ? 16 : 0,
                       }}
                     >
                       <div
                         style={{
-                          flex: 1,
+                          flex: isLastRegisterStacked ? "none" : 1,
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
@@ -1408,7 +1434,7 @@ const DashboardSection = () => {
                       </div>
                       <div
                         style={{
-                          flex: 1,
+                          flex: isLastRegisterStacked ? "none" : 1,
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
@@ -1438,7 +1464,7 @@ const DashboardSection = () => {
                       </div>
                       <div
                         style={{
-                          flex: 1,
+                          flex: isLastRegisterStacked ? "none" : 1,
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
@@ -1468,7 +1494,7 @@ const DashboardSection = () => {
                       </div>
                       <div
                         style={{
-                          flex: 1,
+                          flex: isLastRegisterStacked ? "none" : 1,
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
@@ -1540,13 +1566,21 @@ const DashboardSection = () => {
                       >
                         {last.name}
                       </span>
-                      <span
-                        style={{ color: "#666", fontSize: 13, lineHeight: 1.5 }}
-                      >
-                        {last.description || (
-                          <span style={{ color: "#bbb" }}>Sem descrição.</span>
-                        )}
-                      </span>
+                      {!isTinyScreen && (
+                        <span
+                          style={{ color: "#666", fontSize: 13, lineHeight: 1.5 }}
+                        >
+                          {last.description ? (
+                            isVerySmallScreen && last.description.length > 40
+                              ? `${last.description.substring(0, 40)}...`
+                              : isSmallScreen && last.description.length > 120
+                              ? `${last.description.substring(0, 120)}...`
+                              : last.description
+                          ) : (
+                            <span style={{ color: "#bbb" }}>Sem descrição.</span>
+                          )}
+                        </span>
+                      )}
                     </div>
                   </>
                 );
@@ -1662,15 +1696,17 @@ const DashboardSection = () => {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
+                    justifyContent: isSearchProductStacked ? "center" : "space-between",
+                    alignItems: isSearchProductStacked ? "center" : "flex-end",
                     margin: "24px 0 0 0",
                     width: "100%",
+                    flexDirection: isSearchProductStacked ? "column" : "row",
+                    gap: isSearchProductStacked ? 16 : 0,
                   }}
                 >
                   <div
                     style={{
-                      flex: 1,
+                      flex: isSearchProductStacked ? "none" : 1,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -1698,7 +1734,7 @@ const DashboardSection = () => {
                   </div>
                   <div
                     style={{
-                      flex: 1,
+                      flex: isSearchProductStacked ? "none" : 1,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -1726,7 +1762,7 @@ const DashboardSection = () => {
                   </div>
                   <div
                     style={{
-                      flex: 1,
+                      flex: isSearchProductStacked ? "none" : 1,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -1756,7 +1792,7 @@ const DashboardSection = () => {
                   </div>
                   <div
                     style={{
-                      flex: 1,
+                      flex: isSearchProductStacked ? "none" : 1,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -1835,13 +1871,20 @@ const DashboardSection = () => {
                     <span style={{ color: "#bbb" }}>Sem descrição.</span>
                   )}
                 </span>
-                <div style={{ display: "flex", gap: 24, marginTop: 18 }}>
+                <div style={{ 
+                  display: "flex", 
+                  gap: 24, 
+                  marginTop: 18,
+                  flexDirection: isSearchTaskInfoStacked ? "column" : "row",
+                  alignItems: isSearchTaskInfoStacked ? "flex-start" : "center"
+                }}>
                   <span
                     style={{
                       padding: "4px 8px",
                       borderRadius: 12,
                       fontSize: 12,
                       fontWeight: "bold",
+                      textAlign: isBadgeTextCentered ? "center" : "left",
                       background:
                         searchResult.data.status === "concluída"
                           ? "#4CAF50"
@@ -1863,6 +1906,7 @@ const DashboardSection = () => {
                       borderRadius: 12,
                       fontSize: 12,
                       fontWeight: "bold",
+                      textAlign: isBadgeTextCentered ? "center" : "left",
                       background:
                         searchResult.data.priority === "alta"
                           ? "#F44336"
@@ -1876,18 +1920,23 @@ const DashboardSection = () => {
                       searchResult.data.priority.slice(1)}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: "#999", marginTop: 12 }}>
-                  Criada em:{" "}
-                  {new Date(searchResult.data.createdAt).toLocaleDateString(
-                    "pt-BR"
-                  )}
+                <div style={{ fontSize: 12, color: "#999", marginTop: 12, textAlign: "left" }}>
+                  <div style={{ display: "inline-block", marginBottom: isSearchTaskDateStacked ? 4 : 0 }}>
+                    Criada em:{" "}
+                    {new Date(searchResult.data.createdAt).toLocaleDateString(
+                      "pt-BR"
+                    )}
+                  </div>
                   {searchResult.data.dueDate && (
-                    <span style={{ marginLeft: 16 }}>
+                    <div style={{ 
+                      display: isSearchTaskDateStacked ? "block" : "inline-block", 
+                      marginLeft: isSearchTaskDateStacked ? 0 : 16 
+                    }}>
                       Prazo:{" "}
                       {new Date(searchResult.data.dueDate).toLocaleDateString(
                         "pt-BR"
                       )}
-                    </span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1979,26 +2028,28 @@ const DashboardSection = () => {
                   <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
                       gap: "8px",
+                      flexDirection: isTaskStatusStacked ? "column" : "row",
+                      alignItems: isTaskStatusStacked ? "flex-start" : "center",
                     }}
                   >
-                    <span
-                      style={{
-                        padding: "4px 8px",
-                        borderRadius: 12,
-                        fontSize: 11,
-                        fontWeight: "bold",
-                        background:
-                          filteredTasks[currentTaskIndex].status === "concluída"
-                            ? "#4CAF50"
-                            : filteredTasks[currentTaskIndex].status ===
-                              "em_andamento"
-                            ? "#FF9800"
-                            : "#F44336",
-                        color: "#fff",
-                      }}
-                    >
+                                      <span
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: 12,
+                      fontSize: 11,
+                      fontWeight: "bold",
+                      textAlign: isBadgeTextCentered ? "center" : "left",
+                      background:
+                        filteredTasks[currentTaskIndex].status === "concluída"
+                          ? "#4CAF50"
+                          : filteredTasks[currentTaskIndex].status ===
+                            "em_andamento"
+                          ? "#FF9800"
+                          : "#F44336",
+                      color: "#fff",
+                    }}
+                  >
                       {filteredTasks[currentTaskIndex].status === "concluída"
                         ? "Concluída"
                         : filteredTasks[currentTaskIndex].status ===
@@ -2012,6 +2063,7 @@ const DashboardSection = () => {
                         borderRadius: 12,
                         fontSize: 11,
                         fontWeight: "bold",
+                        textAlign: isBadgeTextCentered ? "center" : "left",
                         background:
                           filteredTasks[currentTaskIndex].priority === "alta"
                             ? "#F44336"
@@ -2052,18 +2104,23 @@ const DashboardSection = () => {
                     {filteredTasks[currentTaskIndex].description}
                   </p>
 
-                  <div style={{ fontSize: 12, color: "#999" }}>
-                    Criada em:{" "}
-                    {new Date(
-                      filteredTasks[currentTaskIndex].createdAt
-                    ).toLocaleDateString("pt-BR")}
+                  <div style={{ fontSize: 12, color: "#999", textAlign: "left" }}>
+                    <div style={{ display: "inline-block", marginBottom: isTaskInfoStacked ? 4 : 0 }}>
+                      Criada em:{" "}
+                      {new Date(
+                        filteredTasks[currentTaskIndex].createdAt
+                      ).toLocaleDateString("pt-BR")}
+                    </div>
                     {filteredTasks[currentTaskIndex].dueDate && (
-                      <span style={{ marginLeft: 16 }}>
+                      <div style={{ 
+                        display: isTaskInfoStacked ? "block" : "inline-block", 
+                        marginLeft: isTaskInfoStacked ? 0 : 16 
+                      }}>
                         Prazo:{" "}
                         {new Date(
                           filteredTasks[currentTaskIndex].dueDate
                         ).toLocaleDateString("pt-BR")}
-                      </span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -2239,7 +2296,12 @@ const DashboardSection = () => {
                   }}
                 >
                   <div
-                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    style={{ 
+                      display: "flex", 
+                      gap: 8,
+                      flexDirection: isTaskStatusStacked ? "column" : "row",
+                      alignItems: isTaskStatusStacked ? "flex-start" : "center"
+                    }}
                   >
                     <span
                       style={{
@@ -2247,6 +2309,7 @@ const DashboardSection = () => {
                         borderRadius: 12,
                         fontSize: 11,
                         fontWeight: "bold",
+                        textAlign: isBadgeTextCentered ? "center" : "left",
                         background:
                           task.status === "concluída"
                             ? "#4CAF50"
@@ -2268,6 +2331,7 @@ const DashboardSection = () => {
                         borderRadius: 12,
                         fontSize: 11,
                         fontWeight: "bold",
+                        textAlign: isBadgeTextCentered ? "center" : "left",
                         background:
                           task.priority === "alta"
                             ? "#F44336"
@@ -2343,7 +2407,7 @@ const DashboardSection = () => {
                 fontWeight: 500,
               }}
             >
-              Saldo Líquido das Vendas
+              {isTinyScreen ? "Saldo Líquido" : "Saldo Líquido das Vendas"}
             </span>
             <span
               style={{
@@ -2386,7 +2450,7 @@ const DashboardSection = () => {
                 fontWeight: 500,
               }}
             >
-              Saldo Líquido Semanal
+              {isTinyScreen ? "Saldo Líq. Semanal" : "Saldo Líquido Semanal"}
             </span>
             <span
               style={{
@@ -2438,16 +2502,18 @@ const DashboardSection = () => {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
+                  justifyContent: isLastSaleStacked ? "center" : "space-between",
+                  alignItems: isLastSaleStacked ? "center" : "flex-end",
                   margin: "40px 0 8px 0",
                   width: "100%",
-                  paddingRight: 24,
+                  paddingRight: isLastSaleStacked ? 0 : 24,
+                  flexDirection: isLastSaleStacked ? "column" : "row",
+                  gap: isLastSaleStacked ? 16 : 0,
                 }}
               >
                 <div
                   style={{
-                    flex: 1,
+                    flex: isLastSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2475,7 +2541,7 @@ const DashboardSection = () => {
                 </div>
                 <div
                   style={{
-                    flex: 1,
+                    flex: isLastSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2503,7 +2569,7 @@ const DashboardSection = () => {
                 </div>
                 <div
                   style={{
-                    flex: 1,
+                    flex: isLastSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2531,7 +2597,7 @@ const DashboardSection = () => {
                 </div>
                 <div
                   style={{
-                    flex: 1,
+                    flex: isLastSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2752,15 +2818,17 @@ const DashboardSection = () => {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
+                  justifyContent: isSearchSaleStacked ? "center" : "space-between",
+                  alignItems: isSearchSaleStacked ? "center" : "flex-end",
                   margin: "24px 0 0 0",
                   width: "100%",
+                  flexDirection: isSearchSaleStacked ? "column" : "row",
+                  gap: isSearchSaleStacked ? 16 : 0,
                 }}
               >
                 <div
                   style={{
-                    flex: 1,
+                    flex: isSearchSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2788,7 +2856,7 @@ const DashboardSection = () => {
                 </div>
                 <div
                   style={{
-                    flex: 1,
+                    flex: isSearchSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2816,7 +2884,7 @@ const DashboardSection = () => {
                 </div>
                 <div
                   style={{
-                    flex: 1,
+                    flex: isSearchSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -2846,7 +2914,7 @@ const DashboardSection = () => {
                 </div>
                 <div
                   style={{
-                    flex: 1,
+                    flex: isSearchSaleStacked ? "none" : 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
