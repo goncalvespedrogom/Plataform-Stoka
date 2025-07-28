@@ -69,7 +69,7 @@ const SettingsSection = () => {
       <div className="bg-white rounded-2xl p-8 shadow flex flex-col w-full" style={{ minHeight: 120 }}>
         <span className="text-gray-400" style={{ fontSize: 14, fontWeight: 500, marginBottom: 18, textAlign: 'left' }}>Configurações de Perfil</span>
         <form className="flex flex-col gap-0" onSubmit={handleSave}>
-          <div className="flex items-start gap-4 py-8 border-b border-gray-200">
+          <div className="flex flex-col min-[696px]:flex-row items-start gap-4 py-8 border-b border-gray-200">
             <label htmlFor="username" className="text-sm font-medium text-gray-700 w-48 pt-1">Nome de Usuário</label>
             <input
               id="username"
@@ -78,11 +78,11 @@ const SettingsSection = () => {
               value={profile.username}
               onChange={handleChange}
               placeholder="Usuário"
-              className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 flex-1 placeholder:text-sm text-sm"
+              className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 flex-1 min-[696px]:w-auto w-full placeholder:text-sm text-sm"
               required
             />
           </div>
-          <div className="flex items-start gap-4 py-8 border-b border-gray-200">
+          <div className="flex flex-col min-[696px]:flex-row items-start gap-4 py-8 border-b border-gray-200">
             <label htmlFor="bio" className="text-sm font-medium text-gray-700 w-48 pt-1">Biografia</label>
             <textarea
               id="bio"
@@ -90,12 +90,12 @@ const SettingsSection = () => {
               value={profile.bio}
               onChange={handleChange}
               placeholder="Digite a sua descrição ou de sua loja..."
-              className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 flex-1 placeholder:text-sm text-sm"
+              className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 flex-1 min-[696px]:w-auto w-full placeholder:text-sm text-sm"
               rows={5}
               required
             />
           </div>
-          <div className="flex items-start gap-4 py-8 border-b border-gray-200">
+          <div className="flex flex-col min-[696px]:flex-row items-start gap-4 py-8 border-b border-gray-200">
             <label htmlFor="ramoProfissional" className="text-sm font-medium text-gray-700 w-48 pt-1">Área Profissional</label>
             <input
               id="ramoProfissional"
@@ -104,11 +104,11 @@ const SettingsSection = () => {
               value={profile.ramoProfissional}
               onChange={handleChange}
               placeholder="Ramo alimentício, bebidas, etc..."
-              className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 flex-1 placeholder:text-sm text-sm"
+              className="border p-2 px-4 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 flex-1 min-[696px]:w-auto w-full placeholder:text-sm text-sm"
               required
             />
           </div>
-          <div className="flex items-start gap-4 py-8">
+          <div className="flex flex-col min-[696px]:flex-row items-start gap-4 py-8">
             <label htmlFor="photo" className="text-sm font-medium text-gray-700 w-48 pt-1">Foto de Perfil</label>
             <div className="flex items-center gap-4 flex-1 profile-photo-input-wrapper">
               <input
@@ -117,7 +117,7 @@ const SettingsSection = () => {
                 type="file"
                 accept="image/*"
                 onChange={handlePhotoChange}
-                className="border p-12 px-10 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 text-sm file:text-sm file:py-2 file:px-3 file:rounded file:bg-gray-400 file:font-medium file:text-white file:border-none responsive-photo-input"
+                className="border p-12 px-10 rounded bg-gray-100 focus:border-gray-400 focus:outline-none focus:ring-0 text-sm file:text-sm file:py-2 file:px-3 file:rounded file:bg-gray-400 file:font-medium file:text-white file:border-none responsive-photo-input min-[696px]:w-auto w-full max-w-full max-[490px]:max-w-[8.8rem]"
                 style={{ fontSize: '0.75rem' }}
               />
               {profile.photoURL && (

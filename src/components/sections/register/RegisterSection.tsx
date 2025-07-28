@@ -674,7 +674,7 @@ const RegisterSection = () => {
       {/* Modal de Adição/Edição de Produto */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow text-sm">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] max-w-[90vw] sm:w-[400px] flex flex-col gap-4 shadow text-sm">
             {/* Header com X alinhado à direita */}
             <div className="flex justify-end">
               <button
@@ -890,7 +890,7 @@ const RegisterSection = () => {
       {/* Modal de Confirmação de Mesclagem */}
       {isConfirmMergeModalOpen && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow-lg text-sm">
+          <div className="bg-white p-8 rounded-2xl w-[400px] max-w-[90vw] sm:w-[400px] flex flex-col gap-4 shadow-lg text-sm">
             <div className="text-lg font-semibold text-gray-600">Produto já registrado</div>
             <div className="text-gray-500 text-sm">Este produto já está registrado na lista, portanto ele será recalculado e adicionado ao produto já existente.</div>
             <div className="flex gap-3 justify-end pt-8">
@@ -913,7 +913,7 @@ const RegisterSection = () => {
       {/* Modal de Confirmação de Exclusão */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col text-sm">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-sm flex flex-col text-sm">
             <h2 className="text-xl font-bold mb-2 text-gray-800">Excluir produto</h2>
             <p className="mb-12 text-gray-600 text-sm">
               Tem certeza que deseja excluir o produto "{productToDelete?.name}"?

@@ -387,7 +387,7 @@ const TasksSection = () => {
       {/* Modal de Adição/Edição de Tarefa */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow text-sm">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] max-w-[90vw] sm:w-[400px] flex flex-col gap-4 shadow text-sm">
             <div className="flex justify-end">
               <button onClick={handleModalClose} className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"><CgClose size={22} style={{ strokeWidth: 1.2 }} /></button>
             </div>
@@ -528,7 +528,7 @@ const TasksSection = () => {
       {/* Modal de Confirmação de Exclusão */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-sm flex flex-col">
             <h2 className="text-xl font-bold mb-2 text-gray-800">Excluir tarefa</h2>
             <p className="mb-12 text-gray-600 text-sm">
               Tem certeza que deseja excluir a tarefa "{taskToDelete?.title}"?

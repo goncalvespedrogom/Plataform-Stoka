@@ -226,14 +226,14 @@ const SalesSectionContent = () => {
               <span className="text-gray-400 text-sm ml-0.5">Nenhum produto encontrado.</span>
             )}
             {filteredProducts.slice(0, 3).map(product => (
-              <div key={product.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 shadow-sm">
+              <div key={product.id} className="flex flex-col min-[975px]:flex-row min-[975px]:items-center min-[975px]:justify-between bg-gray-50 rounded-lg px-4 py-3 shadow-sm gap-2">
                 <div>
                   <div className="font-semibold text-base text-gray-700">{product.name}</div>
-                  <div className="text-sm text-gray-500">{product.description || 'Sem descrição.'}</div>
+                  <div className="text-sm text-gray-500 hidden min-[531px]:block min-[531px]:max-w-[400px]">{product.description || 'Sem descrição.'}</div>
                   <div className="text-xs text-gray-400 mt-2">Estoque: {product.quantity} | Valor unitário: R$ {product.unitPrice.toFixed(2)}</div>
                 </div>
                 <button
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:opacity-80 transition text-sm"
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:opacity-80 transition text-xs min-[360px]:text-sm w-full min-[531px]:w-auto"
                   onClick={() => handleRegisterSale(product)}
                   disabled={product.quantity === 0}
                   title={product.quantity === 0 ? 'Sem estoque' : 'Registrar venda'}
@@ -247,7 +247,7 @@ const SalesSectionContent = () => {
         {/* Modal de venda */}
         {isModalOpen && selectedProduct && (
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-            <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] flex flex-col gap-4 shadow">
+            <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[400px] max-w-[90vw] sm:w-[400px] flex flex-col gap-4 shadow">
               <div className="flex flex-col gap-1">
                 <label className="text-gray-600 text-xs font-medium">Produto</label>
                 <div className="w-full text-sm px-3 py-2 rounded-lg border border-[#e0e0e0] bg-[#f5f6fa] text-[#222]">{selectedProduct.name}</div>
@@ -401,7 +401,7 @@ const SalesSectionContent = () => {
       {/* Modal de confirmação de reset do saldo total */}
       {resetModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] flex flex-col gap-2 shadow">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] max-w-[90vw] sm:w-[350px] flex flex-col gap-2 shadow">
             <span className="text-xl font-medium text-gray-700">Deseja realmente zerar o saldo total?</span>
             <span className="text-gray-500 text-sm">O saldo será zerado e passará a contar apenas para as próximas vendas.</span>
             <div className="flex gap-3 justify-end pt-6">
@@ -427,7 +427,7 @@ const SalesSectionContent = () => {
       {/* Modal de confirmação de reset do saldo bruto */}
       {resetGrossModalOpen && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] flex flex-col gap-2 shadow">
+          <div className="bg-[#fff] p-8 py-8 rounded-2xl w-[350px] max-w-[90vw] sm:w-[350px] flex flex-col gap-2 shadow">
             <span className="text-xl font-medium text-gray-700">Deseja realmente zerar o saldo bruto?</span>
             <span className="text-gray-500 text-sm">O saldo bruto será zerado e passará a contar apenas para as próximas vendas.</span>
             <div className="flex gap-3 justify-end pt-6">
@@ -453,7 +453,7 @@ const SalesSectionContent = () => {
       {/* Modal de Confirmação de Exclusão */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full flex flex-col">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-sm flex flex-col">
             <h2 className="text-xl font-bold mb-2 text-gray-800">Excluir venda</h2>
             <p className="mb-12 text-gray-600 text-sm">
               Tem certeza que deseja excluir a venda do produto "{saleToDelete?.productName}"?
