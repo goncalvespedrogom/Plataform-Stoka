@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaClipboardList, FaHome, FaChartBar, FaDatabase, FaQuestionCircle, FaCog, FaUser, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaBookmark } from "react-icons/fa";
+import { FaSackDollar } from "react-icons/fa6";
 import DashboardSection from './sections/dashboard/index';
 import RegisterSection from './sections/register/index';
 import TasksSection from './sections/tasks/index';
@@ -205,61 +206,67 @@ export default function Sidebar() {
             <a 
               href="#" 
               onClick={() => handleSectionClick('dashboard')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${isSidebarOpen ? 'w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'dashboard' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
+              style={{ minHeight: '40px' }}
             >
-              <FaHome size={19} />
+              <FaHome size={19} style={{ flexShrink: 0 }} />
               {isSidebarOpen && 'Dashboard'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('analytics')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${isSidebarOpen ? 'w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'analytics' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
+              style={{ minHeight: '40px' }}
             >
-              <FaBookmark size={19} />
+              <FaBookmark size={19} style={{ flexShrink: 0 }} />
               {isSidebarOpen && 'Tarefas'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('databases')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${isSidebarOpen ? 'w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'databases' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
+              style={{ minHeight: '40px' }}
             >
-              <FaClipboardList size={19} />
+              <FaClipboardList size={19} style={{ flexShrink: 0 }} />
               {isSidebarOpen && 'Produtos'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('sales')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${isSidebarOpen ? 'w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'sales' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
+              style={{ minHeight: '40px' }}
             >
-              <FaQuestionCircle size={19} />
+              <FaSackDollar size={19} style={{ flexShrink: 0 }} />
               {isSidebarOpen && 'Vendas'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('settings')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition w-full text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition ${isSidebarOpen ? 'w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'settings' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
+              style={{ minHeight: '40px' }}
             >
-              <FaUser size={19} />
+              <FaUser size={19} style={{ flexShrink: 0 }} />
               {isSidebarOpen && 'Perfil'}
             </a>
             <a 
               href="#" 
               onClick={() => handleSectionClick('logout')}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-4 ml-[.1rem] w-full text-[14px] ${
+              className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} px-3 py-2 rounded-lg text-[#231f20] hover:bg-[#f0f0f0] transition mt-6 ${isSidebarOpen ? 'ml-[0rem] w-full' : 'w-10'} text-[14px] ${
                 selectedSection === 'logout' ? 'bg-[#f0f0f0] font-medium' : 'bg-transparent font-normal'
               }`}
+              style={{ minHeight: '40px' }}
             >
-              <FaSignOutAlt size={19} />
+              <FaSignOutAlt size={19} style={{ flexShrink: 0 }} />
               {isSidebarOpen && 'Sair'}
             </a>
           </nav>
