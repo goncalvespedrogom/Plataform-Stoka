@@ -41,8 +41,7 @@ const TasksSection = () => {
   const [detailModalTask, setDetailModalTask] = useState<Task | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
-  const [selectedTaskDescription, setSelectedTaskDescription] = useState<{ title: string; description: string } | null>(null);
+
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -180,18 +179,7 @@ const TasksSection = () => {
     setTaskToDelete(null);
   };
 
-  const handleViewDescription = (task: Task) => {
-    setSelectedTaskDescription({
-      title: task.title,
-      description: task.description || 'Nenhuma descrição disponível.'
-    });
-    setShowDescriptionModal(true);
-  };
 
-  const handleCloseDescriptionModal = () => {
-    setShowDescriptionModal(false);
-    setSelectedTaskDescription(null);
-  };
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingTask(null);
@@ -311,7 +299,7 @@ const TasksSection = () => {
                   ) : <IoChevronDown className="text-gray-300" />}
                 </button>
               </th>
-              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs">
+              <th className="text-left font-medium p-3 border-b border-[#e0e0e0] text-gray-600 text-xs max-[1135px]:min-w-[125px]">
                 <button onClick={() => requestSort('status')} className="flex items-center gap-1 font-medium hover:text-gray-500 transition-colors text-xs">
                   Status
                   {sortConfig.key === 'status' ? (
@@ -346,8 +334,8 @@ const TasksSection = () => {
                 <td className="p-3 border-b border-[#e0e0e0]">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getPriorityColor(task.priority)}`}>{formatLabel(task.priority)}</span>
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0]">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getStatusColor(task.status)}`}>{formatLabel(task.status)}</span>
+                <td className="p-3 border-b border-[#e0e0e0] max-[1135px]:min-w-[125px]">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 cursor-default ${getStatusColor(task.status)} ${task.status === 'em_andamento' ? 'max-[1135px]:text-center max-[1135px]:block' : ''}`}>{formatLabel(task.status)}</span>
                 </td>
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   <span>{formatDate(task.dueDate)}</span>
@@ -368,11 +356,11 @@ const TasksSection = () => {
                     <button onClick={() => handleEditTask(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Editar tarefa"><IoPencil size={18} className="text-gray-500" /></button>
                     <button onClick={() => handleDeleteClick(task)} className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition" title="Remover tarefa"><IoTrash size={18} className="text-gray-500" /></button>
                     <button
-                      onClick={() => handleViewDescription(task)}
+                      onClick={() => setDetailModalTask(task)}
                       className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition xl:hidden"
-                      title="Visualizar descrição"
+                      title="Visualizar detalhes"
                     >
-                      <span className="text-xs text-gray-500 font-medium">Visualizar descrição</span>
+                      <span className="text-xs text-gray-500 font-medium">Visualizar detalhes</span>
                     </button>
                   </div>
                 </td>
@@ -478,7 +466,7 @@ const TasksSection = () => {
       {/* Modal de Detalhes da Tarefa */}
       {detailModalTask && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-0 rounded-2xl w-full max-w-md shadow-2xl relative animate-fadeIn text-sm">
+          <div className="bg-white p-0 rounded-2xl w-full max-w-md max-[480px]:max-w-[90vw] shadow-2xl relative animate-fadeIn text-sm">
             <div className="flex justify-between items-center border-b px-7 py-5 rounded-t-2xl bg-gradient-to-r from-gray-100 to-gray-50">
               <h2 className="text-xl font-bold text-gray-400 tracking-tight">Detalhes da Tarefa</h2>
               <button
@@ -506,7 +494,7 @@ const TasksSection = () => {
                 </div>
               </div>
               {/* Grupo: Prioridade e Status */}
-              <div className="flex flex-row gap-4 items-center">
+              <div className="flex flex-row gap-4 items-center max-[380px]:flex-col max-[380px]:items-start">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 text-xs font-medium">Prioridade</span>
                   <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(detailModalTask.priority)}`}>{formatLabel(detailModalTask.priority)}</span>
@@ -525,12 +513,12 @@ const TasksSection = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 text-xs font-medium">Criada em</span>
-                  <span className="text-[#231f20] text-xs">{formatDate(detailModalTask.createdAt)}</span>
+                  <span className="text-[#231f20] font-medium text-xs">{formatDate(detailModalTask.createdAt)}</span>
                 </div>
                 {detailModalTask.completedAt && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500 text-xs font-medium">Concluída em</span>
-                    <span className="text-[#231f20] text-xs">{formatDate(detailModalTask.completedAt)}</span>
+                    <span className="text-[#231f20] font-medium text-xs">{formatDate(detailModalTask.completedAt)}</span>
                   </div>
                 )}
               </div>
@@ -573,36 +561,7 @@ const TasksSection = () => {
         </div>
       )}
 
-      {/* Modal de Visualização de Descrição */}
-      {showDescriptionModal && selectedTaskDescription && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-md flex flex-col text-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Descrição da Tarefa</h2>
-              <button
-                onClick={handleCloseDescriptionModal}
-                className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
-              >
-                <CgClose size={22} style={{ strokeWidth: 1.2 }} />
-              </button>
-            </div>
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">{selectedTaskDescription.title}</h3>
-              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                {selectedTaskDescription.description}
-              </p>
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={handleCloseDescriptionModal}
-                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

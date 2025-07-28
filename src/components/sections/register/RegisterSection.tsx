@@ -63,8 +63,7 @@ const RegisterSection = () => {
   const productsPerPage = 12;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
-  const [selectedProductDescription, setSelectedProductDescription] = useState<{ name: string; description: string } | null>(null);
+  const [detailModalProduct, setDetailModalProduct] = useState<Product | null>(null);
 
   // Função para filtrar produtos baseado no termo de busca e categoria selecionada
   const filteredProducts = products.filter(product => {
@@ -345,17 +344,10 @@ const RegisterSection = () => {
     setProductToDelete(null);
   };
 
-  const handleViewDescription = (product: Product) => {
-    setSelectedProductDescription({
-      name: product.name,
-      description: product.description || 'Nenhuma descrição disponível.'
-    });
-    setShowDescriptionModal(true);
-  };
 
-  const handleCloseDescriptionModal = () => {
-    setShowDescriptionModal(false);
-    setSelectedProductDescription(null);
+
+  const handleViewProductDetails = (product: Product) => {
+    setDetailModalProduct(product);
   };
 
   const handleModalClose = () => {
@@ -595,7 +587,15 @@ const RegisterSection = () => {
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   {product.date ? new Date(product.date).toLocaleDateString('pt-BR') : ''}
                 </td>
-                <td className="p-3 border-b border-[#e0e0e0] text-sm hidden xl:table-cell">{product.description}</td>
+                <td className="p-3 border-b border-[#e0e0e0] max-w-[200px] truncate text-sm hidden xl:table-cell">
+                  <button
+                    className="w-full text-left truncate hover:underline focus:outline-none text-sm"
+                    title="Ver detalhes do produto"
+                    onClick={() => handleViewProductDetails(product)}
+                  >
+                    {product.description || 'Sem descrição'}
+                  </button>
+                </td>
                 <td className="p-3 border-b border-[#e0e0e0] text-sm">
                   <div className="flex gap-2">
                     <button
@@ -627,11 +627,11 @@ const RegisterSection = () => {
                       <IoMdRemove size={18} className="text-gray-500" />
                     </button>
                     <button
-                      onClick={() => handleViewDescription(product)}
+                      onClick={() => handleViewProductDetails(product)}
                       className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition xl:hidden"
-                      title="Visualizar descrição"
+                      title="Visualizar detalhes"
                     >
-                      <span className="text-xs text-gray-500 font-medium">Visualizar descrição</span>
+                      <span className="text-xs text-gray-500 font-medium">Visualizar detalhes</span>
                     </button>
                   </div>
                 </td>
@@ -958,29 +958,88 @@ const RegisterSection = () => {
         </div>
       )}
 
-      {/* Modal de Visualização de Descrição */}
-      {showDescriptionModal && selectedProductDescription && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-[90vw] w-full sm:max-w-md flex flex-col text-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Descrição do Produto</h2>
+
+
+      {/* Modal de Detalhes do Produto */}
+      {detailModalProduct && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white p-0 rounded-2xl w-full max-w-md max-[480px]:max-w-[90vw] shadow-2xl relative animate-fadeIn text-sm">
+            <div className="flex justify-between items-center border-b px-7 py-5 rounded-t-2xl bg-gradient-to-r from-gray-100 to-gray-50">
+              <h2 className="text-xl font-bold text-gray-400 tracking-tight">Detalhes do Produto</h2>
               <button
-                onClick={handleCloseDescriptionModal}
+                onClick={() => setDetailModalProduct(null)}
                 className="text-gray-400 text-2xl font-bold cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                title="Fechar"
               >
                 <CgClose size={22} style={{ strokeWidth: 1.2 }} />
               </button>
             </div>
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">{selectedProductDescription.name}</h3>
-              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                {selectedProductDescription.description}
-              </p>
+            <div className="flex flex-col gap-6 px-7 py-6">
+              {/* Grupo: Nome e Descrição */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-xs font-medium">Nome</span>
+                </div>
+                <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner break-words">
+                  {detailModalProduct.name}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-500 text-xs font-medium">Descrição</span>
+                <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 whitespace-pre-line break-words max-h-40 overflow-auto shadow-inner">
+                  {detailModalProduct.description || 'Nenhuma descrição disponível.'}
+                </div>
+              </div>
+              {/* Grupo: Categoria */}
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-500 text-xs font-medium">Categoria</span>
+                <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner">
+                  {detailModalProduct.category}
+                </div>
+              </div>
+              {/* Grupo: Valor Total */}
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-500 text-xs font-medium">Valor Total</span>
+                <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner">
+                  {detailModalProduct.totalValue.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </div>
+              </div>
+              {/* Grupo: Quantidade, Preço Unitário e Data */}
+              <div className="flex flex-col gap-2 bg-gray-50 border border-gray-100 rounded-lg p-3 shadow-inner">
+              <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-xs font-medium">Data de Registro</span>
+                  <span className="text-[#231f20] font-medium text-xs">
+                    {detailModalProduct.date ? new Date(detailModalProduct.date).toLocaleDateString('pt-BR') : 'Data não informada'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-xs font-medium">Quantidade</span>
+                  <span className="text-[#231f20] font-medium text-xs">{detailModalProduct.quantity}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-xs font-medium">Preço Unitário</span>
+                  <span className="text-[#231f20] font-medium text-xs">
+                    {detailModalProduct.unitPrice.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
+                  </span>
+                </div>
+
+              </div>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end px-7 pb-6">
               <button
-                onClick={handleCloseDescriptionModal}
-                className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:opacity-80 transition font-medium"
+                type="button"
+                onClick={() => setDetailModalProduct(null)}
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium text-sm"
               >
                 Fechar
               </button>
