@@ -73,15 +73,18 @@ const DashboardSection = () => {
     "Eletrônicos",
     "Vestuário",
     "Alimentos",
-    "Casa e Jardim",
+    "Mobília",
     "Esportes",
-    "Livros",
+    "Estudos",
     "Saúde",
     "Automotivo",
     "Brinquedos",
     "Ferramentas",
-    "Papelaria",
+    "Utilidades",
     "Pet Shop",
+    "Limpeza",
+    "Jardinagem",
+    "Outros",
   ];
   // Cálculo de categoriasData para garantir todas as categorias
   let categoriasData = todasCategorias.map((categoria) => {

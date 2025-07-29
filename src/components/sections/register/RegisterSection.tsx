@@ -18,15 +18,18 @@ const PRODUCT_CATEGORIES = [
   'Eletrônicos',
   'Vestuário',
   'Alimentos',
-  'Casa e Jardim',
+  'Mobília', // Substituído 'Casa e Jardim' por 'Mobília'
   'Esportes',
-  'Livros',
+  'Estudos', // Substituído 'Livros' por 'Estudos'
   'Saúde',
   'Automotivo',
   'Brinquedos',
   'Ferramentas',
-  'Papelaria',
-  'Pet Shop'
+  'Utilidades', // Substituído 'Papelaria' por 'Utilidades'
+  'Pet Shop',
+  'Limpeza',
+  'Jardinagem',
+  'Outros'
 ];
 
 // Função utilitária para capitalizar apenas a primeira letra da primeira palavra
