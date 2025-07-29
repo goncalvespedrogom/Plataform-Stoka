@@ -33,9 +33,9 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="flex flex-col gap-4 max-w-sm mx-auto p-0 bg-transparent shadow-none border-none w-full">
-      <h2 className="text-4xl font-bold text-[#000000ee]">Bem-vindo novamente,</h2>
-      <p className="text-[#8a8a8a] mt-[-.8rem] mb-6">por favor, preencha seus dados.</p>
+    <form onSubmit={handleLogin} className="flex flex-col gap-4 max-w-sm mx-auto p-0 bg-transparent shadow-none border-none w-full px-4 sm:px-0">
+      <h2 className="text-[1.5rem] sm:text-3xl md:text-4xl font-bold text-[#000000ee]">Bem-vindo novamente,</h2>
+      <p className="text-[#8a8a8a] mt-[-.8rem] mb-6 text-sm sm:text-base">por favor, preencha seus dados.</p>
       <input
         type="email"
         placeholder="E-mail"

@@ -53,9 +53,9 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleRegister} className="flex flex-col gap-4 max-w-sm mx-auto p-0 bg-transparent shadow-none border-none w-full">
-      <h2 className="text-4xl font-bold text-[#000000ee]">Crie sua conta,</h2>
-      <p className="text-[#8a8a8a] mt-[-.8rem] mb-6">preencha seus dados para começar.</p>
+    <form onSubmit={handleRegister} className="flex flex-col gap-4 max-w-sm mx-auto p-0 bg-transparent shadow-none border-none w-full px-4 sm:px-0">
+      <h2 className="text-[1.5rem] sm:text-3xl md:text-4xl font-bold text-[#000000ee]">Crie sua conta,</h2>
+      <p className="text-[#8a8a8a] mt-[-.8rem] mb-6 text-sm sm:text-base">preencha seus dados para começar.</p>
       <input
         type="email"
         placeholder="E-mail"
