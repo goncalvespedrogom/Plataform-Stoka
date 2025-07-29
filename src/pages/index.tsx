@@ -1,8 +1,16 @@
 import Sidebar from "../components/Sidebar";
 import PlatformLayout from "../components/PlatformLayout";
+import { useSEO } from "../hooks/useSEO";
 
 function HomePage() {
-  return <div className="flex-1"></div>;
+  const { SEOHead } = useSEO();
+
+  return (
+    <>
+      <SEOHead />
+      <div className="flex-1"></div>
+    </>
+  );
 }
 
 HomePage.getLayout = function getLayout(page: React.ReactNode) {
