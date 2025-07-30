@@ -1,40 +1,183 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# 🏪 STOKA
 
-## Getting Started
+Uma plataforma de gestão empresarial desenvolvida para auxiliar pequenas empresas no controle de estoque, vendas, tarefas e análise de dados.
 
-First, run the development server:
+## 📋 Sobre o Projeto
 
+A **STOKA** é uma aplicação web moderna que oferece uma solução integrada para gestão empresarial, permitindo que empreendedores controlem seus negócios de forma eficiente através de uma interface intuitiva e responsiva.
+
+### 🎯 Objetivo
+
+Facilitar a gestão empresarial através de uma plataforma única que integra:
+- Controle de estoque em tempo real
+- Gestão de vendas e análise de lucros
+- Sistema de tarefas e lembretes
+- Dashboard com métricas e gráficos
+- Autenticação segura de usuários
+
+## ✨ Funcionalidades Principais
+
+### 📊 Dashboard
+- **Visão Geral**: Métricas em tempo real do negócio
+- **Gráficos Interativos**: Visualização de dados de vendas, estoque e lucros
+- **Análise de Categorias**: Distribuição de produtos por categoria
+- **Busca Rápida**: Localização instantânea de produtos e tarefas
+- **Resumo Financeiro**: Saldo, lucros e perdas
+
+### 📦 Gestão de Estoque
+- **Cadastro de Produtos**: Registro completo com nome, categoria, quantidade e preço
+- **Controle de Quantidade**: Acompanhamento automático do estoque
+- **Categorização**: Organização por categorias (Eletrônicos, Vestuário, Alimentos, etc.)
+- **Valor Total**: Cálculo automático do valor total do estoque
+- **Histórico**: Snapshots do estoque para análise temporal
+
+### 💰 Gestão de Vendas
+- **Registro de Vendas**: Controle de transações com produtos
+- **Cálculo de Lucros**: Análise automática de lucros e perdas
+- **Relatórios**: Visualização de performance de vendas
+- **Integração com Estoque**: Atualização automática do estoque
+
+### ✅ Sistema de Tarefas
+- **Criação de Tarefas**: Título, descrição e prioridade
+- **Controle de Status**: Pendente, em andamento, concluída
+- **Datas de Vencimento**: Controle de prazos
+- **Prioridades**: Baixa, média, alta
+- **Filtros**: Organização por status e prioridade
+
+### ⚙️ Configurações
+- **Perfil do Usuário**: Gerenciamento de dados pessoais
+- **Preferências**: Configurações da plataforma e de segurança da conta [EM BREVE]
+
+## 🛠️ Tecnologias Utilizadas
+
+### Frontend
+- **Next.js 15.3.3** - Framework React para aplicações web
+- **React 18.2.0** - Biblioteca para interfaces de usuário
+- **TypeScript 5.3.3** - Linguagem tipada para JavaScript
+- **Tailwind CSS 3.4.1** - Framework CSS utilitário
+- **Headless UI 2.2.4** - Componentes acessíveis e sem estilo
+
+### Backend & Banco de Dados
+- **Firebase 11.10.0** - Plataforma de desenvolvimento do Google
+  - **Firestore** - Banco de dados NoSQL em tempo real
+  - **Authentication** - Sistema de autenticação seguro
+
+### Bibliotecas de UI/UX
+- **React Icons 5.0.1** - Ícones para React
+- **Recharts 3.1.0** - Biblioteca de gráficos para React
+- **React DatePicker 8.4.0** - Seletor de datas
+
+### Ferramentas de Desenvolvimento
+- **ESLint 8.56.0** - Linter para JavaScript/TypeScript
+- **PostCSS 8.4.35** - Processador de CSS
+- **Autoprefixer 10.4.17** - Prefixos CSS automáticos
+
+## 🚀 Como Executar o Projeto
+
+### Pré-requisitos
+- Node.js (versão 18 ou superior)
+- npm ou yarn
+- Conta no Firebase (para configuração do banco de dados)
+
+### Instalação
+
+1. **Clone o repositório**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [URL_DO_REPOSITORIO]
+cd plataform-stoka
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Instale as dependências**
+```bash
+npm install
+# ou
+yarn install
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. **Configure o Firebase**
+   - Crie um projeto no [Firebase Console](https://console.firebase.google.com/)
+   - Configure Authentication e Firestore
+   - Copie as credenciais para `src/firebaseConfig.ts`
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+4. **Execute o projeto**
+```bash
+npm run dev
+# ou
+yarn dev
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+5. **Acesse a aplicação**
+   - Abra [http://localhost:3000](http://localhost:3000) no seu navegador
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Scripts Disponíveis
 
-## Learn More
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Gera a build de produção
+- `npm run start` - Inicia o servidor de produção
+- `npm run lint` - Executa o linter para verificar código
 
-To learn more about Next.js, take a look at the following resources:
+## 📱 Responsividade
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+A aplicação é totalmente responsiva e funciona em:
+- **Desktop**: Interface completa com sidebar expandida
+- **Tablet**: Sidebar colapsível
+- **Mobile**: Interface otimizada para dispositivos móveis
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔐 Autenticação
 
-## Deploy on Vercel
+O sistema utiliza Firebase Authentication para:
+- Login com email e senha
+- Registro de novos usuários
+- Recuperação de senha
+- Controle de sessão seguro
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📊 Estrutura do Projeto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+```
+plataform-stoka/
+├── src/
+│   ├── components/          # Componentes React
+│   │   ├── Auth/           # Componentes de autenticação
+│   │   ├── sections/       # Seções da aplicação
+│   │   └── Sidebar.tsx     # Navegação lateral
+│   ├── hooks/              # Custom hooks
+│   ├── pages/              # Páginas Next.js
+│   ├── types/              # Definições TypeScript
+│   ├── styles/             # Estilos globais
+│   └── firebaseConfig.ts   # Configuração Firebase
+├── public/                 # Arquivos estáticos
+└── package.json           # Dependências e scripts
+```
+
+## 🎨 Design System
+
+A aplicação utiliza um design system consistente com:
+- **Cores**: Paleta de cores moderna e profissional
+- **Tipografia**: Hierarquia clara de textos
+- **Componentes**: Reutilizáveis e acessíveis
+- **Ícones**: React Icons para consistência visual
+
+## 🔄 Funcionalidades Futuras
+
+- [ ] Relatórios em PDF
+- [ ] Integração com APIs de pagamento
+- [ ] Sistema de notificações push
+- [ ] Backup automático de dados
+- [ ] Múltiplos usuários por empresa
+- [ ] API REST para integrações externas
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
+## 👥 Contribuição
+
+Contribuições são bem-vindas! Por favor, entre em contato antes de enviar pull requests.
+
+## 📞 Suporte
+
+Para dúvidas ou suporte, entre em contato através das minhas redes.
+
+
+
+
